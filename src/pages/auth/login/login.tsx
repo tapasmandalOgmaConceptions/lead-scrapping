@@ -107,18 +107,20 @@ const Login: React.FC = () => {
                     </div>
                     <div>
                       <label htmlFor="email">Password</label>
-                      <Field
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter Your Password"
-                      />
-                      <span onClick={togglePasswordVisibility}>
-                          {showPassword ? (
-                            <VisibilityOffIcon />
-                          ) : (
-                            <VisibilityIcon />
-                          )}
-                        </span>
+                      <div className={styles.passField}>
+                        <Field
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter Your Password"
+                        />
+                        <span className={styles.visibilityIcon}  onClick={togglePasswordVisibility}>
+                            {showPassword ? (
+                              <VisibilityOffIcon />
+                            ) : (
+                              <VisibilityIcon />
+                            )}
+                          </span>
+                        </div>
                       <ErrorMessage
                         name="password"
                         component="p"

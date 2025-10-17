@@ -130,19 +130,21 @@ const CreateUpdateUser: React.FC = () => {
                       </li>
                       <li>
                         <label>Password</label>
-                        <Field
-                          name="password"
-                          type={showPassword ? "text" : "password"}
-                          autoComplete="new-password"
-                          placeholder="Enter Password"
-                        />
-                        <span onClick={togglePasswordVisibility}>
-                          {showPassword ? (
-                            <VisibilityOffIcon />
-                          ) : (
-                            <VisibilityIcon />
-                          )}
-                        </span>
+                        <div className={styles.passField}>
+                          <Field
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            autoComplete="new-password"
+                            placeholder="Enter Password"
+                          />
+                          <span className={styles.visibilityIcon} onClick={togglePasswordVisibility}>
+                            {showPassword ? (
+                              <VisibilityOffIcon />
+                            ) : (
+                              <VisibilityIcon />
+                            )}
+                          </span>
+                        </div>
                         <ErrorMessage
                           name="password"
                           component="p"
@@ -150,7 +152,7 @@ const CreateUpdateUser: React.FC = () => {
                         />
                       </li>
                     </ul>
-                    <div>
+                    <div className={styles.mt30}>
                       <Button variant="contained" type="submit" disabled={loading}>
                         {userId ? "Update" : "Add"}
                       </Button>
