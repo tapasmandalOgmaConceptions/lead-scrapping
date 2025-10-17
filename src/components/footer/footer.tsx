@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styles from './footer.module.scss';
 
 const Footer: React.FC  = () => {
@@ -7,7 +6,7 @@ const Footer: React.FC  = () => {
   return (
     <>
 
-    <div className={styles.bottomFooter}>
+    {/* <div className={styles.bottomFooter}>
       <div className={styles.container}>
         <div className={styles.footerRow}>
           <div className={styles.footerClm}>
@@ -96,7 +95,7 @@ const Footer: React.FC  = () => {
           </div>
         </div>        
       </div>      
-    </div>
+    </div> */}
 
     <div className={styles.copyrightPrt}>
       <div className={styles.container}>

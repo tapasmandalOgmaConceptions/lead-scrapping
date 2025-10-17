@@ -392,7 +392,5 @@ body.body-fixed::before {
     }
 }
 .confirmation-alert-icon{
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    margin: 20px auto 0;
 }
