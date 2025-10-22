@@ -193,7 +193,7 @@ const LeadScrappingList: React.FC = () => {
               <ul>
                 <li>Created At</li>
                 <li>Email</li>
-                <li>Phone No</li>
+                <li className={styles.phoneSec}>Phone No</li>
                 <li>City</li>
                 <li>Address</li>
                 <li>Lead Status</li>
