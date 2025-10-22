@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "./leadScrappingList.module.scss";
 import api from "../../../services/api";
@@ -131,7 +132,13 @@ const LeadScrappingList: React.FC = () => {
                     <Form>
                       <ul>
                         <li>
-                          <Autocomplete
+                          <Field name="city" placeholder="Search by sector" />
+                          <img
+                            src="images/search-icon.svg"
+                            alt="search icon"
+                            className={styles.productSrchIcon}
+                          />
+                          {/* <Autocomplete
                             freeSolo
                             options={citySuggestions?.map(
                               (option) => option?.title
@@ -149,7 +156,7 @@ const LeadScrappingList: React.FC = () => {
                                 variant="outlined"
                               />
                             )}
-                          />
+                          /> */}
                           <ErrorMessage
                             name="city"
                             component="p"
