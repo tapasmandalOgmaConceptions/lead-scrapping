@@ -31,12 +31,13 @@
                 }
                 ul{
                     @include flex;
-                    align-items: center;
+                    // align-items: center;
                     li{
                         margin-left: 15px;
                         &:first-child{
                             margin-left: 0;
                         }
+                         
                     }
                     .productSearchField{
                         @media only screen and (max-width:991px){
@@ -75,7 +76,11 @@
                                 top: 10px;
                                 right: 10px;
                             }
+
+                           
                         }
+                            
+                       
                     }
                     .productSort{
                         select{
@@ -379,3 +384,4 @@
     }
 
 }
+

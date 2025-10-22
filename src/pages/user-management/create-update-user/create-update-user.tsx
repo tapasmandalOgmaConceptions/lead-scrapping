@@ -21,7 +21,7 @@ const CreateUpdateUser: React.FC = () => {
   useEffect(() => {
     if (userId) getUserInfo();
   }, []);
-  const initialProfile: UserInterface = {
+  const initialUser: UserInterface = {
     name: "",
     email: "",
     password: "",
@@ -103,7 +103,7 @@ const CreateUpdateUser: React.FC = () => {
               <h1>{userId ? "Update" : "Add"} User</h1>
               <div className={styles.smartLinerFormClmTwo}>
                 <Formik
-                  initialValues={initialProfile}
+                  initialValues={initialUser}
                   validationSchema={validationSchema}
                   onSubmit={handleSubmit}
                   innerRef={formikRef}
