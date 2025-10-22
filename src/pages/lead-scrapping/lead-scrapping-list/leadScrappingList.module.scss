@@ -32,9 +32,14 @@
         }
         ul {
           @include flex;
-          align-items: center;
+          // align-items: center;
           li {
             margin-left: 15px;
+            @media (max-width: 576px) {
+              margin-left: 0;
+              margin-top: 15px;
+              width: 100%;
+            }
             &:first-child {
               margin-left: 0;
             }
@@ -68,6 +73,10 @@
                 color: #161e2d;
               }
             }
+            .errorMessage{
+              margin-bottom: 0 !important; 
+              color: red !important;                               
+          }
           }
           .productSearchField {
             position: relative;
@@ -274,28 +283,40 @@
       @include justify-space-between;
       align-items: center;
       li {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        // overflow: hidden;
+        // white-space: nowrap;
+        // text-overflow: ellipsis;
         &:first-child {
-          width: 16%;
+          width: 15%;
           padding-left: 20px !important;
+           @media (max-width: 767px) {
+             padding-left: 10px !important;
+           }
         }
         &:nth-child(2) {
-          width: 20%;
+          width: 15%;
         }
         &:nth-child(3) {
-          width: 23%;
+          width: 10%;
         }
         &:nth-child(4) {
-          width: 20%;
+          width: 10%;
         }
         &:nth-child(5) {
+          width: 15%;
+        }
+        &:nth-child(6) {
+          width: 10%;
+        }
+        &:nth-child(7) {
           width: 10%;
         }
         &:last-child {
-          width: 10%;
+          width: 15%;
           padding-right: 20px !important;
+           @media (max-width: 767px) {
+             padding-right: 10px !important;
+           }
         }
       }
     }
@@ -336,6 +357,7 @@
             color: $textColor;
             font-weight: 500;
             margin-bottom: 0;
+            line-height: 20px;
             @media (max-width: 991px) {
               width: calc(100% - 120px);
               text-align: right;
@@ -345,21 +367,14 @@
               margin-right: 3px;
             }
           }
-          &:first-child {
-            padding-left: 10px !important;
+          &:first-child {            
             img {
               max-width: 100px;
               max-height: 65px;
               border-radius: 10px;
             }
           }
-          &:last-child {
-            p {
-              font-size: 18px;
-              color: $secondaryColor;
-              font-weight: 600;
-            }
-          }
+          
         }
       }
     }
