@@ -8,6 +8,7 @@ import Header from "../components/header/header";
 import Footer from "../components/footer/footer";
 import UserList from "../pages/user-management/user-list/userList";
 import CreateUpdateUser from "../pages/user-management/create-update-user/create-update-user";
+import LeadScrappingList from "../pages/lead-scrapping/lead-scrapping-list/leadScrappingList";
 
 function AppRouter() {
   return (
@@ -21,7 +22,8 @@ function AppRouter() {
 
         {/* ProtectedRoute for routes that require authentication */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<UserList />} />
+          <Route path="/" element={<LeadScrappingList />} />
+          <Route path="/user-list" element={<UserList />} />
           <Route path="/create-user" element={<CreateUpdateUser />} />
           <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
         </Route>

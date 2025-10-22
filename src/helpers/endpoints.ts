@@ -11,7 +11,11 @@ const endpoints =  {
         updateUser: (userId: string) => `user/update/${userId}`,
         deleteUser: (userId: string) => `user/delete/${userId}`
     },
-
+    leadScrape: {
+        createLeadScrape: "leads/scrape",
+        leadList: "leads",
+        getCityList: "leads/cities"
+    },
 
     
     profile: {

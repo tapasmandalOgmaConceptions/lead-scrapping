@@ -103,7 +103,10 @@ const Header: React.FC  = () => {
               <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarsExampleDefault">
                 <ul className="navbar-nav" onClick={handleNavLinkClick}>
                   <li>
-                    <Link to={'/'}>User List</Link>
+                    <Link to={'/'}>Lead Scrape</Link>
+                  </li>
+                  <li>
+                    <Link to={'/user-list'}>User List</Link>
                   </li>
                   
                   {/* <li className="dropdown">

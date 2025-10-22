@@ -6,7 +6,6 @@ import { setLogout } from '../store/userSlice';
 // Create a custom Axios instance
 const api: AxiosInstance = axios.create({
   baseURL: apiBaseUrl,
-  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
