@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import confirmationAlert from "../../../services/confirmationAlert";
+import AssignUserModal from "../../../modal/assign-user/assignUserModal";
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<UserListInterface[]>([]);
@@ -25,6 +26,8 @@ const UserList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const [assignUserModalOpen, setAssignUserModalOpen] = useState<boolean>(false);
+    const [assignUserId, setAssignUserId] = useState<string>("");
   const delay = 300;
   const navigate = useNavigate();
 
@@ -79,12 +82,15 @@ const UserList: React.FC = () => {
     setActiveUserId(null);
   };
 
-  const navigateToUpdateUser = (id: string) => {
-    navigate(`/update-user/${id}`);
+  const navigateToUpdateUser = (userId: string) => {
+    navigate(`/update-user/${userId}`);
   };
 
   const navigateToCreateUser = () => {
     navigate(`/create-user`);
+  };
+    const navigateToAssignUserLeadList = (userId: string) => {
+    navigate(`/assign-leads/${userId}`);
   };
   
    const deleteUser = async (userId: string) => {
@@ -101,6 +107,14 @@ const UserList: React.FC = () => {
       }
     })
   };
+  const openAssignUserModal = (userId: string) => {
+    setAssignUserModalOpen(true);
+    setAssignUserId(userId);
+  };
+  const closeAssignUserModal = () => {
+    setAssignUserModalOpen(false);
+    setAssignUserId("");
+  }
 
   return (
     <>
@@ -145,6 +159,7 @@ const UserList: React.FC = () => {
               <ul>
                 <li>Name</li>
                 <li>Email</li>
+                <li>Role</li>
                 <li>Action</li>
               </ul>
             </div>
@@ -158,6 +173,11 @@ const UserList: React.FC = () => {
                   <li data-label="Email">
                     <p>{user.email}</p>
                   </li>
+
+                  <li data-label="Role">
+                    <p>{user.role}</p>
+                  </li>
+
                   <li data-label="Action" className={styles.actionCell}>
                     <div>
                       <IconButton
@@ -195,6 +215,22 @@ const UserList: React.FC = () => {
                         >
                           Edit
                         </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            openAssignUserModal(user.id);
+                          }}
+                        >
+                          Assign City & Sector
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            navigateToAssignUserLeadList(user.id);
+                          }}
+                        >
+                          Assigned Leads
+                        </MenuItem>
                         <MenuItem onClick={() => {
                             handleMenuClose();
                             deleteUser(user.id);
@@ -207,6 +243,7 @@ const UserList: React.FC = () => {
             ))}
           </div>
         </div>
+        <AssignUserModal open={assignUserModalOpen} onClose={closeAssignUserModal} userId={assignUserId}/>
 
         <div className={styles.container}>
           {users.length === 0 && !loading && (

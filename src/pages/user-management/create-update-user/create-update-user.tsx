@@ -10,7 +10,7 @@ import endpoints from "../../../helpers/endpoints";
 import { UserInterface } from "../../../interfaces/userInterface";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 
 const CreateUpdateUser: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -24,6 +24,7 @@ const CreateUpdateUser: React.FC = () => {
   const initialUser: UserInterface = {
     name: "",
     email: "",
+    role: "",
     password: "",
   };
   const validationSchema = Yup.object().shape({
@@ -31,6 +32,7 @@ const CreateUpdateUser: React.FC = () => {
     email: Yup.string()
       .email("Invalid email format")
       .required("Email is required"),
+    role: Yup.string().required("Role is required"),
     password: userId
       ? Yup.string().min(8, "Password must be at least 8 characters")
       : Yup.string()
@@ -46,7 +48,7 @@ const CreateUpdateUser: React.FC = () => {
       const res = await apiEndpoint;
       if (res.data) {
         alert(res.data?.message, "success");
-        navigate("/");
+        navigate("/user-list");
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -63,6 +65,7 @@ const CreateUpdateUser: React.FC = () => {
         formikRef.current?.setValues({
           name: data.name || "",
           email: data.email || "",
+          role: data.role || "",
           password: "",
         });
       }
@@ -73,7 +76,7 @@ const CreateUpdateUser: React.FC = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
- 
+
   return (
     <>
       <div className={styles.myProfileBdyPrt}>
@@ -121,9 +124,30 @@ const CreateUpdateUser: React.FC = () => {
                       </li>
                       <li>
                         <label>Email</label>
-                        <Field name="email" autoComplete="off" placeholder="Enter User Email Address" />
+                        <Field
+                          name="email"
+                          autoComplete="off"
+                          placeholder="Enter User Email Address"
+                        />
                         <ErrorMessage
                           name="email"
+                          component="p"
+                          className={styles.errorMessage}
+                        />
+                      </li>
+                      <li>
+                        <label htmlFor="roleOptions">Role</label>
+                        <Field
+                          as="select"
+                          name="role"
+                          id="roleOptions"
+                        >
+                          <option value="">Select an option</option>
+                          <option value="Admin">Admin</option>
+                          <option value="User">User</option>
+                        </Field>
+                        <ErrorMessage
+                          name="role"
                           component="p"
                           className={styles.errorMessage}
                         />
@@ -137,7 +161,10 @@ const CreateUpdateUser: React.FC = () => {
                             autoComplete="new-password"
                             placeholder="Enter Password"
                           />
-                          <span className={styles.visibilityIcon} onClick={togglePasswordVisibility}>
+                          <span
+                            className={styles.visibilityIcon}
+                            onClick={togglePasswordVisibility}
+                          >
                             {showPassword ? (
                               <VisibilityOffIcon />
                             ) : (
@@ -153,7 +180,11 @@ const CreateUpdateUser: React.FC = () => {
                       </li>
                     </ul>
                     <div className={styles.mt30}>
-                      <Button variant="contained" type="submit" disabled={loading}>
+                      <Button
+                        variant="contained"
+                        type="submit"
+                        disabled={loading}
+                      >
                         {userId ? "Update" : "Add"}
                       </Button>
                     </div>
