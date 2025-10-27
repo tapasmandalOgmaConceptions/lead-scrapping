@@ -67,12 +67,12 @@ const ChangeLeadStatus: React.FC<ChangeLeadStatusModalProps> = ({
       >
         <div className={styles.modalBodyPart}>
           <DialogTitle>Change Lead Status</DialogTitle>
-          <span onClick={onClose}>
+          <span className={styles.closeIcon} onClick={onClose}>
             <CloseIcon />
           </span>
         </div>
 
-        <DialogContent>
+        <DialogContent className="pt0s">
           <div>
             <Formik
               initialValues={initialValue}
@@ -84,7 +84,7 @@ const ChangeLeadStatus: React.FC<ChangeLeadStatusModalProps> = ({
                 <Form>
                   <div>
                     <label>Status</label>
-                    <Field as="select" name="status">
+                    <Field as="select" style={{height:"50px"}} name="status">
                       <option value="">Select an option</option>
                       <option value="Positive lead">Positive lead</option>
                       <option value="Not interested">Not interested</option>
@@ -95,6 +95,7 @@ const ChangeLeadStatus: React.FC<ChangeLeadStatusModalProps> = ({
                       className={styles.errorMessage}
                     />
                   </div>
+                  <br/>
                   <div>
                     <Button
                       type="button"
@@ -102,6 +103,7 @@ const ChangeLeadStatus: React.FC<ChangeLeadStatusModalProps> = ({
                       color="error"
                       onClick={onClose}
                       disabled={loading}
+                      className={styles.mRight2}
                     >
                       Cancel
                     </Button>
