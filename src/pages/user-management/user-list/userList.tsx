@@ -27,7 +27,7 @@ const UserList: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [assignUserModalOpen, setAssignUserModalOpen] = useState<boolean>(false);
-    const [assignUserId, setAssignUserId] = useState<string>("");
+  const [assignUserId, setAssignUserId] = useState<string>("");
   const delay = 300;
   const navigate = useNavigate();
 
@@ -90,7 +90,7 @@ const UserList: React.FC = () => {
     navigate(`/create-user`);
   };
     const navigateToAssignUserLeadList = (userId: string) => {
-    navigate(`/assign-leads/${userId}`);
+    navigate(`/assigned-leads/${userId}`);
   };
   
    const deleteUser = async (userId: string) => {

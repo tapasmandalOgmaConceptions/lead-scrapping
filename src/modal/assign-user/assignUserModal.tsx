@@ -66,7 +66,6 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
         ...Value,
         user_id: userId,
       };
-      console.log(payload);
       const res = await api.post(endpoints.user.assignUser, payload);
       if (res.status === 200) {
         alert(res.data?.message, "success");

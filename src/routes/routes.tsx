@@ -28,7 +28,7 @@ function AppRouter() {
           <Route path="/user-list" element={<UserList />} />
           <Route path="/create-user" element={<CreateUpdateUser />} />
           <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
-          <Route path="/assign-leads/:userId" element={<AssignUserLeadList />} />
+          <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
         </Route>
 
         {/* Catch-all for 404 Not Found */}

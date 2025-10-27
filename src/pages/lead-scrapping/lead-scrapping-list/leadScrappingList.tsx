@@ -201,35 +201,35 @@ const LeadScrappingList: React.FC = () => {
                 <li>summary</li>
               </ul>
             </div>
-            {leads.map((user, ind) => (
-              <div className={styles.tableRow} key={ind}>
+            {leads.map((lead) => (
+              <div className={styles.tableRow} key={lead.id}>
                 <ul>
                   <li data-label="Created At">
                     <p>
-                      {moment(user.created_at).format("MM-DD-YYYY h:mm:ss a")}
+                      {moment(lead.created_at).format("MM-DD-YYYY h:mm:ss a")}
                     </p>
                   </li>
 
                   <li data-label="Email">
-                    <p>{user.email}</p>
+                    <p>{lead.email}</p>
                   </li>
                   <li data-label="Phone No">
-                    <p>{user.phone}</p>
+                    <p>{lead.phone}</p>
                   </li>
                   <li data-label="City">
-                    <p>{user.city}</p>
+                    <p>{lead.city}</p>
                   </li>
                   <li data-label="Address">
-                    <p>{user.address}</p>
+                    <p>{lead.address}</p>
                   </li>
                   <li data-label="Lead Status">
-                    <p>{user.lead_status}</p>
+                    <p>{lead.lead_status}</p>
                   </li>
                   <li data-label="sector">
-                    <p>{user.sector}</p>
+                    <p>{lead.sector}</p>
                   </li>
                   <li data-label="Summary">
-                    <p>{user.summary}</p>
+                    <p>{lead.summary}</p>
                   </li>
                 </ul>
               </div>
