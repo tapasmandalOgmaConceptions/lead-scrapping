@@ -23,6 +23,8 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
 import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
 
 const AssignUserLeadList: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -39,7 +41,7 @@ const AssignUserLeadList: React.FC = () => {
   const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] = useState<boolean>(false);
   const [selectedLeadId, setSelectedLeadId] = useState<string>("");
   const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>("");
-
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { userId } = useParams();
   useEffect(() => {
     getAssignUserLeadList();
@@ -47,13 +49,14 @@ const AssignUserLeadList: React.FC = () => {
 
   const getAssignUserLeadList = async () => {
     setLoading(true);
+    const userIdToFetch = userId || userInfo?.id;
     try {
       const res = await api.get(
         `${endpoints.user.assignUserLead}?page=${page}&limit=${size}${
           city ? `&city=${city}` : ""
         }${
           sector ? `&sector=${sector}` : ""
-        }&user_id=${userId}&is_followup=false`
+        }&user_id=${userIdToFetch}&is_followup=false`
       );
       if (res.status === 200) {
         setLeads(res.data?.data || []);
@@ -149,7 +152,7 @@ const AssignUserLeadList: React.FC = () => {
           <div className={styles.container}>
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
-                <h1>Assign Leads</h1>
+                <h1>Assigned Leads</h1>
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik
