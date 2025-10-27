@@ -415,3 +415,6 @@ body.body-fixed::before {
     padding: 0 40px 0 15px !important;
     border: none !important;
 }
+.pt0s{
+    padding-top: 0 !important;
+}
