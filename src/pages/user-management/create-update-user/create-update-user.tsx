@@ -137,7 +137,8 @@ const CreateUpdateUser: React.FC = () => {
                       </li>
                       <li>
                         <label htmlFor="roleOptions">Role</label>
-                        <Field
+                        <div className={styles.selectSec}>
+                          <Field
                           as="select"
                           name="role"
                           id="roleOptions"
@@ -146,6 +147,7 @@ const CreateUpdateUser: React.FC = () => {
                           <option value="Admin">Admin</option>
                           <option value="User">User</option>
                         </Field>
+                        </div>
                         <ErrorMessage
                           name="role"
                           component="p"

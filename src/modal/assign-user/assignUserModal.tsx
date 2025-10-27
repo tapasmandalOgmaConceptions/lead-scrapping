@@ -89,12 +89,12 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
       >
         <div className={styles.modalBodyPart}>
           <DialogTitle>Assign City and Sector</DialogTitle>
-          <span onClick={onClose}>
+          <span className={styles.closeIcon} onClick={onClose}>
             <CloseIcon />
           </span>
         </div>
 
-        <DialogContent>
+        <DialogContent  className="pt0s">
           <div>
             <Formik
               initialValues={initialValue}
@@ -106,6 +106,7 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
                   <div>
                     <label>City</label>
                     <Autocomplete
+                      className={styles.autocompletefield}
                       freeSolo
                       options={citySuggestions?.map((option) => option?.title)}
                       onInputChange={(event, value) => {
@@ -137,6 +138,7 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
                       className={styles.errorMessage}
                     />
                   </div>
+                  <br/>
                   <div>
                     <Button
                       type="button"
@@ -144,6 +146,7 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
                       color="error"
                       onClick={onClose}
                       disabled={loading}
+                      className={styles.mRight2}
                     >
                       Cancel
                     </Button>
