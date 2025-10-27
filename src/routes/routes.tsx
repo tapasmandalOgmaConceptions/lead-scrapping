@@ -9,6 +9,8 @@ import Footer from "../components/footer/footer";
 import UserList from "../pages/user-management/user-list/userList";
 import CreateUpdateUser from "../pages/user-management/create-update-user/create-update-user";
 import LeadScrappingList from "../pages/lead-scrapping/lead-scrapping-list/leadScrappingList";
+import FollowUp from "../pages/home-page/homePage";
+import AssignUserLeadList from "../pages/user-management/assign-user-lead-list/assignUserLeadList";
 
 function AppRouter() {
   return (
@@ -17,15 +19,17 @@ function AppRouter() {
       <Routes>
         <Route element={<AuthRedirect />}>
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/verify-otp" element={<VerifyOtp />} /> */}
         </Route>
 
         {/* ProtectedRoute for routes that require authentication */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<LeadScrappingList />} />
+          <Route path="/" element={<FollowUp />} />
+          <Route path="/lead-scrape" element={<LeadScrappingList />} />
           <Route path="/user-list" element={<UserList />} />
           <Route path="/create-user" element={<CreateUpdateUser />} />
           <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
+          <Route path="/assigned-leads" element={<AssignUserLeadList />} />
+          <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
         </Route>
 
         {/* Catch-all for 404 Not Found */}

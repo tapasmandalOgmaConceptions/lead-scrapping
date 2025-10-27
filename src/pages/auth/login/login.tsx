@@ -35,6 +35,8 @@ const Login: React.FC = () => {
               id: data.user.id,
               email: data.user.email,
               name: data.user.name,
+              role: data.user.role,
+              isAdmin: data.user?.role?.toLowerCase() === "admin",
               profileImage: null,
             },
           })

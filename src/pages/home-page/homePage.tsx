@@ -1,23 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from "react";
-import styles from "./leadScrappingList.module.scss";
-import api from "../../../services/api";
+import styles from "./homePage.module.scss";
+import api from "../../services/api";
 import Pagination from "@mui/material/Pagination";
-import alert from "../../../services/alert";
-import endpoints from "../../../helpers/endpoints";
+import alert from "../../services/alert";
+import endpoints from "../../helpers/endpoints";
 import * as Yup from "yup";
 import { Formik, Form, ErrorMessage, Field } from "formik";
 import {
   LeadListResponse,
   LeadScrape,
-} from "../../../interfaces/leadScrapeInterface";
+} from "../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
 import moment from "moment";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
+import searchImgIcon from "../../assets/images/search-icon.svg";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
-const LeadScrappingList: React.FC = () => {
+const FollowUp: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
   const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(30);
@@ -25,25 +28,27 @@ const LeadScrappingList: React.FC = () => {
   const [city, setCity] = useState<string>("");
   const [sector, setSector] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [isLeadScrapping, setIsLeadScrapping] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
   useEffect(() => {
-    getLeadList();
+    getFollowUpLeadList();
   }, [page, size, city, sector]);
 
-  const getLeadList = async () => {
+  const getFollowUpLeadList = async () => {
     setLoading(true);
     try {
       const res = await api.get(
-        `${endpoints.leadScrape.leadList}?page=${page}&limit=${size}${
+        `${endpoints.user.assignUserLead}?page=${page}&limit=${size}${
           city ? `&city=${city}` : ""
-        }${sector ? `&sector=${sector}` : ""}`
+        }${
+          sector ? `&sector=${sector}` : ""
+        }${!userInfo?.isAdmin ? `&user_id=${userInfo?.id}` : "" }&is_followup=true`
       );
       if (res.status === 200) {
-        setLeads(res.data?.data?.leads || []);
-        setTotalPage(res.data?.data?.meta.pages || 0);
+        setLeads(res.data?.data || []);
+        setTotalPage(res.data?.meta?.pages || 0);
       }
     } catch (error: any) {
       alert(error?.response?.data?.detail || error?.message, "error");
@@ -64,25 +69,13 @@ const LeadScrappingList: React.FC = () => {
     sector: "",
   };
   const validationSchema = Yup.object().shape({
-    city: Yup.string().required("City is required"),
-    sector: Yup.string().required("Sector is required"),
+    city: Yup.string(),
+    sector: Yup.string(),
   });
-  const handleSearch = async (value: LeadScrape) => {
-    setIsLeadScrapping(true);
-    try {
-      const res = await api.post(
-        `${endpoints.leadScrape.createLeadScrape}?city=${value.city}&sector=${value.sector}`
-      );
-      if (res.status === 200) {
-        setPage(1);
-        setCity(value.city);
-        setSector(value.sector);
-      }
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || err?.message, "error");
-    } finally {
-      setIsLeadScrapping(false);
-    }
+  const handleSearch = (value: LeadScrape) => {
+    setPage(1);
+    setCity(value.city || "");
+    setSector(value.sector || "");
   };
   const fetchCitySuggestions = async (query: string) => {
     if (!query) return;
@@ -119,7 +112,7 @@ const LeadScrappingList: React.FC = () => {
           <div className={styles.container}>
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
-                <h1>Lead Scrape</h1>
+                <h1>Followup Leads</h1>
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik
@@ -159,9 +152,9 @@ const LeadScrappingList: React.FC = () => {
                         <li className={styles.productSearchField}>
                           <Field name="sector" placeholder="Search by sector" />
                           <img
-                            src="images/search-icon.svg"
+                            src={searchImgIcon}
                             alt="search icon"
-                            className={styles.productSrchIcon}
+                            className={styles.productSearchIcon}
                           />
                           <ErrorMessage
                             name="sector"
@@ -170,12 +163,8 @@ const LeadScrappingList: React.FC = () => {
                           />
                         </li>
                         <li>
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            disabled={isLeadScrapping}
-                          >
-                            Scrape
+                          <Button type="submit" variant="contained">
+                            Search
                           </Button>
                         </li>
                       </ul>
@@ -258,4 +247,4 @@ const LeadScrappingList: React.FC = () => {
   );
 };
 
-export default LeadScrappingList;
+export default FollowUp;
