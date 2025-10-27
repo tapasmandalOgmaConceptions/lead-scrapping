@@ -101,15 +101,27 @@ const Header: React.FC  = () => {
 
             <nav className={`header-nav navbar navbar-expand-lg ${isMenuOpen ? 'show-menu' : ''}`}>
               <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarsExampleDefault">
-                <ul className="navbar-nav" onClick={handleNavLinkClick}>
-                  <li>
-                    <Link to={'/'}>Lead Scrape</Link>
-                  </li>
-                  <li>
-                    <Link to={'/user-list'}>User List</Link>
-                  </li>
-                  
-                  {/* <li className="dropdown">
+               {isAuthenticated && (
+                  <ul className="navbar-nav" onClick={handleNavLinkClick}>
+                    <li>
+                      <Link to={"/"}>FollowUp Leads</Link>
+                    </li>
+                    {!userInfo?.isAdmin ? (
+                      <li>
+                        <Link to={"/assigned-leads"}>Assigned Leads</Link>
+                      </li>
+                    ) : (
+                      <>
+                        <li>
+                          <Link to={"/lead-scrape"}>Lead Scrape</Link>
+                        </li>
+                        <li>
+                          <Link to={"/user-list"}>User List</Link>
+                        </li>
+                      </>
+                    )}
+
+                    {/* <li className="dropdown">
                     <span className='subLink' onClick={handleNavLinkClick}>Place Purchase Orders</span>
                     <span
                       className="dropdown-toggle"
@@ -129,7 +141,8 @@ const Header: React.FC  = () => {
                       </li>
                     </ul>
                   </li> */}
-                </ul>
+                  </ul>
+                )}
               </div>
             </nav>
           </div>

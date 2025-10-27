@@ -395,6 +395,16 @@ body.body-fixed::before {
     margin: 20px auto 0;
 }
 
+.css-1tlcqt-MuiAutocomplete-root .MuiOutlinedInput-root{
+    border: none;
+    padding: 0 !important;
+    border-color: #fff !important;
+    border-radius: 7px !important;
+}
+.css-1tlcqt-MuiAutocomplete-root .MuiOutlinedInput-root input{
+    padding: 0 40px 0 15px !important;
+    border: none !important;
+}
 .css-1hdoajr .MuiOutlinedInput-root{
     border: none;
     padding: 0 !important;
@@ -405,4 +415,6 @@ body.body-fixed::before {
     padding: 0 40px 0 15px !important;
     border: none !important;
 }
-
+.pt0s{
+    padding-top: 0 !important;
+}
