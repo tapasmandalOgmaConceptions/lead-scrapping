@@ -16,7 +16,8 @@ const endpoints =  {
     leadScrape: {
         createLeadScrape: "leads/scrape",
         leadList: "leads",
-        getCityList: "leads/cities"
+        getCityList: "leads/cities",
+        changeLeadStatus: (leadId: string) => `assign-user/lead/${leadId}/status`
     },
 
     

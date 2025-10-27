@@ -3,6 +3,7 @@ export interface LeadScrape {
   city: string;
 }
 export interface LeadListResponse {
+  id: string;
   created_at: string;
   city: string;
   address: string;
@@ -12,4 +13,14 @@ export interface LeadListResponse {
   phone: string;
   sector: string;
   summary: string;
+}
+export interface ChangeLeadStatusModalProps {
+  open: boolean;
+  onClose: () => void;
+  leadId: string;
+  confirmLeadStatusModal: () => void;
+  leadStatus: string
+}
+export interface LeadStatus {
+ status: string;
 }

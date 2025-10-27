@@ -18,6 +18,11 @@ import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
 import { useParams } from "react-router-dom";
 import searchImgIcon from "../../../assets/images/search-icon.svg";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import IconButton from "@mui/material/IconButton";
+import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus";
 
 const AssignUserLeadList: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -29,7 +34,12 @@ const AssignUserLeadList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
-  
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] = useState<boolean>(false);
+  const [selectedLeadId, setSelectedLeadId] = useState<string>("");
+  const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>("");
+
   const { userId } = useParams();
   useEffect(() => {
     getAssignUserLeadList();
@@ -41,11 +51,13 @@ const AssignUserLeadList: React.FC = () => {
       const res = await api.get(
         `${endpoints.user.assignUserLead}?page=${page}&limit=${size}${
           city ? `&city=${city}` : ""
-        }${sector ? `&sector=${sector}` : ""}&user_id=${userId}&is_followup=false`
+        }${
+          sector ? `&sector=${sector}` : ""
+        }&user_id=${userId}&is_followup=false`
       );
       if (res.status === 200) {
         setLeads(res.data?.data || []);
-        setTotalPage(res.data?.data?.pages || 0);
+        setTotalPage(res.data?.meta?.pages || 0);
       }
     } catch (error: any) {
       alert(error?.response?.data?.detail || error?.message, "error");
@@ -101,6 +113,34 @@ const AssignUserLeadList: React.FC = () => {
     debounce(fetchCitySuggestions, 500),
     []
   );
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLElement>,
+    leadId: string
+  ) => {
+    setActiveUserId(leadId);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setActiveUserId(null);
+  };
+  const openLeadStatusModal = (leadId: string, leadStatus: string) => {
+    setChangeLeadStatusModalOpen(true);
+    setSelectedLeadId(leadId);
+    setSelectedLeadStatus(leadStatus);
+  };
+  const closeLeadStatusModal = () => {
+    setChangeLeadStatusModalOpen(false);
+    setSelectedLeadId("");
+    setSelectedLeadStatus("");
+  }
+    const confirmLeadStatusModal = () => {
+    setChangeLeadStatusModalOpen(false);
+    setSelectedLeadId("");
+    setSelectedLeadStatus("");
+    getAssignUserLeadList();
+  }
 
   return (
     <>
@@ -160,10 +200,7 @@ const AssignUserLeadList: React.FC = () => {
                           />
                         </li>
                         <li>
-                          <Button
-                            type="submit"
-                            variant="contained"
-                          >
+                          <Button type="submit" variant="contained">
                             Search
                           </Button>
                         </li>
@@ -188,43 +225,89 @@ const AssignUserLeadList: React.FC = () => {
                 <li>Lead Status</li>
                 <li>sector</li>
                 <li>summary</li>
+                <li>Action</li>
               </ul>
             </div>
-            {leads.map((user, ind) => (
-              <div className={styles.tableRow} key={ind}>
+            {leads.map((lead) => (
+              <div className={styles.tableRow} key={lead.id}>
                 <ul>
                   <li data-label="Created At">
                     <p>
-                      {moment(user.created_at).format("MM-DD-YYYY h:mm:ss a")}
+                      {moment(lead.created_at).format("MM-DD-YYYY h:mm:ss a")}
                     </p>
                   </li>
 
                   <li data-label="Email">
-                    <p>{user.email}</p>
+                    <p>{lead.email}</p>
                   </li>
                   <li data-label="Phone No">
-                    <p>{user.phone}</p>
+                    <p>{lead.phone}</p>
                   </li>
                   <li data-label="City">
-                    <p>{user.city}</p>
+                    <p>{lead.city}</p>
                   </li>
                   <li data-label="Address">
-                    <p>{user.address}</p>
+                    <p>{lead.address}</p>
                   </li>
                   <li data-label="Lead Status">
-                    <p>{user.lead_status}</p>
+                    <p>{lead.lead_status}</p>
                   </li>
                   <li data-label="sector">
-                    <p>{user.sector}</p>
+                    <p>{lead.sector}</p>
                   </li>
                   <li data-label="Summary">
-                    <p>{user.summary}</p>
+                    <p>{lead.summary}</p>
+                  </li>
+                  <li data-label="Action" className={styles.actionCell}>
+                    <div>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={
+                          activeUserId === lead.id ? "long-menu" : undefined
+                        }
+                        aria-expanded={
+                          activeUserId === lead.id ? "true" : undefined
+                        }
+                        aria-haspopup="true"
+                        onClick={(event) => handleMenuClick(event, lead.id)}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        open={activeUserId === lead.id} // Show menu only for the active user
+                        onClose={handleMenuClose}
+                        slotProps={{
+                          paper: {
+                            style: {
+                              maxHeight: 48 * 4.5,
+                              width: "20ch",
+                            },
+                          },
+                          list: {
+                            "aria-labelledby": "long-button",
+                          },
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            openLeadStatusModal(lead.id, lead.lead_status);
+                          }}
+                        >
+                          Change Status
+                        </MenuItem>
+                      </Menu>
+                    </div>
                   </li>
                 </ul>
               </div>
             ))}
           </div>
         </div>
+        <ChangeLeadStatus open={changeLeadStatusModalOpen} onClose={closeLeadStatusModal} leadId={selectedLeadId} confirmLeadStatusModal={confirmLeadStatusModal} leadStatus={selectedLeadStatus} />
 
         <div className={styles.container}>
           {leads.length === 0 && !loading && (
