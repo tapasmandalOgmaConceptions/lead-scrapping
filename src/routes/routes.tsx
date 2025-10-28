@@ -1,21 +1,23 @@
-import React from "react";
+import React, {lazy, Suspense} from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "../pages/auth/login/login";
 import ProtectedRoute from "./protectedRoute";
 import AuthRedirect from "./authRedirect";
-import PageNotFound from "../pages/page-not-found/pageNotFound";
 import Header from "../components/header/header";
 import Footer from "../components/footer/footer";
-import UserList from "../pages/user-management/user-list/userList";
-import CreateUpdateUser from "../pages/user-management/create-update-user/create-update-user";
-import LeadScrappingList from "../pages/lead-scrapping/lead-scrapping-list/leadScrappingList";
-import FollowUp from "../pages/home-page/homePage";
-import AssignUserLeadList from "../pages/user-management/assign-user-lead-list/assignUserLeadList";
+
+const Login = lazy(() => import("../pages/auth/login/login"));
+const PageNotFound = lazy(() => import("../pages/page-not-found/pageNotFound"));
+const UserList = lazy(() => import("../pages/user-management/user-list/userList"));
+const CreateUpdateUser = lazy(() => import("../pages/user-management/create-update-user/create-update-user"));
+const LeadScrappingList = lazy(() => import("../pages/lead-scrapping/lead-scrapping-list/leadScrappingList"));
+const FollowUp = lazy(() => import("../pages/home-page/homePage"));
+const AssignUserLeadList = lazy(() => import("../pages/user-management/assign-user-lead-list/assignUserLeadList"));
 
 function AppRouter() {
   return (
     <Router>
       <Header/>
+      <Suspense fallback={<div style={{height: "100vh", display:"flex", justifyContent:"center", alignItems: "center"}}>Loading...</div>}>
       <Routes>
         <Route element={<AuthRedirect />}>
           <Route path="/login" element={<Login />} />
@@ -35,6 +37,7 @@ function AppRouter() {
         {/* Catch-all for 404 Not Found */}
         <Route path="*" element={<PageNotFound/>}/>
       </Routes>
+      </Suspense>
       <Footer/>
     </Router>
   );
