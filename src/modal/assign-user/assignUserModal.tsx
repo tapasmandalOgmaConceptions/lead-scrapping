@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./assignUserModal.module.scss";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -10,7 +10,7 @@ import {
 } from "../../interfaces/userInterface";
 import { Autocomplete, Button, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikProps } from "formik";
 import * as Yup from "yup";
 import debounce from "lodash/debounce";
 import endpoints from "../../helpers/endpoints";
@@ -25,6 +25,10 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const formikRef = useRef<FormikProps<AssignUser>>(null);
+  useEffect(() => {
+    formikRef.current?.resetForm();
+  }, [userId]);
   const initialValue: AssignUser = {
     sector: "",
     city: "",
@@ -99,6 +103,7 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
               initialValues={initialValue}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
+              innerRef={formikRef}
             >
               {({ setFieldValue }) => (
                 <Form>
