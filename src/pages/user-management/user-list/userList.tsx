@@ -215,7 +215,9 @@ const UserList: React.FC = () => {
                         >
                           Edit
                         </MenuItem>
-                        <MenuItem
+                        {user.role === "User" && (
+                          <div>
+                          <MenuItem
                           onClick={() => {
                             handleMenuClose();
                             openAssignUserModal(user.id);
@@ -231,6 +233,8 @@ const UserList: React.FC = () => {
                         >
                           Assigned Leads
                         </MenuItem>
+                        </div>
+                        )}
                         <MenuItem onClick={() => {
                             handleMenuClose();
                             deleteUser(user.id);
