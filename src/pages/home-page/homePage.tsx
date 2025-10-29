@@ -6,17 +6,17 @@ import Pagination from "@mui/material/Pagination";
 import alert from "../../services/alert";
 import endpoints from "../../helpers/endpoints";
 import * as Yup from "yup";
-import { Formik, Form, ErrorMessage, Field } from "formik";
+import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
   LeadScrape,
+  SectorListResponse,
 } from "../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
 import moment from "moment";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
-import searchImgIcon from "../../assets/images/search-icon.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 
@@ -30,8 +30,13 @@ const FollowUp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
+  const [sectors, setSectors] = useState<SectorListResponse[]>([]);
+  const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
 
+  useEffect(() => {
+    getSectors();
+  }, []);
   useEffect(() => {
     getFollowUpLeadList();
   }, [page, size, city, sector]);
@@ -42,9 +47,9 @@ const FollowUp: React.FC = () => {
       const res = await api.get(
         `${endpoints.user.assignUserLead}?page=${page}&limit=${size}${
           city ? `&city=${city}` : ""
-        }${
-          sector ? `&sector=${sector}` : ""
-        }${!userInfo?.isAdmin ? `&user_id=${userInfo?.id}` : "" }&is_followup=true`
+        }${sector ? `&sector=${sector}` : ""}${
+          !userInfo?.isAdmin ? `&user_id=${userInfo?.id}` : ""
+        }&is_followup=true`
       );
       if (res.status === 200) {
         setLeads(res.data?.data || []);
@@ -104,6 +109,32 @@ const FollowUp: React.FC = () => {
     debounce(fetchCitySuggestions, 500),
     []
   );
+  const getSectors = async (keyword?: string) => {
+    setIsSectorFetching(true);
+    try {
+      const res = await api.get(
+        `${endpoints.leadScrape.getSectors}?limit=20&page=1${
+          keyword ? `&keyword=${keyword}` : ""
+        }`
+      );
+      if (res.status === 200) {
+        const sectorsData = res.data?.data?.sectors || [];
+        const uniqueTitles = Array.from(
+          new Map(sectorsData.map((item: any) => [item.name, item])).values()
+        ) as SectorListResponse[];
+
+        setSectors(uniqueTitles);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setIsSectorFetching(false);
+    }
+  };
+  const debouncedFetchSectorSuggestions = useCallback(
+    debounce(getSectors, 500),
+    []
+  );
 
   return (
     <>
@@ -149,12 +180,23 @@ const FollowUp: React.FC = () => {
                             className={styles.errorMessage}
                           />
                         </li>
-                        <li className={styles.productSearchField}>
-                          <Field name="sector" placeholder="Search by sector" />
-                          <img
-                            src={searchImgIcon}
-                            alt="search icon"
-                            className={styles.productSearchIcon}
+                        <li>
+                          <Autocomplete
+                            freeSolo
+                            options={sectors?.map((option) => option?.name)}
+                            onInputChange={(event, value) => {
+                              debouncedFetchSectorSuggestions(value);
+                              setFieldValue("sector", value);
+                            }}
+                            loading={isSectorFetching}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name="sector"
+                                placeholder="Search by sector"
+                                variant="outlined"
+                              />
+                            )}
                           />
                           <ErrorMessage
                             name="sector"
@@ -181,7 +223,7 @@ const FollowUp: React.FC = () => {
             <div className={styles.tableHead}>
               <ul>
                 <li>Created At</li>
-                <li>Email</li>
+                {/* <li>Email</li> */}
                 <li className={styles.phoneSec}>Phone No</li>
                 <li>City</li>
                 <li>Address</li>
@@ -199,9 +241,9 @@ const FollowUp: React.FC = () => {
                     </p>
                   </li>
 
-                  <li data-label="Email">
+                  {/* <li data-label="Email">
                     <p>{lead.email}</p>
-                  </li>
+                  </li> */}
                   <li data-label="Phone No">
                     <p>{lead.phone}</p>
                   </li>

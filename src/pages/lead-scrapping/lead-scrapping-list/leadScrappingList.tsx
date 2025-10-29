@@ -6,10 +6,11 @@ import Pagination from "@mui/material/Pagination";
 import alert from "../../../services/alert";
 import endpoints from "../../../helpers/endpoints";
 import * as Yup from "yup";
-import { Formik, Form, ErrorMessage, Field } from "formik";
+import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
   LeadScrape,
+  SectorListResponse,
 } from "../../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
 import moment from "moment";
@@ -28,7 +29,11 @@ const LeadScrappingList: React.FC = () => {
   const [isLeadScrapping, setIsLeadScrapping] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
-
+  const [sectors, setSectors] = useState<SectorListResponse[]>([]);
+  const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
+  useEffect(() => {
+    getSectors();
+  }, []);
   useEffect(() => {
     getLeadList();
   }, [page, size, city, sector]);
@@ -111,6 +116,32 @@ const LeadScrappingList: React.FC = () => {
     debounce(fetchCitySuggestions, 500),
     []
   );
+    const getSectors = async (keyword?: string) => {
+    setIsSectorFetching(true);
+    try {
+      const res = await api.get(
+        `${endpoints.leadScrape.getSectors}?limit=20&page=1${
+          keyword ? `&keyword=${keyword}` : ""
+        }`
+      );
+      if (res.status === 200) {
+        const sectorsData = res.data?.data?.sectors || [];
+        const uniqueTitles = Array.from(
+          new Map(sectorsData.map((item: any) => [item.name, item])).values()
+        ) as SectorListResponse[];
+
+        setSectors(uniqueTitles);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setIsSectorFetching(false);
+    }
+  };
+  const debouncedFetchSectorSuggestions = useCallback(
+    debounce(getSectors, 500),
+    []
+  );
 
   return (
     <>
@@ -156,12 +187,23 @@ const LeadScrappingList: React.FC = () => {
                             className={styles.errorMessage}
                           />
                         </li>
-                        <li className={styles.productSearchField}>
-                          <Field name="sector" placeholder="Search by sector" />
-                          <img
-                            src="images/search-icon.svg"
-                            alt="search icon"
-                            className={styles.productSrchIcon}
+                         <li>
+                          <Autocomplete
+                            freeSolo
+                            options={sectors?.map((option) => option?.name)}
+                            onInputChange={(event, value) => {
+                              debouncedFetchSectorSuggestions(value);
+                              setFieldValue("sector", value);
+                            }}
+                            loading={isSectorFetching}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name="sector"
+                                placeholder="Search by sector"
+                                variant="outlined"
+                              />
+                            )}
                           />
                           <ErrorMessage
                             name="sector"
@@ -192,7 +234,7 @@ const LeadScrappingList: React.FC = () => {
             <div className={styles.tableHead}>
               <ul>
                 <li>Created At</li>
-                <li>Email</li>
+                {/* <li>Email</li> */}
                 <li className={styles.phoneSec}>Phone No</li>
                 <li>City</li>
                 <li>Address</li>
@@ -210,9 +252,9 @@ const LeadScrappingList: React.FC = () => {
                     </p>
                   </li>
 
-                  <li data-label="Email">
+                  {/* <li data-label="Email">
                     <p>{lead.email}</p>
-                  </li>
+                  </li> */}
                   <li data-label="Phone No">
                     <p>{lead.phone}</p>
                   </li>
