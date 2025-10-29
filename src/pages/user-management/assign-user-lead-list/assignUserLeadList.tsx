@@ -6,10 +6,11 @@ import Pagination from "@mui/material/Pagination";
 import alert from "../../../services/alert";
 import endpoints from "../../../helpers/endpoints";
 import * as Yup from "yup";
-import { Formik, Form, ErrorMessage, Field } from "formik";
+import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
   LeadScrape,
+  SectorListResponse,
 } from "../../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
 import moment from "moment";
@@ -17,7 +18,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
 import { useParams } from "react-router-dom";
-import searchImgIcon from "../../../assets/images/search-icon.svg";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -38,11 +38,17 @@ const AssignUserLeadList: React.FC = () => {
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
-  const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] = useState<boolean>(false);
+  const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
+    useState<boolean>(false);
   const [selectedLeadId, setSelectedLeadId] = useState<string>("");
   const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>("");
+  const [sectors, setSectors] = useState<SectorListResponse[]>([]);
+  const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { userId } = useParams();
+  useEffect(() => {
+    getSectors();
+  }, []);
   useEffect(() => {
     getAssignUserLeadList();
   }, [page, size, city, sector]);
@@ -137,13 +143,39 @@ const AssignUserLeadList: React.FC = () => {
     setChangeLeadStatusModalOpen(false);
     setSelectedLeadId("");
     setSelectedLeadStatus("");
-  }
-    const confirmLeadStatusModal = () => {
+  };
+  const confirmLeadStatusModal = () => {
     setChangeLeadStatusModalOpen(false);
     setSelectedLeadId("");
     setSelectedLeadStatus("");
     getAssignUserLeadList();
-  }
+  };
+  const getSectors = async (keyword?: string) => {
+    setIsSectorFetching(true);
+    try {
+      const res = await api.get(
+        `${endpoints.leadScrape.getSectors}?limit=20&page=1${
+          keyword ? `&keyword=${keyword}` : ""
+        }`
+      );
+      if (res.status === 200) {
+        const sectorsData = res.data?.data?.sectors || [];
+        const uniqueTitles = Array.from(
+          new Map(sectorsData.map((item: any) => [item.name, item])).values()
+        ) as SectorListResponse[];
+
+        setSectors(uniqueTitles);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setIsSectorFetching(false);
+    }
+  };
+  const debouncedFetchSectorSuggestions = useCallback(
+    debounce(getSectors, 500),
+    []
+  );
 
   return (
     <>
@@ -189,12 +221,23 @@ const AssignUserLeadList: React.FC = () => {
                             className={styles.errorMessage}
                           />
                         </li>
-                        <li className={styles.productSearchField}>
-                          <Field name="sector" placeholder="Search by sector" />
-                          <img
-                            src={searchImgIcon}
-                            alt="search icon"
-                            className={styles.productSearchIcon}
+                        <li>
+                          <Autocomplete
+                            freeSolo
+                            options={sectors?.map((option) => option?.name)}
+                            onInputChange={(event, value) => {
+                              debouncedFetchSectorSuggestions(value);
+                              setFieldValue("sector", value);
+                            }}
+                            loading={isSectorFetching}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name="sector"
+                                placeholder="Search by sector"
+                                variant="outlined"
+                              />
+                            )}
                           />
                           <ErrorMessage
                             name="sector"
@@ -221,7 +264,7 @@ const AssignUserLeadList: React.FC = () => {
             <div className={styles.tableHead}>
               <ul>
                 <li>Created At</li>
-                <li>Email</li>
+                {/* <li>Email</li> */}
                 <li className={styles.phoneSec}>Phone No</li>
                 <li>City</li>
                 <li>Address</li>
@@ -240,9 +283,9 @@ const AssignUserLeadList: React.FC = () => {
                     </p>
                   </li>
 
-                  <li data-label="Email">
+                  {/* <li data-label="Email">
                     <p>{lead.email}</p>
-                  </li>
+                  </li> */}
                   <li data-label="Phone No">
                     <p>{lead.phone}</p>
                   </li>
@@ -310,7 +353,13 @@ const AssignUserLeadList: React.FC = () => {
             ))}
           </div>
         </div>
-        <ChangeLeadStatus open={changeLeadStatusModalOpen} onClose={closeLeadStatusModal} leadId={selectedLeadId} confirmLeadStatusModal={confirmLeadStatusModal} leadStatus={selectedLeadStatus} />
+        <ChangeLeadStatus
+          open={changeLeadStatusModalOpen}
+          onClose={closeLeadStatusModal}
+          leadId={selectedLeadId}
+          confirmLeadStatusModal={confirmLeadStatusModal}
+          leadStatus={selectedLeadStatus}
+        />
 
         <div className={styles.container}>
           {leads.length === 0 && !loading && (
