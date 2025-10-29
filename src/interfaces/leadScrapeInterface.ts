@@ -7,7 +7,7 @@ export interface LeadListResponse {
   created_at: string;
   city: string;
   address: string;
-  email: string;
+  // email: string;
   follow_up_status: string;
   lead_status: string;
   phone: string;
@@ -23,4 +23,8 @@ export interface ChangeLeadStatusModalProps {
 }
 export interface LeadStatus {
  status: string;
+}
+export interface SectorListResponse {
+ id: string;
+ name: string;
 }
