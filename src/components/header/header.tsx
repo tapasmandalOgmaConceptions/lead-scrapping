@@ -7,6 +7,7 @@ import { AppDispatch, RootState } from "../../store";
 import { setLogout } from "../../store/userSlice";
 import alert from "../../services/alert";
 import noProfileImage from "../../assets/images/no_profile_image.webp";
+import logo from "../../assets/images/logo.png";
 
 const Header: React.FC  = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -94,8 +95,7 @@ const Header: React.FC  = () => {
       <div className={styles.container}>
         <div className={styles.headerRow}>
           <div className={styles.headerLogoPrt}>
-            {/* <Link to="/"><img src='images/logo.svg' alt='Logo' /></Link> */}
-           <h3>Admin</h3>
+            <Link to="/"><img src={logo} alt='Logo' /></Link>
           </div>
           <div className={styles.headerMenuPrt}>
 
