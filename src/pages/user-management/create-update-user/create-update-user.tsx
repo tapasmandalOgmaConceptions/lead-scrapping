@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./create-update-user.module.scss";
 import { Formik, Form, Field, ErrorMessage, FormikProps } from "formik";
 import * as Yup from "yup";
@@ -193,11 +193,11 @@ const CreateUpdateUser: React.FC = () => {
                   </Form>
                 </Formik>
               </div>
-              <p>
+              {/* <p>
                 If you would like to change anything in your account, to reach
                 out to
                 <Link to={"#"}>orders@krameramerica.com</Link>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 .header{
     position: relative;
     background-color: $headerBg;
-    padding: 15px 0;
+    padding: 10px 0 15px;
     .headerRow{
         @include justify-space-between;
         align-items: center;
@@ -11,7 +11,7 @@
     .headerLogoPrt{
         img{
             width: 100%;
-            max-width: 300px;
+            max-width: 250px;
             @media only screen and (max-width:991px){
                 max-width: 180px;
             }
