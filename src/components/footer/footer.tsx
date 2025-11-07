@@ -99,7 +99,7 @@ const Footer: React.FC  = () => {
 
     <div className={styles.copyrightPrt}>
       <div className={styles.container}>
-        <p>Copyright &copy; {new Date().getFullYear()}, Tour & Travel Pvt. Ltd</p>
+        <p>Copyright &copy; {new Date().getFullYear()}</p>
       </div>
     </div>
 
