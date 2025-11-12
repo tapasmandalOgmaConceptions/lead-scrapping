@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import styles from './header.module.scss';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
@@ -104,19 +104,19 @@ const Header: React.FC  = () => {
                {isAuthenticated && (
                   <ul className="navbar-nav" onClick={handleNavLinkClick}>
                     <li>
-                      <Link to={"/"}>FollowUp Leads</Link>
+                      <NavLink to={"/"}>FollowUp Leads</NavLink>
                     </li>
                     {!userInfo?.isAdmin ? (
                       <li>
-                        <Link to={"/assigned-leads"}>Assigned Leads</Link>
+                        <NavLink to={"/assigned-leads"}>Assigned Leads</NavLink>
                       </li>
                     ) : (
                       <>
                         <li>
-                          <Link to={"/lead-scrape"}>Lead Scrape</Link>
+                          <NavLink to={"/lead-scrape"}>Lead Scrape</NavLink>
                         </li>
                         <li>
-                          <Link to={"/user-list"}>User List</Link>
+                          <NavLink to={"/user-list"}>User List</NavLink>
                         </li>
                       </>
                     )}

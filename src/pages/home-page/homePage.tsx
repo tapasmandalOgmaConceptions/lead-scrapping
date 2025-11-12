@@ -228,8 +228,8 @@ const FollowUp: React.FC = () => {
                 <li>City</li>
                 <li>Address</li>
                 <li>Lead Status</li>
-                <li>sector</li>
-                <li>summary</li>
+                <li>Sector</li>
+                <li>Summary</li>
               </ul>
             </div>
             {leads.map((lead) => (

@@ -269,8 +269,8 @@ const AssignUserLeadList: React.FC = () => {
                 <li>City</li>
                 <li>Address</li>
                 <li>Lead Status</li>
-                <li>sector</li>
-                <li>summary</li>
+                <li>Sector</li>
+                <li>Summary</li>
                 <li>Action</li>
               </ul>
             </div>
