@@ -2,6 +2,12 @@ export interface LeadScrape {
   sector: string;
   city: string;
 }
+export type LeadStatusType =
+  | "new"
+  | "Positive lead"
+  | "Double Positive"
+  | "Triple Positive"
+  | "Not interested";
 export interface LeadListResponse {
   id: string;
   created_at: string;
@@ -9,7 +15,7 @@ export interface LeadListResponse {
   address: string;
   // email: string;
   follow_up_status: string;
-  lead_status: string;
+  lead_status: LeadStatusType;
   phone: string;
   sector: string;
   summary: string;

@@ -11,6 +11,9 @@ const endpoints = {
     assignUserLead: "assign-user/leads",
     assignUser: "assign-user",
   },
+  technician: {
+    getTechniciansLead: "technician/leads",
+  },
   leadScrape: {
     createLeadScrape: "leads/scrape",
     leadList: "leads",

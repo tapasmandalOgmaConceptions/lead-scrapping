@@ -38,12 +38,12 @@ const ChangeLeadStatus: React.FC<ChangeLeadStatusModalProps> = ({
   const validationSchema = Yup.object().shape({
     status: Yup.string().required("Status is required"),
   });
-  const handleSubmit = async (Value: LeadStatus) => {
+  const handleSubmit = async (value: LeadStatus) => {
     setLoading(true);
     try {
       const res = await api.put(
         `${endpoints.leadScrape.changeLeadStatus(leadId)}?status=${
-          Value.status
+          value.status
         }`
       );
       if (res.status === 200) {

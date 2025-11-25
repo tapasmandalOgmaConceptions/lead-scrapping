@@ -10,6 +10,7 @@ import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
   LeadScrape,
+  LeadStatusType,
   SectorListResponse,
 } from "../../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
@@ -17,7 +18,7 @@ import moment from "moment";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -25,6 +26,7 @@ import IconButton from "@mui/material/IconButton";
 import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
+import { changeStatusConfirmationAlert } from "../../../services/confirmationAlert";
 
 const AssignUserLeadList: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -41,11 +43,14 @@ const AssignUserLeadList: React.FC = () => {
   const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
     useState<boolean>(false);
   const [selectedLeadId, setSelectedLeadId] = useState<string>("");
-  const [selectedLeadStatus, setSelectedLeadStatus] = useState<string>("");
+  const [selectedLeadStatus, setSelectedLeadStatus] = useState<
+    LeadStatusType | ""
+  >("");
   const [sectors, setSectors] = useState<SectorListResponse[]>([]);
   const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { userId } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     getSectors();
   }, []);
@@ -134,7 +139,7 @@ const AssignUserLeadList: React.FC = () => {
     setAnchorEl(null);
     setActiveUserId(null);
   };
-  const openLeadStatusModal = (leadId: string, leadStatus: string) => {
+  const openLeadStatusModal = (leadId: string, leadStatus: LeadStatusType) => {
     setChangeLeadStatusModalOpen(true);
     setSelectedLeadId(leadId);
     setSelectedLeadStatus(leadStatus);
@@ -176,6 +181,24 @@ const AssignUserLeadList: React.FC = () => {
     debounce(getSectors, 500),
     []
   );
+  const changeLeadStatus = async (leadId: string, status: LeadStatusType) => {
+    const confirmation = await changeStatusConfirmationAlert();
+    if (!confirmation.isConfirmed) return;
+    try {
+      const res = await api.put(
+        `${endpoints.leadScrape.changeLeadStatus(leadId)}?status=${status}`
+      );
+      if (res.status === 200) {
+        alert(res.data?.message, "success");
+        getAssignUserLeadList();
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
+  const navigateToViewLeadPage = (leadId: string)=>{
+    navigate(`/view-lead/${leadId}`);
+  }
 
   return (
     <>
@@ -338,13 +361,44 @@ const AssignUserLeadList: React.FC = () => {
                         }}
                       >
                         <MenuItem
-                          onClick={() => {
-                            handleMenuClose();
-                            openLeadStatusModal(lead.id, lead.lead_status);
-                          }}
-                        >
-                          Change Status
-                        </MenuItem>
+                            onClick={() => {
+                              handleMenuClose();
+                              navigateToViewLeadPage(lead.id);
+                            }}
+                          >
+                            View Lead
+                          </MenuItem>
+                        {["new", "Not interested"].includes(
+                          lead.lead_status
+                        ) && (
+                          <MenuItem
+                            onClick={() => {
+                              handleMenuClose();
+                              openLeadStatusModal(lead.id, lead.lead_status);
+                            }}
+                          >
+                            Change Status
+                          </MenuItem>
+                        )}
+                        {(lead.lead_status === "Positive lead" ||
+                          lead.lead_status === "Double Positive") && (
+                          <MenuItem
+                            onClick={() => {
+                              handleMenuClose();
+                              changeLeadStatus(
+                                lead.id,
+                                lead.lead_status === "Positive lead"
+                                  ? "Double Positive"
+                                  : "Triple Positive"
+                              );
+                            }}
+                          >
+                            Mark as {lead.lead_status === "Positive lead"
+                              ? "Double"
+                              : "Triple"}{" "}
+                            Positive
+                          </MenuItem>
+                        )}
                       </Menu>
                     </div>
                   </li>

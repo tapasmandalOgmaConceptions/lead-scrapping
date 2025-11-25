@@ -38,7 +38,7 @@ const FollowUp: React.FC = () => {
     getSectors();
   }, []);
   useEffect(() => {
-    getFollowUpLeadList();
+    userInfo?.role === "Technician" ? getTechnicianLeadList() : getFollowUpLeadList();
   }, [page, size, city, sector]);
 
   const getFollowUpLeadList = async () => {
@@ -54,6 +54,24 @@ const FollowUp: React.FC = () => {
       if (res.status === 200) {
         setLeads(res.data?.data || []);
         setTotalPage(res.data?.meta?.pages || 0);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getTechnicianLeadList = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(
+        `${endpoints.technician.getTechniciansLead}?page=${page}&limit=${size}${
+          city ? `&city=${city}` : ""
+        }${sector ? `&sector=${sector}` : ""}`
+      );
+      if (res.status === 200) {
+        setLeads(res.data?.data?.leads || []);
+        setTotalPage(res.data?.data?.meta?.pages || 0);
       }
     } catch (error: any) {
       alert(error?.response?.data?.detail || error?.message, "error");
