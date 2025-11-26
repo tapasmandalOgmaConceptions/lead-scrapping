@@ -27,6 +27,7 @@ import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { changeStatusConfirmationAlert } from "../../../services/confirmationAlert";
+import AddNotes from "../../../modal/add-note/addNote";
 
 const AssignUserLeadList: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -48,6 +49,7 @@ const AssignUserLeadList: React.FC = () => {
   >("");
   const [sectors, setSectors] = useState<SectorListResponse[]>([]);
   const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
+  const [addNoteModalOpen, setAddNoteModalOpen] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -196,9 +198,18 @@ const AssignUserLeadList: React.FC = () => {
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
-  const navigateToViewLeadPage = (leadId: string)=>{
+  const navigateToViewLeadPage = (leadId: string) => {
     navigate(`/view-lead/${leadId}`);
-  }
+  };
+   const openAddNoteModal = (leadId: string) => {
+    setAddNoteModalOpen(true);
+    setSelectedLeadId(leadId);
+  };
+  const closeAddNoteModal = (isFetchApi = false) => {
+    setAddNoteModalOpen(false);
+    setSelectedLeadId("");
+    if(isFetchApi) getAssignUserLeadList();
+  };
 
   return (
     <>
@@ -361,13 +372,13 @@ const AssignUserLeadList: React.FC = () => {
                         }}
                       >
                         <MenuItem
-                            onClick={() => {
-                              handleMenuClose();
-                              navigateToViewLeadPage(lead.id);
-                            }}
-                          >
-                            View Lead
-                          </MenuItem>
+                          onClick={() => {
+                            handleMenuClose();
+                            navigateToViewLeadPage(lead.id);
+                          }}
+                        >
+                          View Lead Details
+                        </MenuItem>
                         {["new", "Not interested"].includes(
                           lead.lead_status
                         ) && (
@@ -393,12 +404,21 @@ const AssignUserLeadList: React.FC = () => {
                               );
                             }}
                           >
-                            Mark as {lead.lead_status === "Positive lead"
+                            Mark as{" "}
+                            {lead.lead_status === "Positive lead"
                               ? "Double"
                               : "Triple"}{" "}
                             Positive
                           </MenuItem>
                         )}
+                        <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            openAddNoteModal(lead.id);
+                          }}
+                        >
+                          Add Note
+                        </MenuItem>
                       </Menu>
                     </div>
                   </li>
@@ -413,6 +433,11 @@ const AssignUserLeadList: React.FC = () => {
           leadId={selectedLeadId}
           confirmLeadStatusModal={confirmLeadStatusModal}
           leadStatus={selectedLeadStatus}
+        />
+        <AddNotes
+          open={addNoteModalOpen}
+          onClose={closeAddNoteModal}
+          leadId={selectedLeadId}
         />
 
         <div className={styles.container}>
