@@ -1,4 +1,77 @@
-.parent{
-    height: 100vh;
-    width: 100%;
+@import "../../../assets/styles/shared.scss";
+
+.productListBdyPrt {
+  position: relative;
+  background-color: $loginBodyBg;
+  padding: 50px 0;
+  min-height: 100vh;
+  @media only screen and (max-width: 991px) {
+    padding: 40px 0;
+  }
+  .productListHdrPrt {
+    margin-bottom: 50px;
+    .productListHdrRow {
+      @include justify-space-between;
+      align-items: center;
+      .productListTitle {
+        h1 {
+          font-size: 40px;
+          font-weight: 600;
+          @media only screen and (max-width: 991px) {
+            font-size: 30px;
+          }
+          @media (max-width: 576px) {
+            font-size: 27px;
+          }
+        }
+      }
+     
+    }  
+  }
+
+  .LeadcolRow{
+    @include justify-space-between;
+    .LeaddetailsCol{
+        width: 100%;
+        @include justify-space-between;         
+         h2{
+            font-size: 25px;
+            font-weight: 600;  
+            border-bottom: solid 1px #ccc; 
+            width: 100%;
+            margin: 25px 0;
+            padding-bottom: 10px;
+        }
+        .secRow{
+           @include justify-space-between;
+           width: 49%;
+           margin:5px 0;
+           @media (max-width: 576px) {
+            width: 100%;
+          }
+           .secColleft{
+            width: 30%;
+            background: #F3F3F3;
+            font-size: 15px;
+            color: #000;
+            padding: 10px 15px;
+           } 
+           .secColRight{
+            width: 69.3%;
+            background: #ebebeb;
+            font-size: 15px;
+            color: #000;
+            padding: 10px 15px;
+           } 
+        }
+    }
+   
+    }
+
+
+
+  .loader {
+    text-align: center;
+    margin-top: 10px;
+  }
 }
