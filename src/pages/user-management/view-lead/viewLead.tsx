@@ -57,8 +57,8 @@ const ViewLead: React.FC = () => {
             <div className={styles.LeadcolRow}>
               <div className={styles.LeaddetailsCol}>
                 <h2>Leads Details</h2>
-
-                <div className={styles.secRow}>
+                <div className={styles.secBox}>
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>Created At</div>
                   <div className={styles.secColRight}>
                     {moment(leadDetails?.created_at).format(
@@ -67,44 +67,50 @@ const ViewLead: React.FC = () => {
                   </div>
                 </div>
 
-                <div className={styles.secRow}>
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>Phone No</div>
                   <div className={styles.secColRight}>{leadDetails?.phone}</div>
                 </div>
 
-                <div className={styles.secRow}>
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>City</div>
                   <div className={styles.secColRight}>{leadDetails?.city}</div>
                 </div>
 
-                <div className={styles.secRow}>
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>Address</div>
                   <div className={styles.secColRight}>
                     {leadDetails?.address}
                   </div>
                 </div>
+                </div>
 
-                <div className={styles.secRow}>
+                <div className={styles.secBox}>
+
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>Lead Status</div>
                   <div className={styles.secColRight}>
                     {leadDetails?.lead_status}
                   </div>
                 </div>
 
-                <div className={styles.secRow}>
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>Sector</div>
                   <div className={styles.secColRight}>
                     {leadDetails?.sector}
                   </div>
                 </div>
 
-                <div className={styles.secRow}>
+                <div className={`${styles.secRow} ${styles.width100}`}>
                   <div className={styles.secColleft}>Summary</div>
                   <div className={styles.secColRight}>
                     {leadDetails?.summary}
                   </div>
                 </div>
+
+                </div>
               </div>
+
               <div className={styles.LeaddetailsCol}>
                 <h2>Assign Technician</h2>
                 {leadDetails?.assigned_technician ? (
@@ -139,27 +145,29 @@ const ViewLead: React.FC = () => {
             <div className={styles.LeadcolRow}>
               <div className={styles.LeaddetailsCol}>
                 <h2>Notes</h2>
-                {leadNotes.map((note: LeadNote) => (
-                  <div key={note.id} className={styles.width50}>
-                    <div className={styles.secRow}>
+                {leadNotes.map((note: LeadNote) => (                  
+                  <div key={note.id} className={`${styles.secBox} ${styles.width100}`}>
+                    <div className={styles.flexRow}>
+                      <div className={`${styles.secRow} ${styles.width30}`}>
                       <div className={styles.secColleft}>Name</div>
                       <div className={styles.secColRight}>{note?.created_by_user?.name}</div>
                     </div>
-                    <div className={styles.secRow}>
+                    <div className={`${styles.secRow} ${styles.width30}`}>
                       <div className={styles.secColleft}>Email Address</div>
                       <div className={styles.secColRight}>
                         {note?.created_by_user?.email}
                       </div>
                     </div>
-                    <div className={styles.secRow}>
+                    <div className={`${styles.secRow} ${styles.width30}`}>
                       <div className={styles.secColleft}>Role</div>
                       <div className={styles.secColRight}>
                         {note?.created_by_user?.role}
                       </div>
                     </div>
-                    <div className={styles.secRow}>
-                      <div className={styles.secColleft}>Notes</div>
-                      <div className={styles.secColRight}>
+                    </div>
+                    <div className={`${styles.secRow} ${styles.width100}`}>
+                      <div style={{width:"7%"}} className={styles.secColleft}>Notes</div>
+                      <div style={{width:"91%"}} className={styles.secColRight}>
                        {note?.notes}
                       </div>
                     </div>

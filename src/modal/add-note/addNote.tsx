@@ -52,7 +52,7 @@ const AddNotes: React.FC<AddNoteModalProps> = ({ open, onClose, leadId }) => {
     }
   };
   return (
-    <Dialog
+    <Dialog      
       open={open}
       keepMounted
       onClose={() => onClose()}
@@ -76,9 +76,9 @@ const AddNotes: React.FC<AddNoteModalProps> = ({ open, onClose, leadId }) => {
           >
             {({ values, setFieldValue }) => (
               <Form>
-                <div>
+                <div className={styles.addnotePoprow}>
                   <label>Note</label>
-                  <Field as="textarea" name="note" rows="5" cols="30" />
+                  <Field as="textarea" name="note" rows="5" cols="40" />
                   <ErrorMessage
                     name="note"
                     component="p"

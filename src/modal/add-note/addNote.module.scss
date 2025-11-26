@@ -5,6 +5,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: solid 1px #ccc;
+    margin-bottom: 15px;
+    h2{
+        padding: 10px 24px;
+    }
 }
 
 .pt0s .css-kw13he-MuiDialogContent-root{
@@ -32,4 +37,8 @@
 }
 .mRight2{
     margin-right: 10px !important;
+}
+.addnotePoprow{
+    display: flex;
+    flex-direction: column;
 }
