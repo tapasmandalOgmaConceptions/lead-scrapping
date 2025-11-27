@@ -88,18 +88,17 @@ const AddNotes: React.FC<AddNoteModalProps> = ({ open, onClose, leadId }) => {
 
                 <br />
                 <div>
+                  <Button className={styles.mRight2} type="submit" variant="contained" disabled={loading}>
+                    Add
+                  </Button>
                   <Button
                     type="button"
                     variant="contained"
                     color="error"
                     onClick={() => onClose()}
                     disabled={loading}
-                    className={styles.mRight2}
                   >
                     Cancel
-                  </Button>
-                  <Button type="submit" variant="contained" disabled={loading}>
-                    Add
                   </Button>
                 </div>
               </Form>
