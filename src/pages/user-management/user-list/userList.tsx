@@ -13,7 +13,7 @@ import { UserListInterface } from "../../../interfaces/userInterface";
 import { useNavigate } from "react-router-dom";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import confirmationAlert from "../../../services/confirmationAlert";
+import {confirmationAlert} from "../../../services/confirmationAlert";
 import AssignUserModal from "../../../modal/assign-user/assignUserModal";
 
 const UserList: React.FC = () => {

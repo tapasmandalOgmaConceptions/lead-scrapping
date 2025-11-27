@@ -11,12 +11,18 @@ const endpoints = {
     assignUserLead: "assign-user/leads",
     assignUser: "assign-user",
   },
+  technician: {
+    getTechniciansLead: "technician/leads",
+  },
   leadScrape: {
     createLeadScrape: "leads/scrape",
     leadList: "leads",
     getCityList: "leads/cities",
     changeLeadStatus: (leadId: string) => `assign-user/lead/${leadId}/status`,
-    getSectors: "leads/sectors"
+    getSectors: "leads/sectors",
+    addNote: "lead-notes/add-notes",
+    getLead: (leadId: string) => `/leads/${leadId}`,
+    getLeadNote: (leadId: string) => `/lead-notes/${leadId}/notes`
   },
 };
 export default endpoints;

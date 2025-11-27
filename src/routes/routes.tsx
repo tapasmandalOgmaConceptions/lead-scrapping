@@ -12,6 +12,7 @@ const CreateUpdateUser = lazy(() => import("../pages/user-management/create-upda
 const LeadScrappingList = lazy(() => import("../pages/lead-scrapping/lead-scrapping-list/leadScrappingList"));
 const FollowUp = lazy(() => import("../pages/home-page/homePage"));
 const AssignUserLeadList = lazy(() => import("../pages/user-management/assign-user-lead-list/assignUserLeadList"));
+const ViewLead = lazy(() => import("../pages/user-management/view-lead/viewLead"));
 
 function AppRouter() {
   return (
@@ -32,6 +33,7 @@ function AppRouter() {
           <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
           <Route path="/assigned-leads" element={<AssignUserLeadList />} />
           <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
+          <Route path="/view-lead/:leadId" element={< ViewLead/>} />
         </Route>
 
         {/* Catch-all for 404 Not Found */}

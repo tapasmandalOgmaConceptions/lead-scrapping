@@ -11,11 +11,12 @@ export interface UserInterface {
   password: string;
 }
 
+export type UserRole = 'Admin' | 'User' | 'Technician';
 export interface UserInfo {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: UserRole;
   isAdmin: boolean;
   profileImage: string | null;
 }

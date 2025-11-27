@@ -146,6 +146,7 @@ const CreateUpdateUser: React.FC = () => {
                           <option value="">Select an option</option>
                           <option value="Admin">Admin</option>
                           <option value="User">User</option>
+                          <option value="Technician">Technician</option>
                         </Field>
                         </div>
                         <ErrorMessage
