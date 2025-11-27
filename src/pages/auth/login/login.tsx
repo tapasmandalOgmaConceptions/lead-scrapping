@@ -12,6 +12,7 @@ import endpoints from "../../../helpers/endpoints";
 import { setLogin } from "../../../store/userSlice";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { UserRole } from "../../../interfaces/userInterface";
 
 const Login: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -35,7 +36,7 @@ const Login: React.FC = () => {
               id: data.user.id,
               email: data.user.email,
               name: data.user.name,
-              role: data.user.role,
+              role: data.user.role as UserRole,
               isAdmin: data.user?.role?.toLowerCase() === "admin",
               profileImage: null,
             },

@@ -19,6 +19,11 @@ import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
+import { useNavigate } from "react-router-dom";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import IconButton from "@mui/material/IconButton";
 
 const FollowUp: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -32,13 +37,17 @@ const FollowUp: React.FC = () => {
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
   const [sectors, setSectors] = useState<SectorListResponse[]>([]);
   const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeLeadId, setActiveLeadId] = useState<string | null>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-
+  const navigate = useNavigate();
   useEffect(() => {
     getSectors();
   }, []);
   useEffect(() => {
-    getFollowUpLeadList();
+    userInfo?.role === "Technician"
+      ? getTechnicianLeadList()
+      : getFollowUpLeadList();
   }, [page, size, city, sector]);
 
   const getFollowUpLeadList = async () => {
@@ -54,6 +63,24 @@ const FollowUp: React.FC = () => {
       if (res.status === 200) {
         setLeads(res.data?.data || []);
         setTotalPage(res.data?.meta?.pages || 0);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getTechnicianLeadList = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(
+        `${endpoints.technician.getTechniciansLead}?page=${page}&limit=${size}${
+          city ? `&city=${city}` : ""
+        }${sector ? `&sector=${sector}` : ""}`
+      );
+      if (res.status === 200) {
+        setLeads(res.data?.data?.leads || []);
+        setTotalPage(res.data?.data?.meta?.pages || 0);
       }
     } catch (error: any) {
       alert(error?.response?.data?.detail || error?.message, "error");
@@ -135,6 +162,21 @@ const FollowUp: React.FC = () => {
     debounce(getSectors, 500),
     []
   );
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLElement>,
+    leadId: string
+  ) => {
+    setActiveLeadId(leadId);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setActiveLeadId(null);
+  };
+  const navigateToViewLeadPage = (leadId: string) => {
+    navigate(`/view-lead/${leadId}`);
+  };
 
   return (
     <>
@@ -230,6 +272,7 @@ const FollowUp: React.FC = () => {
                 <li>Lead Status</li>
                 <li>Sector</li>
                 <li>Summary</li>
+                <li>Action</li>
               </ul>
             </div>
             {leads.map((lead) => (
@@ -261,6 +304,50 @@ const FollowUp: React.FC = () => {
                   </li>
                   <li data-label="Summary">
                     <p>{lead.summary}</p>
+                  </li>
+                  <li data-label="Action" className={styles.actionCell}>
+                    <div>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={
+                          activeLeadId === lead.id ? "long-menu" : undefined
+                        }
+                        aria-expanded={
+                          activeLeadId === lead.id ? "true" : undefined
+                        }
+                        aria-haspopup="true"
+                        onClick={(event) => handleMenuClick(event, lead.id)}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        open={activeLeadId === lead.id}
+                        onClose={handleMenuClose}
+                        slotProps={{
+                          paper: {
+                            style: {
+                              maxHeight: 48 * 4.5,
+                              width: "20ch",
+                            },
+                          },
+                          list: {
+                            "aria-labelledby": "long-button",
+                          },
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            handleMenuClose();
+                            navigateToViewLeadPage(lead.id);
+                          }}
+                        >
+                          View Lead Details
+                        </MenuItem>
+                      </Menu>
+                    </div>
                   </li>
                 </ul>
               </div>

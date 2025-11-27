@@ -21,7 +21,6 @@ const userSlice = createSlice({
       state.userInfo = null;
       state.isAuthenticated = false;
     },
-    // You can add other reducers here if needed, e.g., for updating user info
     updateUserInfo: (state, action: PayloadAction<Partial<UserInfo>>) => {
       if (state.userInfo) {
         state.userInfo = { ...state.userInfo, ...action.payload };
