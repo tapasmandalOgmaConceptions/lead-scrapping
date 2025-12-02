@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import styles from "../view-lead/viewLead.module.scss";
 import { DealClientForm } from "../../../interfaces/templateNoteInterface";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -58,33 +59,83 @@ const ViewAndEditTemplateNote: React.FC = () => {
   };
 
   return (
-    <div>
-      <div>
-        <div className="section_heading">
-          <h3>Deal</h3>
+    <div className={styles.LeadcolRow}>
+      <div className={styles.LeaddetailsCol}>
+        <div className={styles.sectionHeading}>
+          <h2>Deal</h2>
           {sectionName !== TemplateNoteEnum.DEAL && (
-            <span onClick={() => editSection(TemplateNoteEnum.DEAL)}>
-              <EditIcon />
+            <span className={styles.editBtn} onClick={() => editSection(TemplateNoteEnum.DEAL)}>
+              Edit <EditIcon />
             </span>
           )}
           {sectionName === TemplateNoteEnum.DEAL && (
             <>
-              <span onClick={cancelEditSection}>
-                <CancelIcon />
-              </span>
-              <span onClick={() => saveSection(TemplateNoteEnum.DEAL)}>
-                <CheckCircleIcon />
-              </span>
+              <span className={styles.cancelBtn} onClick={cancelEditSection}>
+                 Cancel <CancelIcon />
+              </span>              
             </>
           )}
         </div>
         {sectionName !== TemplateNoteEnum.DEAL && (
-          <div className="view_info">
-            <p>view information</p>
+          <div className={styles.viewInfo}>
+             <div className={styles.editInfoCol}>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+             </div>  
+              <div className={styles.editInfoCol}>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+             </div>
+              <div className={styles.editInfoCol}>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span className={styles.borderRight}>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+                <span>
+                  <label>Client Name</label>
+                  <p>Client Name Here</p>
+                </span>
+             </div>          
           </div>
         )}
         {sectionName === TemplateNoteEnum.DEAL && (
-          <div className="edit_info">
+          <div className={styles.editInfo}>
             <Formik
               initialValues={initialDealFormValue}
               validationSchema={dealFormValidationSchema}
@@ -92,14 +143,14 @@ const ViewAndEditTemplateNote: React.FC = () => {
             >
               {({ values, setFieldValue }) => (
                 <Form>
-                  <div>
+                  <div className={styles.editInfoCol}>
                     <span>
                       <label>Client Name</label>
                       <Field
                         name="client_name"
                         placeholder="Enter Client Name"
                       />
-                      <ErrorMessage name="client_name" component="p" />
+                      <ErrorMessage className={styles.error} name="client_name" component="p" />
                     </span>
                     <span>
                       <label>Primary Contact Name</label>
@@ -107,7 +158,7 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="primary_contact_name"
                         placeholder="Enter Primary Contact Name"
                       />
-                      <ErrorMessage name="primary_contact_name" component="p" />
+                      <ErrorMessage className={styles.error} name="primary_contact_name" component="p" />
                     </span>
                     <span>
                       <label>Primary Contact Email</label>
@@ -115,7 +166,7 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="primary_contact_email"
                         placeholder="Enter Primary Contact Email"
                       />
-                      <ErrorMessage
+                      <ErrorMessage className={styles.error}
                         name="primary_contact_email"
                         component="p"
                       />
@@ -126,17 +177,17 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="primary_contact_phone"
                         placeholder="Enter Primary Contact Phone"
                       />
-                      <ErrorMessage
+                      <ErrorMessage className={styles.error}
                         name="primary_contact_phone"
                         component="p"
                       />
                     </span>
                   </div>
-                  <div>
+                  <div className={styles.editInfoCol}>
                     <span>
                       <label>Industry</label>
                       <Field name="industry" placeholder="Enter Industry" />
-                      <ErrorMessage name="industry" component="p" />
+                      <ErrorMessage className={styles.error} name="industry" component="p" />
                     </span>
                     <span>
                       <label>Sector Package</label>
@@ -144,12 +195,12 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="sector_package"
                         placeholder="Enter Sector Package"
                       />
-                      <ErrorMessage name="sector_package" component="p" />
+                      <ErrorMessage className={styles.error} name="sector_package" component="p" />
                     </span>
                     <span>
                       <label>Deal Name</label>
                       <Field name="deal_name" placeholder="Enter Deal Name" />
-                      <ErrorMessage name="deal_name" component="p" />
+                      <ErrorMessage className={styles.error} name="deal_name" component="p" />
                     </span>
                     <span>
                       <label>Sale Person Name</label>
@@ -157,14 +208,14 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="salesperson_name"
                         placeholder="Enter Sale Person Name"
                       />
-                      <ErrorMessage name="salesperson_name" component="p" />
+                      <ErrorMessage className={styles.error} name="salesperson_name" component="p" />
                     </span>
                   </div>
-                  <div>
+                  <div className={styles.editInfoCol}>
                     <span>
                       <label>Deal Close date</label>
                       <Field name="deal_close_date" type="date" />
-                      <ErrorMessage name="deal_close_date" component="p" />
+                      <ErrorMessage className={styles.error} name="deal_close_date" component="p" />
                     </span>
                     <span>
                       <label>Expected Start Date (Optional)</label>
@@ -172,7 +223,7 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="expected_start_date"
                         type="date"
                       />
-                      <ErrorMessage name="expected_start_date" component="p" />
+                      <ErrorMessage className={styles.error} name="expected_start_date" component="p" />
                     </span>
                    <span>
                       <label>Expected End Date or Deadline (Optional)</label>
@@ -180,7 +231,7 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="expected_end_date_or_deadline"
                         type="date"
                       />
-                      <ErrorMessage name="expected_end_date_or_deadline" component="p" />
+                      <ErrorMessage className={styles.error} name="expected_end_date_or_deadline" component="p" />
                     </span>
                     <span>
                       <label>Client Approved Scope Summary</label>
@@ -188,17 +239,21 @@ const ViewAndEditTemplateNote: React.FC = () => {
                         name="client_approved_scope_summary"
                         placeholder="Enter Client Approved Scope Summary"
                       />
-                      <ErrorMessage name="client_approved_scope_summary" component="p" />
+                      <ErrorMessage className={styles.error} name="client_approved_scope_summary" component="p" />
                     </span>
                   </div>
-                  <div>
+                  <div className={styles.editInfoCol}>
                     <span>
                       <label>Special Terms (Optional)</label>
                       <Field
                         name="special_terms"
                         placeholder="Enter Special Terms"
                       />
-                      <ErrorMessage name="special_terms" component="p" />
+                      <ErrorMessage className={styles.error} name="special_terms" component="p" />
+                    </span>
+                    <span className={styles.submitBtn} onClick={() => saveSection(TemplateNoteEnum.DEAL)}>
+                      Submit 
+                      {/* <CheckCircleIcon /> */}
                     </span>
                   </div>
                 </Form>
