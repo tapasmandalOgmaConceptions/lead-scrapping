@@ -10,6 +10,7 @@ import {
 } from "../../../interfaces/leadScrapeInterface";
 import moment from "moment";
 import alert from "../../../services/alert";
+import ViewAndEditTemplateNote from "../template-note/templateNote";
 
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
@@ -142,6 +143,10 @@ const ViewLead: React.FC = () => {
                   <div className={styles.notFound}>No technician assigned.</div>
                 )}
               </div>
+            </div>
+
+            <div>
+              <ViewAndEditTemplateNote/>
             </div>
 
             <div className={styles.LeadcolRow}>
