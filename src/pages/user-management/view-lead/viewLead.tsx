@@ -15,7 +15,7 @@ import ViewAndEditTemplateNote from "../template-note/templateNote";
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
   const [leadNotes, setLeadNotes] = useState<LeadNote[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { leadId } = useParams();
   useEffect(() => {
     getLead();
@@ -146,7 +146,7 @@ const ViewLead: React.FC = () => {
             </div>
 
             <div>
-              <ViewAndEditTemplateNote/>
+              <ViewAndEditTemplateNote leadId={leadId || ""}/>
             </div>
 
             <div className={styles.LeadcolRow}>
