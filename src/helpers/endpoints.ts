@@ -42,6 +42,11 @@ const endpoints = {
       saveCommunication: "communication/save",
       getCommunication: (dealId: string) => `communication/${dealId}`,
     },
+    workPackage: {
+      getPackageTypes: "work-package/get-package-types",
+      getSkills: "work-package/get-skills",
+      getTools: "/work-package/get-tools"
+    }
   },
 };
 export default endpoints;
