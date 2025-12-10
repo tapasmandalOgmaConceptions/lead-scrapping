@@ -49,9 +49,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     useState<InternalNoteResponse | null>(null);
   const [communicationData, setCommunicationData] =
     useState<CommunicationContact | null>(null);
-  const [workPackageData, setWorkPackageData] = useState<
-    WorkPackageResponse[] | null
-  >(null);
+  const [workPackageData, setWorkPackageData] = useState<WorkPackageResponse[]>([]);
   const [packageSkills, setPackageSkills] = useState<ToolsAndSkillsInterface[]>(
     []
   );
@@ -517,7 +515,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
         endpoints.templateNote.workPackage.getWorkPackage(dealId)
       );
       if (res.status === 200) {
-        setWorkPackageData(res.data?.packages || null);
+        setWorkPackageData(res.data?.packages || []);
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -997,61 +995,61 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     <div>
                       <span className={styles.borderRight}>
                         <label>Packages Title</label>
-                        <p>{wp.package_title || ""}</p>
+                        <p>{wp?.package_title || ""}</p>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Package Type</label>
-                        <p>{wp.package_type.name || ""}</p>
+                        <p>{wp?.package_type?.name || ""}</p>
                       </span>
                       {wp.custom_package_type && (
                         <span className={styles.borderRight}>
                         <label>Custom Work Package</label>
-                        <p>{wp.custom_package_type || ""}</p>
+                        <p>{wp?.custom_package_type || ""}</p>
                       </span>
                       )}
                       <span className={styles.borderRight}>
                         <label>Package Skills</label>
                         <ul>
-                          {wp.required_skills.map((skill) => (
-                            <li key={skill.id}>{skill.name || ""}</li>
+                          {wp?.required_skills?.map((skill) => (
+                            <li key={skill?.id}>{skill?.name || ""}</li>
                           ))}
                         </ul>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Primary Tools</label>
                         <ul>
-                          {wp.primary_tools.map((tool) => (
-                            <li key={tool.id}>{tool.name || ""}</li>
+                          {wp?.primary_tools?.map((tool) => (
+                            <li key={tool?.id}>{tool?.name || ""}</li>
                           ))}
                         </ul>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Complexity</label>
-                        <p>{wp.package_estimated_complexity || ""}</p>
+                        <p>{wp?.package_estimated_complexity || ""}</p>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Packages Price</label>
-                        <p>{wp.package_price_allocation || ""}</p>
+                        <p>{wp?.package_price_allocation || ""}</p>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Package Skills</label>
                         <ul>
-                          {wp.dependencies.map((dependency) => (
-                            <li key={dependency.id}>{dependency.name || ""}</li>
+                          {wp?.dependencies?.map((dependency) => (
+                            <li key={dependency?.id}>{dependency?.name || ""}</li>
                           ))}
                         </ul>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Packages Summary</label>
-                        <p>{wp.package_summary || ""}</p>
+                        <p>{wp?.package_summary || ""}</p>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Key Deliverables</label>
-                        <p>{wp.key_deliverables || ""}</p>
+                        <p>{wp?.key_deliverables || ""}</p>
                       </span>
                       <span className={styles.borderRight}>
                         <label>Acceptance Criteria</label>
-                        <p>{wp.acceptance_criteria || ""}</p>
+                        <p>{wp?.acceptance_criteria || ""}</p>
                       </span>
                     </div>
                   </div>
