@@ -21,6 +21,8 @@ import {
   TechnicalContextResponse,
   ToolsAndSkillsInterface,
   WorkPackage,
+  WorkPackagePayload,
+  WorkPackageResponse,
   WorkPackages,
 } from "../../../interfaces/templateNoteInterface";
 import EditIcon from "@mui/icons-material/Edit";
@@ -47,14 +49,28 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     useState<InternalNoteResponse | null>(null);
   const [communicationData, setCommunicationData] =
     useState<CommunicationContact | null>(null);
-  const [packageSkills, setPackageSkills] = useState<ToolsAndSkillsInterface[]>([]);
-  const [packageTools, setPackageTools] = useState<ToolsAndSkillsInterface[]>([]);
+  const [workPackageData, setWorkPackageData] = useState<
+    WorkPackageResponse[] | null
+  >(null);
+  const [packageSkills, setPackageSkills] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
+  const [packageTools, setPackageTools] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
+  const [packageTypes, setPackageTypes] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
+  const [dependencies, setDependencies] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
     useRef<FormikProps<TechnicalContext>>(null);
   const communicationFormFormikRef =
     useRef<FormikProps<CommunicationContact>>(null);
   const internalNoteFormFormikRef = useRef<FormikProps<InternalNote>>(null);
+  const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   useEffect(() => {
     getDealSectorPackages();
@@ -162,6 +178,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     internal_notes: Yup.string(),
   });
   const workPackageValue: WorkPackage = {
+    id: "",
     package_title: "",
     package_type: "",
     package_summary: "",
@@ -178,6 +195,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     work_packages: [workPackageValue],
   };
   const workPackageValidationSchema = Yup.object().shape({
+    id: Yup.string(),
     package_title: Yup.string().required("Package title is required"),
     package_type: Yup.string().required("Package type is required"),
     package_summary: Yup.string().required("Package summary is required"),
@@ -193,7 +211,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     package_price_allocation: Yup.string(),
     dependencies: Yup.array().min(1, "At least one dependency is required"),
     custom_package_type: Yup.string().when("package_type", {
-      is: (val: string) => val?.toLocaleLowerCase() === "other",
+      is: (val: string) => val === "12",
       then: (schema) =>
         schema.required("Custom package is required when selecting Other"),
       otherwise: (schema) => schema.notRequired(),
@@ -269,6 +287,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           getTechnicianContextData(res.data?.id);
           getInternalNotesData(res.data?.id);
           getCommunicationData(res.data?.id);
+          getWorkPackageData(res.data?.id);
         }
         if (!res.data?.id && userInfo?.role !== "Technician") {
           setSectionName(TemplateNoteEnum.DEAL);
@@ -443,6 +462,115 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       update_frequency: communicationData?.update_frequency || "",
     });
   };
+  const saveWorkPackage = async (value: WorkPackages) => {
+    const types = value.work_packages.map((p) => p.package_type);
+    const hasDuplicate = new Set(types).size !== types.length;
+    if (hasDuplicate) {
+      alert(
+        "Duplicate package type found! Please make sure each package type is unique.",
+        "error"
+      );
+      return;
+    }
+    setSectionChanging(true);
+    try {
+      const formatWorkPackage: WorkPackagePayload[] = value.work_packages.map(
+        (p: WorkPackage) => ({
+          package_title: p.package_title,
+          package_type_id: p.package_type,
+          package_summary: p.package_summary,
+          key_deliverables: p.key_deliverables,
+          acceptance_criteria: p.acceptance_criteria,
+          required_skills_ids: p.required_skills.map((item) => Number(item)),
+          primary_tools_ids: p.primary_tools.map((item) => Number(item)),
+          package_estimated_complexity: p.package_estimated_complexity,
+          package_price_allocation: p.package_price_allocation || null,
+          dependencies_ids: p.dependencies.map((item) => Number(item)),
+          custom_package_type:
+            p.package_type === "12" ? p.custom_package_type : "",
+          ...(p.id ? { id: p.id } : {}),
+        })
+      );
+
+      const payload = {
+        deal_id: dealData?.id || "",
+        packages: formatWorkPackage,
+      };
+      const res = await api.post(
+        endpoints.templateNote.workPackage.saveWorkPackage,
+        payload
+      );
+      if (res.data) {
+        setSectionName(null);
+        getWorkPackageData(dealData?.id || "");
+        alert(res.data.message, "success");
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    } finally {
+      setSectionChanging(false);
+    }
+  };
+  const getWorkPackageData = async (dealId: string) => {
+    try {
+      const res = await api.get(
+        endpoints.templateNote.workPackage.getWorkPackage(dealId)
+      );
+      if (res.status === 200) {
+        setWorkPackageData(res.data?.packages || null);
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
+  const removePackage = async (
+    remove: (index: number) => void,
+    ind: number,
+    packageId: string
+  ) => {
+    if (!packageId) {
+      remove(ind);
+      alert("Work package successfully deleted", "success");
+      return;
+    }
+    setSectionChanging(true);
+    try {
+      const res = await api.delete(
+        endpoints.templateNote.workPackage.deleteWorkPackage(packageId)
+      );
+      if (res.data) {
+        remove(ind);
+        getWorkPackageData(dealData?.id || "");
+        alert(res.data?.message, "success");
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    } finally {
+      setSectionChanging(false);
+    }
+  };
+  const setWorkPackageFormValue = () => {
+    if (!workPackagesFormFormikRef.current) return;
+    const formatPackage: WorkPackage[] = (workPackageData || []).map(
+      (pack) => ({
+        id: pack.id || "",
+        package_title: pack.package_title || "",
+        package_type: String(pack.package_type.id),
+        package_summary: pack.package_summary || "",
+        key_deliverables: pack.key_deliverables || "",
+        acceptance_criteria: pack.acceptance_criteria || "",
+        required_skills: pack.required_skills.map((item) => String(item.id)),
+        primary_tools: pack.primary_tools.map((item) => String(item.id)),
+        package_estimated_complexity: pack.package_estimated_complexity || "",
+        package_price_allocation: pack.package_price_allocation || "",
+        dependencies: pack.dependencies.map((item) => String(item.id)),
+        custom_package_type: pack.custom_package_type || "",
+      })
+    );
+    workPackagesFormFormikRef.current?.setValues({
+      work_packages: formatPackage,
+    });
+  };
   const checkAndSetSectionValue = (sectionName: TemplateNoteEnum) => {
     switch (sectionName) {
       case TemplateNoteEnum.DEAL:
@@ -457,6 +585,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       case TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT:
         setCommunicationFormValue();
         break;
+      case TemplateNoteEnum.WORK_PACKAGE:
+        setWorkPackageFormValue();
+        break;
       default:
         break;
     }
@@ -467,7 +598,18 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
         endpoints.templateNote.workPackage.getPackageTypes
       );
       if (res.status === 200) {
-        console.log(res.data);
+        const formatData: ToolsAndSkillsInterface[] = res.data?.map(
+          (item: { id: string; name: string }) => ({
+            ...item,
+            value: String(item?.id),
+            label: item?.name,
+          })
+        );
+        setPackageTypes(formatData || []);
+        const filterDependencies = formatData.filter(
+          (item) => item.value !== "12"
+        );
+        setDependencies(filterDependencies || []);
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -480,12 +622,11 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
         const formatData: ToolsAndSkillsInterface[] = res.data?.map(
           (item: { id: string; name: string }) => ({
             ...item,
-            value: item?.id,
+            value: String(item?.id),
             label: item?.name,
           })
         );
         setPackageSkills(formatData || []);
-        console.log(formatData);
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -498,12 +639,11 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
         const formatData: ToolsAndSkillsInterface[] = res.data?.map(
           (item: { id: string; name: string }) => ({
             ...item,
-            value: item?.id,
+            value: String(item?.id),
             label: item?.name,
           })
         );
         setPackageTools(formatData || []);
-        console.log(formatData);
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -832,9 +972,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       {dealData?.id && (
         <>
           {/*  ****** WORK PACKAGE SECTION ****** */}
-          {/* <div className={styles.LeaddetailsCol}>
+          <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
-              <h2>Work Package</h2>
+              <h2>Work Packages</h2>
               {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
                 <span
                   className={styles.editBtn}
@@ -851,30 +991,71 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
             </div>
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
               <div className={styles.viewInfo}>
-                <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
-                    <label>Client Main System</label>
-                    <p>{technicalContextData?.client_main_systems}</p>
-                  </span>
-                  <span className={styles.borderRight}>
-                    <label>Integration Targets</label>
-                    <p>{technicalContextData?.integration_targets}</p>
-                  </span>
-                  <span className={styles.borderRight}>
-                    <label>Tools In Scope</label>
-                    <p>{technicalContextData?.tools_in_scope}</p>
-                  </span>
-                  <span>
-                    <label>Access Required List</label>
-                    <p>{technicalContextData?.access_required_list}</p>
-                  </span>
-                </div>
-                <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
-                    <label>Credential Provision Method</label>
-                    <p>{technicalContextData?.credential_provision_method}</p>
-                  </span>
-                </div>
+                {workPackageData?.map((wp, ind: number) => (
+                  <div key={wp.id}>
+                    <h2>Package #{ind + 1}</h2>
+                    <div>
+                      <span className={styles.borderRight}>
+                        <label>Packages Title</label>
+                        <p>{wp.package_title || ""}</p>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Package Type</label>
+                        <p>{wp.package_type.name || ""}</p>
+                      </span>
+                      {wp.custom_package_type && (
+                        <span className={styles.borderRight}>
+                        <label>Custom Work Package</label>
+                        <p>{wp.custom_package_type || ""}</p>
+                      </span>
+                      )}
+                      <span className={styles.borderRight}>
+                        <label>Package Skills</label>
+                        <ul>
+                          {wp.required_skills.map((skill) => (
+                            <li key={skill.id}>{skill.name || ""}</li>
+                          ))}
+                        </ul>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Primary Tools</label>
+                        <ul>
+                          {wp.primary_tools.map((tool) => (
+                            <li key={tool.id}>{tool.name || ""}</li>
+                          ))}
+                        </ul>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Complexity</label>
+                        <p>{wp.package_estimated_complexity || ""}</p>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Packages Price</label>
+                        <p>{wp.package_price_allocation || ""}</p>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Package Skills</label>
+                        <ul>
+                          {wp.dependencies.map((dependency) => (
+                            <li key={dependency.id}>{dependency.name || ""}</li>
+                          ))}
+                        </ul>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Packages Summary</label>
+                        <p>{wp.package_summary || ""}</p>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Key Deliverables</label>
+                        <p>{wp.key_deliverables || ""}</p>
+                      </span>
+                      <span className={styles.borderRight}>
+                        <label>Acceptance Criteria</label>
+                        <p>{wp.acceptance_criteria || ""}</p>
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
             <div
@@ -889,9 +1070,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
               <Formik
                 initialValues={workPackagesInitialFormValue}
                 validationSchema={workPackagesFormValidationSchema}
-                onSubmit={(val) => console.log(val)}
+                onSubmit={(val) => saveWorkPackage(val)}
+                innerRef={workPackagesFormFormikRef}
                 enableReinitialize={true}
-                
               >
                 {({ values, setFieldValue }) => (
                   <Form>
@@ -901,12 +1082,17 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           {values.work_packages.map((workPackage, ind) => (
                             <div key={ind}>
                               <div>
-                                <h2>Work package #{ind + 1}</h2>
+                                <h2>Package #{ind + 1}</h2>
                                 {values.work_packages.length > 1 && (
                                   <button
                                     type="button"
+                                    disabled={sectionChanging}
                                     onClick={() => {
-                                      remove(ind);
+                                      removePackage(
+                                        remove,
+                                        ind,
+                                        workPackage.id || ""
+                                      );
                                     }}
                                     className={styles.removePoButton}
                                   >
@@ -932,31 +1118,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     <label>Package Type</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_type`}
-                                      options={[
-                                        {
-                                          value: "LLM / NLP",
-                                          label: "LLM / NLP",
-                                        },
-                                        {
-                                          value:
-                                            "Workflow Automation (n8n, Zapier, Make)",
-                                          label:
-                                            "Workflow Automation (n8n, Zapier, Make)",
-                                        },
-                                        {
-                                          value: "Integration (API/CRM/ERP)",
-                                          label: "Integration (API/CRM/ERP)",
-                                        },
-                                        {
-                                          value: "Data Pipeline / ETL",
-                                          label: "Data Pipeline / ETL",
-                                        },
-                                        {
-                                          value: "Dashboard / Reporting",
-                                          label: "Dashboard / Reporting",
-                                        },
-                                        { value: "Other", label: "Other" },
-                                      ]}
+                                      options={packageTypes}
                                     />
                                     <ErrorMessage
                                       className={styles.error}
@@ -965,7 +1127,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     />
                                   </span>
                                   {values.work_packages[ind].package_type ===
-                                    "Other" && (
+                                    "12" && (
                                     <span>
                                       <label>Custom Package</label>
                                       <Field
@@ -1011,8 +1173,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_estimated_complexity`}
                                       options={[
-                                        { value: "Low", label: "Low" },
+                                        { value: "Small", label: "Small" },
                                         { value: "Medium", label: "Medium" },
+                                        { value: "Large", label: "Large" },
                                       ]}
                                     />
                                     <ErrorMessage
@@ -1026,6 +1189,11 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     <Field
                                       name={`work_packages.${ind}.package_price_allocation`}
                                       placeholder="Enter Packages Price"
+                                      onKeyPress={(e: any) => {
+                                        if (!/[0-9]/.test(e?.key)) {
+                                          e.preventDefault();
+                                        }
+                                      }}
                                     />
                                     <ErrorMessage
                                       className={styles.error}
@@ -1037,10 +1205,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     <label>Dependencies</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.dependencies`}
-                                      options={[
-                                        { value: "Low", label: "Low" },
-                                        { value: "Medium", label: "Medium" },
-                                      ]}
+                                      options={dependencies}
                                       isMulti={true}
                                     />
                                     <ErrorMessage
@@ -1095,6 +1260,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           <div>
                             <button
                               type="button"
+                              disabled={sectionChanging}
                               onClick={() => {
                                 push(workPackageValue);
                               }}
@@ -1105,12 +1271,14 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         </>
                       )}
                     </FieldArray>
-                    <button type="submit">Submit</button>
+                    <button type="submit" disabled={sectionChanging}>
+                      Submit
+                    </button>
                   </Form>
                 )}
               </Formik>
             </div>
-          </div> */}
+          </div>
 
           {/*  ******TECHNICAL CONTEXT SECTION ****** */}
           <div className={styles.LeaddetailsCol}>
@@ -1361,10 +1529,10 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         <label>Update Frequency</label>
                         <Field name="update_frequency" as="select">
                           <option value="">Select Option</option>
-                          <option value="DAILY">Daily</option>
-                          <option value="WEEKLY">Weekly</option>
-                          <option value="BI_WEEKLY">Bi-Weekly</option>
-                          <option value="AS_NEEDED">As Needed</option>
+                          <option value="Daily">Daily</option>
+                          <option value="Weekly">Weekly</option>
+                          <option value="Bi Weekly">Bi Weekly</option>
+                          <option value="As Needed">As Needed</option>
                         </Field>
                         <ErrorMessage
                           className={styles.error}

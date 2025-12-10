@@ -16,6 +16,7 @@ export interface DealClientForm {
 }
 
 export interface WorkPackage {
+  id: string;
   package_title: string;
   package_type: string;
   package_summary: string;
@@ -101,4 +102,37 @@ export interface ToolsAndSkillsInterface {
   name: string;
   value: string;
   label: string;
+}
+export interface WorkPackagePayload {
+  id?: string;
+  package_title: string;
+  package_type_id: string;
+  package_summary: string;
+  key_deliverables: string;
+  acceptance_criteria: string;
+  required_skills_ids: number[];
+  primary_tools_ids: number[];
+  package_estimated_complexity: string;
+  package_price_allocation: string | null;
+  dependencies_ids: Number[];
+  custom_package_type: string;
+}
+export interface WorkPackageResponse {
+  id: string;
+  package_title: string;
+  package_type: { id: string; name: string};
+  package_summary: string;
+  key_deliverables: string;
+  acceptance_criteria: string;
+  required_skills: SkillsAndPrimaryTools[];
+  primary_tools: SkillsAndPrimaryTools[];
+  package_estimated_complexity: string;
+  package_price_allocation: string | null;
+  dependencies: SkillsAndPrimaryTools[];
+  custom_package_type: string;
+}
+export interface SkillsAndPrimaryTools {
+  id: number;
+  name: string;
+  created_at: string;
 }

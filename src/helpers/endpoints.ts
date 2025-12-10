@@ -45,7 +45,10 @@ const endpoints = {
     workPackage: {
       getPackageTypes: "work-package/get-package-types",
       getSkills: "work-package/get-skills",
-      getTools: "/work-package/get-tools"
+      getTools: "work-package/get-tools",
+      saveWorkPackage: "work-package/save",
+      getWorkPackage: (dealId: string) => `work-package/${dealId}`,
+      deleteWorkPackage: (packageId: string) => `work-package/${packageId}`,
     }
   },
 };
