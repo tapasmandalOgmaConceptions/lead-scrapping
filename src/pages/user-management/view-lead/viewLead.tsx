@@ -146,13 +146,13 @@ const ViewLead: React.FC = () => {
             </div>
 
             <div>
-              <ViewAndEditTemplateNote leadId={leadId || ""}/>
+              <ViewAndEditTemplateNote leadId={leadId || ""} leadStatus={leadDetails?.lead_status || ""}/>
             </div>
 
             <div className={styles.LeadcolRow}>
               <div className={styles.LeaddetailsCol}>
                 <h2>Notes</h2>
-                {leadNotes.map((note: LeadNote) => (
+                {leadNotes?.map((note: LeadNote) => (
                   <div
                     key={note.id}
                     className={`${styles.secBox} ${styles.width100}`}
@@ -202,7 +202,7 @@ const ViewLead: React.FC = () => {
                   </div>
                 ))}
 
-                {leadNotes.length === 0 && (
+                {leadNotes?.length === 0 && (
                   <div className={styles.notFound}>No notes found.</div>
                 )}
               </div>

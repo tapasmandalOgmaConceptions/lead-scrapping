@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
-import { Formik, Form, Field, ErrorMessage, FormikProps } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FormikProps,
+  FieldArray,
+} from "formik";
 import * as Yup from "yup";
 import styles from "../view-lead/viewLead.module.scss";
 import {
@@ -12,10 +19,14 @@ import {
   InternalNoteResponse,
   TechnicalContext,
   TechnicalContextResponse,
+  ToolsAndSkillsInterface,
+  WorkPackage,
+  WorkPackagePayload,
+  WorkPackageResponse,
+  WorkPackages,
 } from "../../../interfaces/templateNoteInterface";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { TemplateNoteEnum } from "../../../enum/templateNoteEnum";
 import api from "../../../services/api";
 import endpoints from "../../../helpers/endpoints";
@@ -23,8 +34,12 @@ import alert from "../../../services/alert";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
+import FormikReactSelect from "../../../components/formik-react-select/formikReactSelect";
 
-const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
+const ViewAndEditTemplateNote: React.FC<{
+  leadId: string;
+  leadStatus: string;
+}> = ({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
   >([]);
@@ -37,16 +52,35 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     useState<InternalNoteResponse | null>(null);
   const [communicationData, setCommunicationData] =
     useState<CommunicationContact | null>(null);
+  const [workPackageData, setWorkPackageData] = useState<WorkPackageResponse[]>(
+    []
+  );
+  const [packageSkills, setPackageSkills] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
+  const [packageTools, setPackageTools] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
+  const [packageTypes, setPackageTypes] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
+  const [dependencies, setDependencies] = useState<ToolsAndSkillsInterface[]>(
+    []
+  );
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
     useRef<FormikProps<TechnicalContext>>(null);
   const communicationFormFormikRef =
     useRef<FormikProps<CommunicationContact>>(null);
   const internalNoteFormFormikRef = useRef<FormikProps<InternalNote>>(null);
+  const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   useEffect(() => {
     getDealSectorPackages();
     getDeals();
+    getPackageTypes();
+    getSkills();
+    getTools();
   }, []);
   const dealInitialFormValue: DealClientForm = {
     client_name: "",
@@ -146,6 +180,51 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     ),
     internal_notes: Yup.string(),
   });
+  const workPackageValue: WorkPackage = {
+    id: "",
+    package_title: "",
+    package_type: "",
+    package_summary: "",
+    key_deliverables: "",
+    acceptance_criteria: "",
+    required_skills: [],
+    primary_tools: [],
+    package_estimated_complexity: "",
+    package_price_allocation: "",
+    dependencies: [],
+    custom_package_type: "",
+  };
+  const workPackagesInitialFormValue: WorkPackages = {
+    work_packages: [workPackageValue],
+  };
+  const workPackageValidationSchema = Yup.object().shape({
+    id: Yup.string(),
+    package_title: Yup.string().required("Package title is required"),
+    package_type: Yup.string().required("Package type is required"),
+    package_summary: Yup.string().required("Package summary is required"),
+    key_deliverables: Yup.string().required("Key deliverable is required"),
+    acceptance_criteria: Yup.string().required(
+      "Acceptance criteria is required"
+    ),
+    required_skills: Yup.array().min(1, "At least one skill is required"),
+    primary_tools: Yup.array(),
+    package_estimated_complexity: Yup.string().required(
+      "Package estimated complexity is required"
+    ),
+    package_price_allocation: Yup.string(),
+    dependencies: Yup.array().min(1, "At least one dependency is required"),
+    custom_package_type: Yup.string().when("package_type", {
+      is: (val: string) => val === "12",
+      then: (schema) =>
+        schema.required("Custom package is required when selecting Other"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  });
+  const workPackagesFormValidationSchema = Yup.object().shape({
+    work_packages: Yup.array()
+      .of(workPackageValidationSchema)
+      .min(1, "At least one work package is required"),
+  });
   const editSection = (sectionName: TemplateNoteEnum) => {
     if (sectionChanging) return;
     setSectionName(sectionName);
@@ -154,9 +233,6 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
   const cancelEditSection = () => {
     if (sectionChanging) return;
     setSectionName(null);
-  };
-  const saveSection = (sectionName: TemplateNoteEnum) => {
-    setSectionName(sectionName);
   };
   const getDealSectorPackages = async () => {
     try {
@@ -214,8 +290,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           getTechnicianContextData(res.data?.id);
           getInternalNotesData(res.data?.id);
           getCommunicationData(res.data?.id);
-        };
-        if(!res.data?.id && userInfo?.role !== "Technician") {
+          getWorkPackageData(res.data?.id);
+        }
+        if (!res.data?.id && userInfo?.role !== "Technician" && (leadStatus !== "Triple Positive" && leadStatus !== "new")) {
           setSectionName(TemplateNoteEnum.DEAL);
         }
       }
@@ -232,7 +309,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       primary_contact_email: d?.primary_contact_email || "",
       primary_contact_phone: d?.primary_contact_phone || "",
       industry: d?.industry || "",
-      sector_package_id: d?.sector_package?.id ? String(d.sector_package.id) : "",
+      sector_package_id: d?.sector_package?.id
+        ? String(d.sector_package.id)
+        : "",
       deal_name: d?.deal_name || "",
       salesperson_name: d?.salesperson_name || "",
       deal_close_date: d?.deal_close_date
@@ -386,6 +465,115 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       update_frequency: communicationData?.update_frequency || "",
     });
   };
+  const saveWorkPackage = async (value: WorkPackages) => {
+    const types = value.work_packages.map((p) => p.package_type);
+    const hasDuplicate = new Set(types).size !== types.length;
+    if (hasDuplicate) {
+      alert(
+        "Duplicate package type found! Please make sure each package type is unique.",
+        "error"
+      );
+      return;
+    }
+    setSectionChanging(true);
+    try {
+      const formatWorkPackage: WorkPackagePayload[] = value.work_packages.map(
+        (p: WorkPackage) => ({
+          package_title: p.package_title,
+          package_type_id: p.package_type,
+          package_summary: p.package_summary,
+          key_deliverables: p.key_deliverables,
+          acceptance_criteria: p.acceptance_criteria,
+          required_skills_ids: p.required_skills.map((item) => Number(item)),
+          primary_tools_ids: p.primary_tools.map((item) => Number(item)),
+          package_estimated_complexity: p.package_estimated_complexity,
+          package_price_allocation: p.package_price_allocation || null,
+          dependencies_ids: p.dependencies.map((item) => Number(item)),
+          custom_package_type:
+            p.package_type === "12" ? p.custom_package_type : "",
+          ...(p.id ? { id: p.id } : {}),
+        })
+      );
+
+      const payload = {
+        deal_id: dealData?.id || "",
+        packages: formatWorkPackage,
+      };
+      const res = await api.post(
+        endpoints.templateNote.workPackage.saveWorkPackage,
+        payload
+      );
+      if (res.data) {
+        setSectionName(null);
+        getWorkPackageData(dealData?.id || "");
+        alert(res.data.message, "success");
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    } finally {
+      setSectionChanging(false);
+    }
+  };
+  const getWorkPackageData = async (dealId: string) => {
+    try {
+      const res = await api.get(
+        endpoints.templateNote.workPackage.getWorkPackage(dealId)
+      );
+      if (res.status === 200) {
+        setWorkPackageData(res.data?.packages || []);
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
+  const removePackage = async (
+    remove: (index: number) => void,
+    ind: number,
+    packageId: string
+  ) => {
+    if (!packageId) {
+      remove(ind);
+      alert("Work package successfully deleted", "success");
+      return;
+    }
+    setSectionChanging(true);
+    try {
+      const res = await api.delete(
+        endpoints.templateNote.workPackage.deleteWorkPackage(packageId)
+      );
+      if (res.data) {
+        remove(ind);
+        getWorkPackageData(dealData?.id || "");
+        alert(res.data?.message, "success");
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    } finally {
+      setSectionChanging(false);
+    }
+  };
+  const setWorkPackageFormValue = () => {
+    if (!workPackagesFormFormikRef.current) return;
+    const formatPackage: WorkPackage[] = (workPackageData || []).map(
+      (pack) => ({
+        id: pack.id || "",
+        package_title: pack.package_title || "",
+        package_type: String(pack.package_type.id),
+        package_summary: pack.package_summary || "",
+        key_deliverables: pack.key_deliverables || "",
+        acceptance_criteria: pack.acceptance_criteria || "",
+        required_skills: pack.required_skills.map((item) => String(item.id)),
+        primary_tools: pack.primary_tools.map((item) => String(item.id)),
+        package_estimated_complexity: pack.package_estimated_complexity || "",
+        package_price_allocation: pack.package_price_allocation || "",
+        dependencies: pack.dependencies.map((item) => String(item.id)),
+        custom_package_type: pack.custom_package_type || "",
+      })
+    );
+    workPackagesFormFormikRef.current?.setValues({
+      work_packages: formatPackage,
+    });
+  };
   const checkAndSetSectionValue = (sectionName: TemplateNoteEnum) => {
     switch (sectionName) {
       case TemplateNoteEnum.DEAL:
@@ -400,10 +588,71 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       case TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT:
         setCommunicationFormValue();
         break;
+      case TemplateNoteEnum.WORK_PACKAGE:
+        setWorkPackageFormValue();
+        break;
       default:
         break;
     }
   };
+  const getPackageTypes = async () => {
+    try {
+      const res = await api.get(
+        endpoints.templateNote.workPackage.getPackageTypes
+      );
+      if (res.status === 200) {
+        const formatData: ToolsAndSkillsInterface[] = res.data?.map(
+          (item: { id: string; name: string }) => ({
+            ...item,
+            value: String(item?.id),
+            label: item?.name,
+          })
+        );
+        setPackageTypes(formatData || []);
+        const filterDependencies = formatData.filter(
+          (item) => item.value !== "12"
+        );
+        setDependencies(filterDependencies || []);
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
+  const getSkills = async () => {
+    try {
+      const res = await api.get(endpoints.templateNote.workPackage.getSkills);
+      if (res.status === 200) {
+        const formatData: ToolsAndSkillsInterface[] = res.data?.map(
+          (item: { id: string; name: string }) => ({
+            ...item,
+            value: String(item?.id),
+            label: item?.name,
+          })
+        );
+        setPackageSkills(formatData || []);
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
+  const getTools = async () => {
+    try {
+      const res = await api.get(endpoints.templateNote.workPackage.getTools);
+      if (res.status === 200) {
+        const formatData: ToolsAndSkillsInterface[] = res.data?.map(
+          (item: { id: string; name: string }) => ({
+            ...item,
+            value: String(item?.id),
+            label: item?.name,
+          })
+        );
+        setPackageTools(formatData || []);
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
+  const hideEditButton = userInfo?.role === "Technician" || leadStatus === "Triple Positive" || leadStatus === "new";
 
   return (
     <div className={styles.LeadcolRow}>
@@ -411,7 +660,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       <div className={styles.LeaddetailsCol}>
         <div className={styles.sectionHeading}>
           <h2>Deal</h2>
-          {sectionName !== TemplateNoteEnum.DEAL && (
+          {(sectionName !== TemplateNoteEnum.DEAL && !hideEditButton) && (
             <span
               className={styles.editBtn}
               onClick={() => editSection(TemplateNoteEnum.DEAL)}
@@ -432,15 +681,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <label>Client Name</label>
                 <p>{dealData?.client_name}</p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Name</label>
                 <p>{dealData?.primary_contact_name}</p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Email</label>
                 <p>{dealData?.primary_contact_email}</p>
               </span>
-              <span>
+              <span className={styles.pl10}>
                 <label>Primary Contact Phone</label>
                 <p>{dealData?.primary_contact_phone}</p>
               </span>
@@ -450,15 +699,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <label>Industry</label>
                 <p>{dealData?.industry}</p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Deal Name</label>
                 <p>{dealData?.deal_name}</p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Sale Person Name</label>
                 <p>{dealData?.salesperson_name}</p>
               </span>
-              <span>
+              <span className={styles.pl10}>
                 <label>Special Terms</label>
                 <p>{dealData?.special_terms}</p>
               </span>
@@ -466,9 +715,13 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
             <div className={styles.editInfoCol}>
               <span className={styles.borderRight}>
                 <label>Deal Close date</label>
-                <p>{dealData?.deal_close_date ? moment(dealData?.deal_close_date).format("MM-DD-YYYY") : ""}</p>
+                <p>
+                  {dealData?.deal_close_date
+                    ? moment(dealData?.deal_close_date).format("MM-DD-YYYY")
+                    : ""}
+                </p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Expected Start Date</label>
                 <p>
                   {dealData?.expected_start_date
@@ -476,7 +729,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     : ""}
                 </p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Expected End Date or Deadline</label>
                 <p>
                   {dealData?.expected_end_date_or_deadline
@@ -486,7 +739,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     : ""}
                 </p>
               </span>
-              <span>
+              <span className={styles.pl10}>
                 <label>Client Approved Scope Summary</label>
                 <p>{dealData?.client_approved_scope_summary}</p>
               </span>
@@ -501,7 +754,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <p>{dealData?.sector_package?.name}</p>
               </span>
               {dealData?.custom_sector_package && (
-                <span>
+                <span className={styles.pl10}>
                   <label>Custom Sector Package</label>
                   <p>{dealData?.custom_sector_package}</p>
                 </span>
@@ -707,425 +960,764 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                       />
                     </span>
                   )}
-                  <button
-                    className={styles.submitBtn}
-                    type="submit"
-                    disabled={sectionChanging}
-                  >
-                    Submit
-                  </button>
+                </div>
+                <div
+                  className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                >
+                  <span>
+                    <button
+                      className={styles.submitBtn}
+                      type="submit"
+                      disabled={sectionChanging}
+                    >
+                      Submit
+                    </button>
+                  </span>
                 </div>
               </Form>
             )}
           </Formik>
         </div>
       </div>
-      {dealData?.id && <>
-        {/*  ****** WORK PACKAGE SECTION ****** */}
-        {/* <div>
-          <div className="section_heading">
-            <h3>Work package</h3>
-            {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-              <span onClick={() => editSection(TemplateNoteEnum.WORK_PACKAGE)}>
-                <EditIcon />
-              </span>
-            )}
-            {sectionName === TemplateNoteEnum.WORK_PACKAGE && (
-              <>
-                <span onClick={cancelEditSection}>
-                  <CancelIcon />
-                </span>
+      {dealData?.id && (
+        <>
+          {/*  ****** WORK PACKAGE SECTION ****** */}
+          <div className={styles.LeaddetailsCol}>
+            <div className={styles.sectionHeading}>
+              <h2>Work Packages</h2>
+              {(sectionName !== TemplateNoteEnum.WORK_PACKAGE && !hideEditButton) && (
                 <span
-                  onClick={() => saveSection(TemplateNoteEnum.WORK_PACKAGE)}
+                  className={styles.editBtn}
+                  onClick={() => editSection(TemplateNoteEnum.WORK_PACKAGE)}
                 >
-                  <CheckCircleIcon />
+                  Edit <EditIcon />
                 </span>
-              </>
-            )}
-          </div>
-          {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-            <div className="view_info">
-              <p>view Work information</p>
+              )}
+              {sectionName === TemplateNoteEnum.WORK_PACKAGE && (
+                <span className={styles.cancelBtn} onClick={cancelEditSection}>
+                  Cancel <CancelIcon />
+                </span>
+              )}
             </div>
-          )}
-          {sectionName === TemplateNoteEnum.WORK_PACKAGE && (
-            <div className="edit_info">edit work information</div>
-          )}
-        </div> */}
-        {/*  ******TECHNICAL CONTEXT SECTION ****** */}
-        {/* <div className={styles.LeaddetailsCol}>
-          <div className={styles.sectionHeading}>
-            <h2>Technical Context</h2>
+            {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
+              <div className={styles.viewInfo}>
+                {workPackageData?.map((wp, ind: number) => (
+                  <div key={wp.id}>
+                    <h2 className={styles.packageSubHdn}>Package #{ind + 1}</h2>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.borderRight}>
+                        <label>Packages Title</label>
+                        <p>{wp?.package_title || ""}</p>
+                      </span>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                        <label>Package Type</label>
+                        <p>{wp?.package_type?.name || ""}</p>
+                      </span>
+                      {wp.custom_package_type && (
+                        <span
+                          className={`${styles.borderRight} ${styles.pl10}`}
+                        >
+                          <label>Custom Work Package</label>
+                          <p>{wp?.custom_package_type || ""}</p>
+                        </span>
+                      )}
+                      <span className={styles.pl10}>
+                        <label>Package Skills</label>
+                        <ul>
+                          {wp?.required_skills?.map((skill) => (
+                            <li key={skill?.id}>{skill?.name || ""}</li>
+                          ))}
+                        </ul>
+                      </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.borderRight}>
+                        <label>Primary Tools</label>
+                        <ul>
+                          {wp?.primary_tools?.map((tool) => (
+                            <li key={tool?.id}>{tool?.name || ""}</li>
+                          ))}
+                        </ul>
+                      </span>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                        <label>Complexity</label>
+                        <p>{wp?.package_estimated_complexity || ""}</p>
+                      </span>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                        <label>Packages Price</label>
+                        <p>{wp?.package_price_allocation || ""}</p>
+                      </span>
+                      <span className={styles.pl10}>
+                        <label>Package Skills</label>
+                        <ul>
+                          {wp?.dependencies?.map((dependency) => (
+                            <li key={dependency?.id}>
+                              {dependency?.name || ""}
+                            </li>
+                          ))}
+                        </ul>
+                      </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.borderRight}>
+                        <label>Packages Summary</label>
+                        <p>{wp?.package_summary || ""}</p>
+                      </span>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                        <label>Key Deliverables</label>
+                        <p>{wp?.key_deliverables || ""}</p>
+                      </span>
+                      <span className={styles.pl10}>
+                        <label>Acceptance Criteria</label>
+                        <p>{wp?.acceptance_criteria || ""}</p>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div
+              className={styles.editInfo}
+              style={{
+                display:
+                  sectionName === TemplateNoteEnum.WORK_PACKAGE
+                    ? "block"
+                    : "none",
+              }}
+            >
+              <Formik
+                initialValues={workPackagesInitialFormValue}
+                validationSchema={workPackagesFormValidationSchema}
+                onSubmit={(val) => saveWorkPackage(val)}
+                innerRef={workPackagesFormFormikRef}
+                enableReinitialize={true}
+              >
+                {({ values, setFieldValue }) => (
+                  <Form>
+                    <FieldArray name="work_packages">
+                      {({ push, remove }) => (
+                        <>
+                          {values.work_packages.map((workPackage, ind) => (
+                            <div key={ind}>
+                              <div>
+                                <h2 className={styles.packageSubHdn}>
+                                  Package #{ind + 1}
+                                </h2>
+                              </div>
+                              <div className={styles.editInfo}>
+                                {values.work_packages.length > 1 && (
+                                  <button
+                                    type="button"
+                                    disabled={sectionChanging}
+                                    onClick={() => {
+                                      removePackage(
+                                        remove,
+                                        ind,
+                                        workPackage.id || ""
+                                      );
+                                    }}
+                                    className={styles.removePoButton}
+                                  >
+                                    <i className="fa-solid fa-xmark"></i>
+                                  </button>
+                                )}
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.threeClm}>
+                                    <label>Packages Title</label>
+                                    <Field
+                                      name={`work_packages.${ind}.package_title`}
+                                      placeholder="Enter Packages Title"
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_title`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.threeClm}>
+                                    <label>Packages Price</label>
+                                    <Field
+                                      name={`work_packages.${ind}.package_price_allocation`}
+                                      placeholder="Enter Packages Price"
+                                      onKeyPress={(e: any) => {
+                                        if (!/[0-9]/.test(e?.key)) {
+                                          e.preventDefault();
+                                        }
+                                      }}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_price_allocation`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  {values.work_packages[ind].package_type ===
+                                    "12" && (
+                                    <span className={styles.threeClm}>
+                                      <label>Custom Package</label>
+                                      <Field
+                                        name={`work_packages.${ind}.custom_package_type`}
+                                        placeholder="Enter Custom Packages"
+                                      />
+                                      <ErrorMessage
+                                        className={styles.error}
+                                        name={`work_packages.${ind}.custom_package_type`}
+                                        component="p"
+                                      />
+                                    </span>
+                                  )}
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
+                                    <label>Package Skills</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.required_skills`}
+                                      options={packageSkills}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.required_skills`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
+                                    <label>Primary Tools</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.primary_tools`}
+                                      options={packageTools}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.primary_tools`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
+                                    <label>Dependencies</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.dependencies`}
+                                      options={dependencies}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.dependencies`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.twoClm}>
+                                    <label>Package Type</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.package_type`}
+                                      options={packageTypes}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_type`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.twoClm}>
+                                    <label>Complexity</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.package_estimated_complexity`}
+                                      options={[
+                                        { value: "Small", label: "Small" },
+                                        { value: "Medium", label: "Medium" },
+                                        { value: "Large", label: "Large" },
+                                      ]}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_estimated_complexity`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.threeClm}>
+                                    <label>Packages Summary</label>
+                                    <Field
+                                      as="textarea"
+                                      name={`work_packages.${ind}.package_summary`}
+                                      placeholder="Enter Packages Summary"
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_summary`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.threeClm}>
+                                    <label>Key Deliverables</label>
+                                    <Field
+                                      as="textarea"
+                                      name={`work_packages.${ind}.key_deliverables`}
+                                      placeholder="Enter Key Deliverables"
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.key_deliverables`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.threeClm}>
+                                    <label>Acceptance Criteria</label>
+                                    <Field
+                                      as="textarea"
+                                      name={`work_packages.${ind}.acceptance_criteria`}
+                                      placeholder="Enter Acceptance Criteria"
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.acceptance_criteria`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          <div
+                            className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                          >
+                            <span>
+                              <button
+                                type="button"
+                                disabled={sectionChanging}
+                                className={styles.addMoreBtn}
+                                onClick={() => {
+                                  push(workPackageValue);
+                                }}
+                              >
+                                Add More
+                              </button>
+                              <button
+                                type="submit"
+                                disabled={sectionChanging}
+                                className={styles.submitBtn}
+                              >
+                                Submit
+                              </button>
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </FieldArray>
+                  </Form>
+                )}
+              </Formik>
+            </div>
+          </div>
+
+          {/*  ******TECHNICAL CONTEXT SECTION ****** */}
+          <div className={styles.LeaddetailsCol}>
+            <div className={styles.sectionHeading}>
+              <h2>Technical Context</h2>
+              {(sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && !hideEditButton) && (
+                <span
+                  className={styles.editBtn}
+                  onClick={() =>
+                    editSection(TemplateNoteEnum.TECHNICAL_CONTEXT)
+                  }
+                >
+                  Edit <EditIcon />
+                </span>
+              )}
+              {sectionName === TemplateNoteEnum.TECHNICAL_CONTEXT && (
+                <span className={styles.cancelBtn} onClick={cancelEditSection}>
+                  Cancel <CancelIcon />
+                </span>
+              )}
+            </div>
             {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && (
-              <span
-                className={styles.editBtn}
-                onClick={() => editSection(TemplateNoteEnum.TECHNICAL_CONTEXT)}
-              >
-                Edit <EditIcon />
-              </span>
-            )}
-            {sectionName === TemplateNoteEnum.TECHNICAL_CONTEXT && (
-              <span className={styles.cancelBtn} onClick={cancelEditSection}>
-                Cancel <CancelIcon />
-              </span>
-            )}
-          </div>
-          {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && (
-            <div className={styles.viewInfo}>
-              <div className={styles.editInfoCol}>
-                <span className={styles.borderRight}>
-                  <label>Client Main System</label>
-                  <p>{technicalContextData?.client_main_systems}</p>
-                </span>
-                <span className={styles.borderRight}>
-                  <label>Integration Targets</label>
-                  <p>{technicalContextData?.integration_targets}</p>
-                </span>
-                <span className={styles.borderRight}>
-                  <label>Tools In Scope</label>
-                  <p>{technicalContextData?.tools_in_scope}</p>
-                </span>
-                <span>
-                  <label>Access Required List</label>
-                  <p>{technicalContextData?.access_required_list}</p>
-                </span>
+              <div className={styles.viewInfo}>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.borderRight}>
+                    <label>Client Main System</label>
+                    <p>{technicalContextData?.client_main_systems}</p>
+                  </span>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    <label>Integration Targets</label>
+                    <p>{technicalContextData?.integration_targets}</p>
+                  </span>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    <label>Tools In Scope</label>
+                    <p>{technicalContextData?.tools_in_scope}</p>
+                  </span>
+                  <span className={styles.pl10}>
+                    <label>Access Required List</label>
+                    <p>{technicalContextData?.access_required_list}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.borderRight}>
+                    <label>Credential Provision Method</label>
+                    <p>{technicalContextData?.credential_provision_method}</p>
+                  </span>
+                </div>
               </div>
-              <div className={styles.editInfoCol}>
-                <span className={styles.borderRight}>
-                  <label>Credential Provision Method</label>
-                  <p>{technicalContextData?.credential_provision_method}</p>
-                </span>
-              </div>
-            </div>
-          )}
-          <div
-            className={styles.editInfo}
-            style={{
-              display:
-                sectionName === TemplateNoteEnum.TECHNICAL_CONTEXT
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <Formik
-              initialValues={technicalContextInitialFormValue}
-              validationSchema={technicalContextFormValidationSchema}
-              onSubmit={(val) => saveTechnicalContextSection(val)}
-              innerRef={technicalContextFormFormikRef}
+            )}
+            <div
+              className={styles.editInfo}
+              style={{
+                display:
+                  sectionName === TemplateNoteEnum.TECHNICAL_CONTEXT
+                    ? "block"
+                    : "none",
+              }}
             >
-              {({ values, setFieldValue }) => (
-                <Form>
-                  <div className={styles.editInfoCol}>
-                    <span>
-                      <label>Client Main System</label>
-                      <Field
-                        name="client_main_systems"
-                        placeholder="Enter Client Main System"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="client_main_systems"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Integration Targets (Optional)</label>
-                      <Field
-                        as="textarea"
-                        name="integration_targets"
-                        placeholder="Enter Integration Targets"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="integration_targets"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Tools In Scope</label>
-                      <Field
-                        name="tools_in_scope"
-                        as="textarea"
-                        placeholder="Enter Tools In Scope"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="tools_in_scope"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Access Required List</label>
-                      <Field
-                        name="access_required_list"
-                        as="textarea"
-                        placeholder="Enter Access Required List"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="access_required_list"
-                        component="p"
-                      />
-                    </span>
-                  </div>
-                  <div className={styles.editInfoCol}>
-                    <span>
-                      <label>Credential Provision Method</label>
-                      <Field
-                        name="credential_provision_method"
-                        placeholder="Enter Credential Provision Method"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="credential_provision_method"
-                        component="p"
-                      />
-                    </span>
-                    <button type="submit" className={styles.submitBtn} disabled={sectionChanging}>
-                      Submit
-                    </button>
-                  </div>
-                </Form>
-              )}
-            </Formik>
+              <Formik
+                initialValues={technicalContextInitialFormValue}
+                validationSchema={technicalContextFormValidationSchema}
+                onSubmit={(val) => saveTechnicalContextSection(val)}
+                innerRef={technicalContextFormFormikRef}
+              >
+                {({ values, setFieldValue }) => (
+                  <Form>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.twoClm}>
+                        <label>Client Main System</label>
+                        <Field
+                          name="client_main_systems"
+                          placeholder="Enter Client Main System"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="client_main_systems"
+                          component="p"
+                        />
+                      </span>
+                      <span className={styles.twoClm}>
+                        <label>Credential Provision Method</label>
+                        <Field
+                          name="credential_provision_method"
+                          placeholder="Enter Credential Provision Method"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="credential_provision_method"
+                          component="p"
+                        />
+                      </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.threeClm}>
+                        <label>Integration Targets (Optional)</label>
+                        <Field
+                          as="textarea"
+                          name="integration_targets"
+                          placeholder="Enter Integration Targets"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="integration_targets"
+                          component="p"
+                        />
+                      </span>
+                      <span className={styles.threeClm}>
+                        <label>Tools In Scope</label>
+                        <Field
+                          name="tools_in_scope"
+                          as="textarea"
+                          placeholder="Enter Tools In Scope"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="tools_in_scope"
+                          component="p"
+                        />
+                      </span>
+                      <span className={styles.threeClm}>
+                        <label>Access Required List</label>
+                        <Field
+                          name="access_required_list"
+                          as="textarea"
+                          placeholder="Enter Access Required List"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="access_required_list"
+                          component="p"
+                        />
+                      </span>
+                    </div>
+                    <div
+                      className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                    >
+                      <span>
+                        <button
+                          type="submit"
+                          className={styles.submitBtn}
+                          disabled={sectionChanging}
+                        >
+                          Submit
+                        </button>
+                      </span>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </div>
           </div>
-        </div> */}
-        {/*  ****** COMMUNICATION SECTION ****** */}
-        <div className={styles.LeaddetailsCol}>
-          <div className={styles.sectionHeading}>
-            <h2>Communication</h2>
+          {/*  ****** COMMUNICATION SECTION ****** */}
+          <div className={styles.LeaddetailsCol}>
+            <div className={styles.sectionHeading}>
+              <h2>Communication</h2>
+              {(sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && !hideEditButton) && (
+                <span
+                  className={styles.editBtn}
+                  onClick={() =>
+                    editSection(TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT)
+                  }
+                >
+                  Edit <EditIcon />
+                </span>
+              )}
+              {sectionName ===
+                TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && (
+                <span className={styles.cancelBtn} onClick={cancelEditSection}>
+                  Cancel <CancelIcon />
+                </span>
+              )}
+            </div>
             {sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && (
-              <span
-                className={styles.editBtn}
-                onClick={() =>
-                  editSection(TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT)
-                }
-              >
-                Edit <EditIcon />
-              </span>
-            )}
-            {sectionName === TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && (
-              <span className={styles.cancelBtn} onClick={cancelEditSection}>
-                Cancel <CancelIcon />
-              </span>
-            )}
-          </div>
-          {sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && (
-            <div className={styles.viewInfo}>
-              <div className={styles.editInfoCol}>
-                <span className={styles.borderRight}>
-                  <label>Client Project Contact Name</label>
-                  <p>{communicationData?.client_project_contact_name}</p>
-                </span>
-                <span className={styles.borderRight}>
-                  <label>Project Contact Email</label>
-                  <p>{communicationData?.client_project_contact_email}</p>
-                </span>
-                <span className={styles.borderRight}>
-                  <label>Preferred Channel</label>
-                  <p>{communicationData?.preferred_channel}</p>
-                </span>
-                <span>
-                  <label>Update Frequency</label>
-                  <p>{communicationData?.update_frequency}</p>
-                </span>
+              <div className={styles.viewInfo}>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.borderRight}>
+                    <label>Client Project Contact Name</label>
+                    <p>{communicationData?.client_project_contact_name}</p>
+                  </span>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    <label>Project Contact Email</label>
+                    <p>{communicationData?.client_project_contact_email}</p>
+                  </span>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    <label>Preferred Channel</label>
+                    <p>{communicationData?.preferred_channel}</p>
+                  </span>
+                  <span className={styles.pl10}>
+                    <label>Update Frequency</label>
+                    <p>{communicationData?.update_frequency}</p>
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-          <div
-            className={styles.editInfo}
-            style={{
-              display:
-                sectionName === TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <Formik
-              initialValues={communicationInitialFormValue}
-              validationSchema={communicationFormValidationSchema}
-              onSubmit={(val) => saveCommunicationSection(val)}
-              innerRef={communicationFormFormikRef}
+            )}
+            <div
+              className={styles.editInfo}
+              style={{
+                display:
+                  sectionName === TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT
+                    ? "block"
+                    : "none",
+              }}
             >
-              {({ values, setFieldValue }) => (
-                <Form>
-                  <div className={styles.editInfoCol}>
-                    <span>
-                      <label>Client Project Contact Name</label>
-                      <Field
-                        name="client_project_contact_name"
-                        placeholder="Enter Client Project Contact Name"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="client_project_contact_name"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Project Contact Email</label>
-                      <Field
-                        name="client_project_contact_email"
-                        placeholder="Enter Project Contact Email"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="client_project_contact_email"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Preferred Channel</label>
-                      <Field name="preferred_channel" as="select">
-                        <option value="">Select Option</option>
-                        <option value="EMAIL">Email</option>
-                        <option value="SLACK">Slack</option>
-                        <option value="TEAMS">Teams</option>
-                        <option value="MEETING">Meeting</option>
-                      </Field>
-                      <ErrorMessage
-                        className={styles.error}
-                        name="preferred_channel"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Update Frequency</label>
-                      <Field name="update_frequency" as="select">
-                        <option value="">Select Option</option>
-                        <option value="DAILY">Daily</option>
-                        <option value="WEEKLY">Weekly</option>
-                        <option value="BI_WEEKLY">Bi-Weekly</option>
-                        <option value="AS_NEEDED">As Needed</option>
-                      </Field>
-                      <ErrorMessage
-                        className={styles.error}
-                        name="update_frequency"
-                        component="p"
-                      />
-                    </span>
-                  </div>
-                  <div className={styles.editInfoCol}>
-                    <button
-                      className={styles.submitBtn}
-                      type="submit"
-                      disabled={sectionChanging}
+              <Formik
+                initialValues={communicationInitialFormValue}
+                validationSchema={communicationFormValidationSchema}
+                onSubmit={(val) => saveCommunicationSection(val)}
+                innerRef={communicationFormFormikRef}
+              >
+                {({ values, setFieldValue }) => (
+                  <Form>
+                    <div className={styles.editInfoCol}>
+                      <span>
+                        <label>Client Project Contact Name</label>
+                        <Field
+                          name="client_project_contact_name"
+                          placeholder="Enter Client Project Contact Name"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="client_project_contact_name"
+                          component="p"
+                        />
+                      </span>
+                      <span>
+                        <label>Project Contact Email</label>
+                        <Field
+                          name="client_project_contact_email"
+                          placeholder="Enter Project Contact Email"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="client_project_contact_email"
+                          component="p"
+                        />
+                      </span>
+                      <span>
+                        <label>Preferred Channel</label>
+                        <Field name="preferred_channel" as="select">
+                          <option value="">Select Option</option>
+                          <option value="EMAIL">Email</option>
+                          <option value="SLACK">Slack</option>
+                          <option value="TEAMS">Teams</option>
+                          <option value="MEETING">Meeting</option>
+                        </Field>
+                        <ErrorMessage
+                          className={styles.error}
+                          name="preferred_channel"
+                          component="p"
+                        />
+                      </span>
+                      <span>
+                        <label>Update Frequency</label>
+                        <Field name="update_frequency" as="select">
+                          <option value="">Select Option</option>
+                          <option value="Daily">Daily</option>
+                          <option value="Weekly">Weekly</option>
+                          <option value="Bi Weekly">Bi Weekly</option>
+                          <option value="As Needed">As Needed</option>
+                        </Field>
+                        <ErrorMessage
+                          className={styles.error}
+                          name="update_frequency"
+                          component="p"
+                        />
+                      </span>
+                    </div>
+                    <div
+                      className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                     >
-                      Submit
-                    </button>
-                  </div>
-                </Form>
-              )}
-            </Formik>
+                      <span>
+                        <button
+                          className={styles.submitBtn}
+                          type="submit"
+                          disabled={sectionChanging}
+                        >
+                          Submit
+                        </button>
+                      </span>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </div>
           </div>
-        </div>
-        {/*  ****** INTERNAL NOTE SECTION ****** */}
-        {/* <div className={styles.LeaddetailsCol}>
-          <div className={styles.sectionHeading}>
-            <h2>Internal Note</h2>
+          {/*  ****** INTERNAL NOTE SECTION ****** */}
+          <div className={styles.LeaddetailsCol}>
+            <div className={styles.sectionHeading}>
+              <h2>Internal Note</h2>
+              {(sectionName !== TemplateNoteEnum.INTERNAL_NOTE && !hideEditButton) && (
+                <span
+                  className={styles.editBtn}
+                  onClick={() => editSection(TemplateNoteEnum.INTERNAL_NOTE)}
+                >
+                  Edit <EditIcon />
+                </span>
+              )}
+              {sectionName === TemplateNoteEnum.INTERNAL_NOTE && (
+                <span className={styles.cancelBtn} onClick={cancelEditSection}>
+                  Cancel <CancelIcon />
+                </span>
+              )}
+            </div>
             {sectionName !== TemplateNoteEnum.INTERNAL_NOTE && (
-              <span
-                className={styles.editBtn}
-                onClick={() => editSection(TemplateNoteEnum.INTERNAL_NOTE)}
-              >
-                Edit <EditIcon />
-              </span>
-            )}
-            {sectionName === TemplateNoteEnum.INTERNAL_NOTE && (
-              <span className={styles.cancelBtn} onClick={cancelEditSection}>
-                Cancel <CancelIcon />
-              </span>
-            )}
-          </div>
-          {sectionName !== TemplateNoteEnum.INTERNAL_NOTE && (
-            <div className={styles.viewInfo}>
-              <div className={styles.editInfoCol}>
-                <span className={styles.borderRight}>
-                  <label>Risk and Warnings</label>
-                  <p>{internalNoteData?.internal_risks_and_warnings}</p>
-                </span>
-                <span className={styles.borderRight}>
-                  <label>Margin Sensitivity</label>
-                  <p>{internalNoteData?.internal_margin_sensitivity}</p>
-                </span>
-                <span>
-                  <label>Note</label>
-                  <p>{internalNoteData?.internal_notes}</p>
-                </span>
+              <div className={styles.viewInfo}>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.borderRight}>
+                    <label>Risk and Warnings</label>
+                    <p>{internalNoteData?.internal_risks_and_warnings}</p>
+                  </span>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    <label>Margin Sensitivity</label>
+                    <p>{internalNoteData?.internal_margin_sensitivity}</p>
+                  </span>
+                  <span className={styles.pl10}>
+                    <label>Note</label>
+                    <p>{internalNoteData?.internal_notes}</p>
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-          <div
-            className={styles.editInfo}
-            style={{
-              display:
-                sectionName === TemplateNoteEnum.INTERNAL_NOTE
-                  ? "block"
-                  : "none",
-            }}
-          >
-            <Formik
-              initialValues={internalNoteInitialFormValue}
-              validationSchema={internalNoteValidationSchema}
-              onSubmit={(val) => saveInternalNoteSection(val)}
-              innerRef={internalNoteFormFormikRef}
+            )}
+            <div
+              className={styles.editInfo}
+              style={{
+                display:
+                  sectionName === TemplateNoteEnum.INTERNAL_NOTE
+                    ? "block"
+                    : "none",
+              }}
             >
-              {({ values, setFieldValue }) => (
-                <Form>
-                  <div className={styles.editInfoCol}>
-                    <span>
-                      <label>Risk and Warnings</label>
-                      <Field
-                        name="internal_risks_and_warnings"
-                        placeholder="Enter Risk and Warnings"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="internal_risks_and_warnings"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Margin Sensitivity</label>
-                      <Field name="internal_margin_sensitivity" as="select">
-                        <option value="">Select Option</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                      </Field>
-                      <ErrorMessage
-                        className={styles.error}
-                        name="internal_margin_sensitivity"
-                        component="p"
-                      />
-                    </span>
-                    <span>
-                      <label>Note</label>
-                      <Field
-                        name="internal_notes"
-                        placeholder="Enter Note"
-                        as="textarea"
-                      />
-                      <ErrorMessage
-                        className={styles.error}
-                        name="internal_notes"
-                        component="p"
-                      />
-                    </span>
-                    <button
-                      className={styles.submitBtn}
-                      type="submit"
-                      disabled={sectionChanging}
+              <Formik
+                initialValues={internalNoteInitialFormValue}
+                validationSchema={internalNoteValidationSchema}
+                onSubmit={(val) => saveInternalNoteSection(val)}
+                innerRef={internalNoteFormFormikRef}
+              >
+                {({ values, setFieldValue }) => (
+                  <Form>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.twoClm}>
+                        <label>Risk and Warnings</label>
+                        <Field
+                          name="internal_risks_and_warnings"
+                          placeholder="Enter Risk and Warnings"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="internal_risks_and_warnings"
+                          component="p"
+                        />
+                      </span>
+                      <span className={styles.twoClm}>
+                        <label>Margin Sensitivity</label>
+                        <Field name="internal_margin_sensitivity" as="select">
+                          <option value="">Select Option</option>
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                        </Field>
+                        <ErrorMessage
+                          className={styles.error}
+                          name="internal_margin_sensitivity"
+                          component="p"
+                        />
+                      </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.oneClm}>
+                        <label>Note</label>
+                        <Field
+                          name="internal_notes"
+                          placeholder="Enter Note"
+                          as="textarea"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="internal_notes"
+                          component="p"
+                        />
+                      </span>
+                    </div>
+                    <div
+                      className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                     >
-                      Submit
-                    </button>
-                  </div>
-                </Form>
-              )}
-            </Formik>
+                      <span>
+                        <button
+                          className={styles.submitBtn}
+                          type="submit"
+                          disabled={sectionChanging}
+                        >
+                          Submit
+                        </button>
+                      </span>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </div>
           </div>
-        </div> */}
-      </>}
+        </>
+      )}
     </div>
   );
 };
