@@ -36,7 +36,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import FormikReactSelect from "../../../components/formik-react-select/formikReactSelect";
 
-const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
+const ViewAndEditTemplateNote: React.FC<{
+  leadId: string;
+  leadStatus: string;
+}> = ({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
   >([]);
@@ -49,7 +52,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
     useState<InternalNoteResponse | null>(null);
   const [communicationData, setCommunicationData] =
     useState<CommunicationContact | null>(null);
-  const [workPackageData, setWorkPackageData] = useState<WorkPackageResponse[]>([]);
+  const [workPackageData, setWorkPackageData] = useState<WorkPackageResponse[]>(
+    []
+  );
   const [packageSkills, setPackageSkills] = useState<ToolsAndSkillsInterface[]>(
     []
   );
@@ -287,7 +292,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           getCommunicationData(res.data?.id);
           getWorkPackageData(res.data?.id);
         }
-        if (!res.data?.id && userInfo?.role !== "Technician") {
+        if (!res.data?.id && userInfo?.role !== "Technician" && (leadStatus !== "Triple Positive" && leadStatus !== "new")) {
           setSectionName(TemplateNoteEnum.DEAL);
         }
       }
@@ -647,6 +652,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
+  const hideEditButton = userInfo?.role === "Technician" || leadStatus === "Triple Positive" || leadStatus === "new";
 
   return (
     <div className={styles.LeadcolRow}>
@@ -654,7 +660,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
       <div className={styles.LeaddetailsCol}>
         <div className={styles.sectionHeading}>
           <h2>Deal</h2>
-          {sectionName !== TemplateNoteEnum.DEAL && (
+          {(sectionName !== TemplateNoteEnum.DEAL && !hideEditButton) && (
             <span
               className={styles.editBtn}
               onClick={() => editSection(TemplateNoteEnum.DEAL)}
@@ -679,11 +685,11 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <label>Primary Contact Name</label>
                 <p>{dealData?.primary_contact_name}</p>
               </span>
-               <span className={`${styles.borderRight} ${styles.pl10}`}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Email</label>
                 <p>{dealData?.primary_contact_email}</p>
               </span>
-                <span className={styles.pl10}>
+              <span className={styles.pl10}>
                 <label>Primary Contact Phone</label>
                 <p>{dealData?.primary_contact_phone}</p>
               </span>
@@ -693,15 +699,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <label>Industry</label>
                 <p>{dealData?.industry}</p>
               </span>
-               <span className={`${styles.borderRight} ${styles.pl10}`}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Deal Name</label>
                 <p>{dealData?.deal_name}</p>
               </span>
-               <span className={`${styles.borderRight} ${styles.pl10}`}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Sale Person Name</label>
                 <p>{dealData?.salesperson_name}</p>
               </span>
-               <span className={styles.pl10}>
+              <span className={styles.pl10}>
                 <label>Special Terms</label>
                 <p>{dealData?.special_terms}</p>
               </span>
@@ -955,9 +961,12 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     </span>
                   )}
                 </div>
-                <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                <div
+                  className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                >
                   <span>
-                    <button className={styles.submitBtn}
+                    <button
+                      className={styles.submitBtn}
                       type="submit"
                       disabled={sectionChanging}
                     >
@@ -976,7 +985,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Work Packages</h2>
-              {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
+              {(sectionName !== TemplateNoteEnum.WORK_PACKAGE && !hideEditButton) && (
                 <span
                   className={styles.editBtn}
                   onClick={() => editSection(TemplateNoteEnum.WORK_PACKAGE)}
@@ -1005,10 +1014,12 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         <p>{wp?.package_type?.name || ""}</p>
                       </span>
                       {wp.custom_package_type && (
-                        <span className={`${styles.borderRight} ${styles.pl10}`}>
-                        <label>Custom Work Package</label>
-                        <p>{wp?.custom_package_type || ""}</p>
-                      </span>
+                        <span
+                          className={`${styles.borderRight} ${styles.pl10}`}
+                        >
+                          <label>Custom Work Package</label>
+                          <p>{wp?.custom_package_type || ""}</p>
+                        </span>
                       )}
                       <span className={styles.pl10}>
                         <label>Package Skills</label>
@@ -1019,7 +1030,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         </ul>
                       </span>
                     </div>
-                    <div className={styles.editInfoCol}>  
+                    <div className={styles.editInfoCol}>
                       <span className={styles.borderRight}>
                         <label>Primary Tools</label>
                         <ul>
@@ -1040,7 +1051,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         <label>Package Skills</label>
                         <ul>
                           {wp?.dependencies?.map((dependency) => (
-                            <li key={dependency?.id}>{dependency?.name || ""}</li>
+                            <li key={dependency?.id}>
+                              {dependency?.name || ""}
+                            </li>
                           ))}
                         </ul>
                       </span>
@@ -1087,7 +1100,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           {values.work_packages.map((workPackage, ind) => (
                             <div key={ind}>
                               <div>
-                                <h2 className={styles.packageSubHdn}>Package #{ind + 1}</h2>
+                                <h2 className={styles.packageSubHdn}>
+                                  Package #{ind + 1}
+                                </h2>
                               </div>
                               <div className={styles.editInfo}>
                                 {values.work_packages.length > 1 && (
@@ -1106,7 +1121,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     <i className="fa-solid fa-xmark"></i>
                                   </button>
                                 )}
-                                <div  className={styles.editInfoCol}>
+                                <div className={styles.editInfoCol}>
                                   <span className={styles.threeClm}>
                                     <label>Packages Title</label>
                                     <Field
@@ -1152,7 +1167,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     </span>
                                   )}
                                 </div>
-                                <div  className={styles.editInfoCol}>
+                                <div className={styles.editInfoCol}>
                                   <span className={styles.oneClm}>
                                     <label>Package Skills</label>
                                     <FormikReactSelect
@@ -1167,7 +1182,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     />
                                   </span>
                                 </div>
-                                <div  className={styles.editInfoCol}>
+                                <div className={styles.editInfoCol}>
                                   <span className={styles.oneClm}>
                                     <label>Primary Tools</label>
                                     <FormikReactSelect
@@ -1182,7 +1197,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     />
                                   </span>
                                 </div>
-                                <div  className={styles.editInfoCol}>
+                                <div className={styles.editInfoCol}>
                                   <span className={styles.oneClm}>
                                     <label>Dependencies</label>
                                     <FormikReactSelect
@@ -1197,7 +1212,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     />
                                   </span>
                                 </div>
-                                <div  className={styles.editInfoCol}>
+                                <div className={styles.editInfoCol}>
                                   <span className={styles.twoClm}>
                                     <label>Package Type</label>
                                     <FormikReactSelect
@@ -1271,7 +1286,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                               </div>
                             </div>
                           ))}
-                          <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                          <div
+                            className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                          >
                             <span>
                               <button
                                 type="button"
@@ -1305,7 +1322,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Technical Context</h2>
-              {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && (
+              {(sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && !hideEditButton) && (
                 <span
                   className={styles.editBtn}
                   onClick={() =>
@@ -1433,7 +1450,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         />
                       </span>
                     </div>
-                    <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                    <div
+                      className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                    >
                       <span>
                         <button
                           type="submit"
@@ -1453,8 +1472,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Communication</h2>
-              {sectionName !==
-                TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && (
+              {(sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && !hideEditButton) && (
                 <span
                   className={styles.editBtn}
                   onClick={() =>
@@ -1566,7 +1584,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         />
                       </span>
                     </div>
-                    <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                    <div
+                      className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                    >
                       <span>
                         <button
                           className={styles.submitBtn}
@@ -1586,7 +1606,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Internal Note</h2>
-              {sectionName !== TemplateNoteEnum.INTERNAL_NOTE && (
+              {(sectionName !== TemplateNoteEnum.INTERNAL_NOTE && !hideEditButton) && (
                 <span
                   className={styles.editBtn}
                   onClick={() => editSection(TemplateNoteEnum.INTERNAL_NOTE)}
@@ -1678,7 +1698,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         />
                       </span>
                     </div>
-                    <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                    <div
+                      className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
+                    >
                       <span>
                         <button
                           className={styles.submitBtn}

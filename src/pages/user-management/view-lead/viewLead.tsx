@@ -146,7 +146,7 @@ const ViewLead: React.FC = () => {
             </div>
 
             <div>
-              <ViewAndEditTemplateNote leadId={leadId || ""}/>
+              <ViewAndEditTemplateNote leadId={leadId || ""} leadStatus={leadDetails?.lead_status || ""}/>
             </div>
 
             <div className={styles.LeadcolRow}>
