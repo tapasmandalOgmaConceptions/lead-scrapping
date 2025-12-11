@@ -202,6 +202,19 @@
     .pl10{
       padding-left: 2%;
     }
+    .chipsList{
+      display: flex;
+      flex-wrap: wrap;
+      li{
+      background: #dfdfdf;
+      border-radius: 5px;
+      padding: 2px 7px 3px;
+      margin-right: 5px;
+      color: #535353;
+      font-size: 13px;
+      margin-bottom: 5px;
+      }
+    }
     span{
       width: 25%;      
     }
@@ -235,14 +248,14 @@
       width: 24%;
       margin: 0 0.5%;
       &.oneClm{
-        width: 98%;
+        width: 99%;
         margin: 0 auto;
       }
       &.twoClm{
         width: 49%;
       }
       &.threeClm{
-        width: 32.15%;
+        width: 32.3%;
       }
       input{
         background: #fff;
