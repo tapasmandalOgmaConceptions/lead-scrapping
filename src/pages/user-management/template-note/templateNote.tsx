@@ -675,15 +675,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <label>Client Name</label>
                 <p>{dealData?.client_name}</p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Name</label>
                 <p>{dealData?.primary_contact_name}</p>
               </span>
-              <span className={styles.borderRight}>
+               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Email</label>
                 <p>{dealData?.primary_contact_email}</p>
               </span>
-              <span>
+                <span className={styles.pl10}>
                 <label>Primary Contact Phone</label>
                 <p>{dealData?.primary_contact_phone}</p>
               </span>
@@ -693,15 +693,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <label>Industry</label>
                 <p>{dealData?.industry}</p>
               </span>
-              <span className={styles.borderRight}>
+               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Deal Name</label>
                 <p>{dealData?.deal_name}</p>
               </span>
-              <span className={styles.borderRight}>
+               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Sale Person Name</label>
                 <p>{dealData?.salesperson_name}</p>
               </span>
-              <span>
+               <span className={styles.pl10}>
                 <label>Special Terms</label>
                 <p>{dealData?.special_terms}</p>
               </span>
@@ -715,7 +715,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     : ""}
                 </p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Expected Start Date</label>
                 <p>
                   {dealData?.expected_start_date
@@ -723,7 +723,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     : ""}
                 </p>
               </span>
-              <span className={styles.borderRight}>
+              <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Expected End Date or Deadline</label>
                 <p>
                   {dealData?.expected_end_date_or_deadline
@@ -733,7 +733,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     : ""}
                 </p>
               </span>
-              <span>
+              <span className={styles.pl10}>
                 <label>Client Approved Scope Summary</label>
                 <p>{dealData?.client_approved_scope_summary}</p>
               </span>
@@ -748,7 +748,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 <p>{dealData?.sector_package?.name}</p>
               </span>
               {dealData?.custom_sector_package && (
-                <span>
+                <span className={styles.pl10}>
                   <label>Custom Sector Package</label>
                   <p>{dealData?.custom_sector_package}</p>
                 </span>
@@ -954,13 +954,16 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                       />
                     </span>
                   )}
-                  <button
-                    className={styles.submitBtn}
-                    type="submit"
-                    disabled={sectionChanging}
-                  >
-                    Submit
-                  </button>
+                </div>
+                <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                  <span>
+                    <button className={styles.submitBtn}
+                      type="submit"
+                      disabled={sectionChanging}
+                    >
+                      Submit
+                    </button>
+                  </span>
                 </div>
               </Form>
             )}
@@ -991,23 +994,23 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
               <div className={styles.viewInfo}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <h2>Package #{ind + 1}</h2>
-                    <div>
+                    <h2 className={styles.packageSubHdn}>Package #{ind + 1}</h2>
+                    <div className={styles.editInfoCol}>
                       <span className={styles.borderRight}>
                         <label>Packages Title</label>
                         <p>{wp?.package_title || ""}</p>
                       </span>
-                      <span className={styles.borderRight}>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Package Type</label>
                         <p>{wp?.package_type?.name || ""}</p>
                       </span>
                       {wp.custom_package_type && (
-                        <span className={styles.borderRight}>
+                        <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Custom Work Package</label>
                         <p>{wp?.custom_package_type || ""}</p>
                       </span>
                       )}
-                      <span className={styles.borderRight}>
+                      <span className={styles.pl10}>
                         <label>Package Skills</label>
                         <ul>
                           {wp?.required_skills?.map((skill) => (
@@ -1015,6 +1018,8 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           ))}
                         </ul>
                       </span>
+                    </div>
+                    <div className={styles.editInfoCol}>  
                       <span className={styles.borderRight}>
                         <label>Primary Tools</label>
                         <ul>
@@ -1023,15 +1028,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           ))}
                         </ul>
                       </span>
-                      <span className={styles.borderRight}>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Complexity</label>
                         <p>{wp?.package_estimated_complexity || ""}</p>
                       </span>
-                      <span className={styles.borderRight}>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Packages Price</label>
                         <p>{wp?.package_price_allocation || ""}</p>
                       </span>
-                      <span className={styles.borderRight}>
+                      <span className={styles.pl10}>
                         <label>Package Skills</label>
                         <ul>
                           {wp?.dependencies?.map((dependency) => (
@@ -1039,15 +1044,17 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           ))}
                         </ul>
                       </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
                       <span className={styles.borderRight}>
                         <label>Packages Summary</label>
                         <p>{wp?.package_summary || ""}</p>
                       </span>
-                      <span className={styles.borderRight}>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Key Deliverables</label>
                         <p>{wp?.key_deliverables || ""}</p>
                       </span>
-                      <span className={styles.borderRight}>
+                      <span className={styles.pl10}>
                         <label>Acceptance Criteria</label>
                         <p>{wp?.acceptance_criteria || ""}</p>
                       </span>
@@ -1080,7 +1087,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           {values.work_packages.map((workPackage, ind) => (
                             <div key={ind}>
                               <div>
-                                <h2>Package #{ind + 1}</h2>
+                                <h2 className={styles.packageSubHdn}>Package #{ind + 1}</h2>
+                              </div>
+                              <div className={styles.editInfo}>
                                 {values.work_packages.length > 1 && (
                                   <button
                                     type="button"
@@ -1097,10 +1106,8 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                     <i className="fa-solid fa-xmark"></i>
                                   </button>
                                 )}
-                              </div>
-                              <div>
-                                <div>
-                                  <span>
+                                <div  className={styles.editInfoCol}>
+                                  <span className={styles.threeClm}>
                                     <label>Packages Title</label>
                                     <Field
                                       name={`work_packages.${ind}.package_title`}
@@ -1112,77 +1119,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                       component="p"
                                     />
                                   </span>
-                                  <span>
-                                    <label>Package Type</label>
-                                    <FormikReactSelect
-                                      name={`work_packages.${ind}.package_type`}
-                                      options={packageTypes}
-                                    />
-                                    <ErrorMessage
-                                      className={styles.error}
-                                      name={`work_packages.${ind}.package_type`}
-                                      component="p"
-                                    />
-                                  </span>
-                                  {values.work_packages[ind].package_type ===
-                                    "12" && (
-                                    <span>
-                                      <label>Custom Package</label>
-                                      <Field
-                                        name={`work_packages.${ind}.custom_package_type`}
-                                        placeholder="Enter Custom Packages"
-                                      />
-                                      <ErrorMessage
-                                        className={styles.error}
-                                        name={`work_packages.${ind}.custom_package_type`}
-                                        component="p"
-                                      />
-                                    </span>
-                                  )}
-                                  <span>
-                                    <label>Package Skills</label>
-                                    <FormikReactSelect
-                                      name={`work_packages.${ind}.required_skills`}
-                                      options={packageSkills}
-                                      isMulti={true}
-                                    />
-                                    <ErrorMessage
-                                      className={styles.error}
-                                      name={`work_packages.${ind}.required_skills`}
-                                      component="p"
-                                    />
-                                  </span>
-                                  <span>
-                                    <label>Primary Tools</label>
-                                    <FormikReactSelect
-                                      name={`work_packages.${ind}.primary_tools`}
-                                      options={packageTools}
-                                      isMulti={true}
-                                    />
-                                    <ErrorMessage
-                                      className={styles.error}
-                                      name={`work_packages.${ind}.primary_tools`}
-                                      component="p"
-                                    />
-                                  </span>
-                                  <span>
-                                    <label>Complexity</label>
-
-                                    <FormikReactSelect
-                                      name={`work_packages.${ind}.package_estimated_complexity`}
-                                      options={[
-                                        { value: "Small", label: "Small" },
-                                        { value: "Medium", label: "Medium" },
-                                        { value: "Large", label: "Large" },
-                                      ]}
-                                    />
-                                    <ErrorMessage
-                                      className={styles.error}
-                                      name={`work_packages.${ind}.package_estimated_complexity`}
-                                      component="p"
-                                    />
-                                  </span>
-                                  <span>
+                                  <span className={styles.threeClm}>
                                     <label>Packages Price</label>
                                     <Field
                                       name={`work_packages.${ind}.package_price_allocation`}
@@ -1199,7 +1136,54 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                       component="p"
                                     />
                                   </span>
-                                  <span>
+                                  {values.work_packages[ind].package_type ===
+                                    "12" && (
+                                    <span className={styles.threeClm}>
+                                      <label>Custom Package</label>
+                                      <Field
+                                        name={`work_packages.${ind}.custom_package_type`}
+                                        placeholder="Enter Custom Packages"
+                                      />
+                                      <ErrorMessage
+                                        className={styles.error}
+                                        name={`work_packages.${ind}.custom_package_type`}
+                                        component="p"
+                                      />
+                                    </span>
+                                  )}
+                                </div>
+                                <div  className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
+                                    <label>Package Skills</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.required_skills`}
+                                      options={packageSkills}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.required_skills`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div  className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
+                                    <label>Primary Tools</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.primary_tools`}
+                                      options={packageTools}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.primary_tools`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div  className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
                                     <label>Dependencies</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.dependencies`}
@@ -1212,7 +1196,39 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                       component="p"
                                     />
                                   </span>
-                                  <span>
+                                </div>
+                                <div  className={styles.editInfoCol}>
+                                  <span className={styles.twoClm}>
+                                    <label>Package Type</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.package_type`}
+                                      options={packageTypes}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_type`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.twoClm}>
+                                    <label>Complexity</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.package_estimated_complexity`}
+                                      options={[
+                                        { value: "Small", label: "Small" },
+                                        { value: "Medium", label: "Medium" },
+                                        { value: "Large", label: "Large" },
+                                      ]}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_estimated_complexity`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.threeClm}>
                                     <label>Packages Summary</label>
                                     <Field
                                       as="textarea"
@@ -1225,7 +1241,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                       component="p"
                                     />
                                   </span>
-                                  <span>
+                                  <span className={styles.threeClm}>
                                     <label>Key Deliverables</label>
                                     <Field
                                       as="textarea"
@@ -1238,7 +1254,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                                       component="p"
                                     />
                                   </span>
-                                  <span>
+                                  <span className={styles.threeClm}>
                                     <label>Acceptance Criteria</label>
                                     <Field
                                       as="textarea"
@@ -1255,23 +1271,30 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                               </div>
                             </div>
                           ))}
-                          <div>
-                            <button
-                              type="button"
-                              disabled={sectionChanging}
-                              onClick={() => {
-                                push(workPackageValue);
-                              }}
-                            >
-                              Add More
-                            </button>
+                          <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                            <span>
+                              <button
+                                type="button"
+                                disabled={sectionChanging}
+                                className={styles.addMoreBtn}
+                                onClick={() => {
+                                  push(workPackageValue);
+                                }}
+                              >
+                                Add More
+                              </button>
+                              <button
+                                type="submit"
+                                disabled={sectionChanging}
+                                className={styles.submitBtn}
+                              >
+                                Submit
+                              </button>
+                            </span>
                           </div>
                         </>
                       )}
                     </FieldArray>
-                    <button type="submit" disabled={sectionChanging}>
-                      Submit
-                    </button>
                   </Form>
                 )}
               </Formik>
@@ -1305,15 +1328,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     <label>Client Main System</label>
                     <p>{technicalContextData?.client_main_systems}</p>
                   </span>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Integration Targets</label>
                     <p>{technicalContextData?.integration_targets}</p>
                   </span>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Tools In Scope</label>
                     <p>{technicalContextData?.tools_in_scope}</p>
                   </span>
-                  <span>
+                  <span className={styles.pl10}>
                     <label>Access Required List</label>
                     <p>{technicalContextData?.access_required_list}</p>
                   </span>
@@ -1344,7 +1367,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 {({ values, setFieldValue }) => (
                   <Form>
                     <div className={styles.editInfoCol}>
-                      <span>
+                      <span className={styles.twoClm}>
                         <label>Client Main System</label>
                         <Field
                           name="client_main_systems"
@@ -1356,7 +1379,21 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           component="p"
                         />
                       </span>
-                      <span>
+                      <span className={styles.twoClm}>
+                        <label>Credential Provision Method</label>
+                        <Field
+                          name="credential_provision_method"
+                          placeholder="Enter Credential Provision Method"
+                        />
+                        <ErrorMessage
+                          className={styles.error}
+                          name="credential_provision_method"
+                          component="p"
+                        />
+                      </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.threeClm}>
                         <label>Integration Targets (Optional)</label>
                         <Field
                           as="textarea"
@@ -1369,7 +1406,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           component="p"
                         />
                       </span>
-                      <span>
+                      <span className={styles.threeClm}>
                         <label>Tools In Scope</label>
                         <Field
                           name="tools_in_scope"
@@ -1382,7 +1419,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           component="p"
                         />
                       </span>
-                      <span>
+                      <span className={styles.threeClm}>
                         <label>Access Required List</label>
                         <Field
                           name="access_required_list"
@@ -1396,26 +1433,16 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         />
                       </span>
                     </div>
-                    <div className={styles.editInfoCol}>
+                    <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
                       <span>
-                        <label>Credential Provision Method</label>
-                        <Field
-                          name="credential_provision_method"
-                          placeholder="Enter Credential Provision Method"
-                        />
-                        <ErrorMessage
-                          className={styles.error}
-                          name="credential_provision_method"
-                          component="p"
-                        />
+                        <button
+                          type="submit"
+                          className={styles.submitBtn}
+                          disabled={sectionChanging}
+                        >
+                          Submit
+                        </button>
                       </span>
-                      <button
-                        type="submit"
-                        className={styles.submitBtn}
-                        disabled={sectionChanging}
-                      >
-                        Submit
-                      </button>
                     </div>
                   </Form>
                 )}
@@ -1451,15 +1478,15 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     <label>Client Project Contact Name</label>
                     <p>{communicationData?.client_project_contact_name}</p>
                   </span>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Project Contact Email</label>
                     <p>{communicationData?.client_project_contact_email}</p>
                   </span>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Preferred Channel</label>
                     <p>{communicationData?.preferred_channel}</p>
                   </span>
-                  <span>
+                  <span className={styles.pl10}>
                     <label>Update Frequency</label>
                     <p>{communicationData?.update_frequency}</p>
                   </span>
@@ -1539,14 +1566,16 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                         />
                       </span>
                     </div>
-                    <div className={styles.editInfoCol}>
-                      <button
-                        className={styles.submitBtn}
-                        type="submit"
-                        disabled={sectionChanging}
-                      >
-                        Submit
-                      </button>
+                    <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                      <span>
+                        <button
+                          className={styles.submitBtn}
+                          type="submit"
+                          disabled={sectionChanging}
+                        >
+                          Submit
+                        </button>
+                      </span>
                     </div>
                   </Form>
                 )}
@@ -1578,11 +1607,11 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                     <label>Risk and Warnings</label>
                     <p>{internalNoteData?.internal_risks_and_warnings}</p>
                   </span>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Margin Sensitivity</label>
                     <p>{internalNoteData?.internal_margin_sensitivity}</p>
                   </span>
-                  <span>
+                  <span className={styles.pl10}>
                     <label>Note</label>
                     <p>{internalNoteData?.internal_notes}</p>
                   </span>
@@ -1607,7 +1636,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                 {({ values, setFieldValue }) => (
                   <Form>
                     <div className={styles.editInfoCol}>
-                      <span>
+                      <span className={styles.twoClm}>
                         <label>Risk and Warnings</label>
                         <Field
                           name="internal_risks_and_warnings"
@@ -1619,7 +1648,7 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           component="p"
                         />
                       </span>
-                      <span>
+                      <span className={styles.twoClm}>
                         <label>Margin Sensitivity</label>
                         <Field name="internal_margin_sensitivity" as="select">
                           <option value="">Select Option</option>
@@ -1633,7 +1662,9 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           component="p"
                         />
                       </span>
-                      <span>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.oneClm}>
                         <label>Note</label>
                         <Field
                           name="internal_notes"
@@ -1646,13 +1677,17 @@ const ViewAndEditTemplateNote: React.FC<{ leadId: string }> = ({ leadId }) => {
                           component="p"
                         />
                       </span>
-                      <button
-                        className={styles.submitBtn}
-                        type="submit"
-                        disabled={sectionChanging}
-                      >
-                        Submit
-                      </button>
+                    </div>
+                    <div className={`${styles.editInfoCol} ${styles.submitBtnRight}`}>
+                      <span>
+                        <button
+                          className={styles.submitBtn}
+                          type="submit"
+                          disabled={sectionChanging}
+                        >
+                          Submit
+                        </button>
+                      </span>
                     </div>
                   </Form>
                 )}
