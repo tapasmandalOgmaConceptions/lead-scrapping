@@ -296,8 +296,7 @@ const ViewAndEditTemplateNote: React.FC<{
         if (
           !res.data?.id &&
           userInfo?.role !== "Technician" &&
-          leadStatus !== "Triple Positive" &&
-          leadStatus !== "new"
+          leadStatus !== "Triple Positive"
         ) {
           setSectionName(TemplateNoteEnum.DEAL);
         }
@@ -661,8 +660,7 @@ const ViewAndEditTemplateNote: React.FC<{
   };
   const hideEditButton =
     userInfo?.role === "Technician" ||
-    leadStatus === "Triple Positive" ||
-    leadStatus === "new";
+    leadStatus === "Triple Positive";
 
   return (
     <div className={styles.LeadcolRow}>

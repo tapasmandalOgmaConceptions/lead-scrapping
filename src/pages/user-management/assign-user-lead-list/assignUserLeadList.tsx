@@ -201,14 +201,14 @@ const AssignUserLeadList: React.FC = () => {
   const navigateToViewLeadPage = (leadId: string) => {
     navigate(`/view-lead/${leadId}`);
   };
-   const openAddNoteModal = (leadId: string) => {
+  const openAddNoteModal = (leadId: string) => {
     setAddNoteModalOpen(true);
     setSelectedLeadId(leadId);
   };
   const closeAddNoteModal = (isFetchApi = false) => {
     setAddNoteModalOpen(false);
     setSelectedLeadId("");
-    if(isFetchApi) getAssignUserLeadList();
+    if (isFetchApi) getAssignUserLeadList();
   };
 
   return (
@@ -411,14 +411,18 @@ const AssignUserLeadList: React.FC = () => {
                             Positive
                           </MenuItem>
                         )}
-                        <MenuItem
-                          onClick={() => {
-                            handleMenuClose();
-                            openAddNoteModal(lead.id);
-                          }}
-                        >
-                          Add Note
-                        </MenuItem>
+                        {!["new", "Not interested"].includes(
+                          lead.lead_status
+                        ) && (
+                          <MenuItem
+                            onClick={() => {
+                              handleMenuClose();
+                              openAddNoteModal(lead.id);
+                            }}
+                          >
+                            Add Note
+                          </MenuItem>
+                        )}
                       </Menu>
                     </div>
                   </li>
