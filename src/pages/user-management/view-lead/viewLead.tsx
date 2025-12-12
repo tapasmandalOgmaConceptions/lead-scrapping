@@ -58,7 +58,9 @@ const ViewLead: React.FC = () => {
             <div className={styles.LeadcolRow}>
               <div className={styles.LeaddetailsCol}>
                 <h2>Leads Details</h2>
-                <div className={`${styles.secBox} ${styles.width100} ${styles.flexRow}`}>
+                <div
+                  className={`${styles.secBox} ${styles.width100} ${styles.flexRow}`}
+                >
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>Created At</div>
                     <div className={styles.secColRight}>
@@ -116,28 +118,27 @@ const ViewLead: React.FC = () => {
                 {leadDetails?.assigned_technician ? (
                   <div className={`${styles.secBox} ${styles.width100}`}>
                     <div className={styles.flexRow}>
-                         <div className={`${styles.secRow} ${styles.width25}`}>
-                      <div className={styles.secColleft}>Name</div>
-                      <div className={styles.secColRight}>
-                        {leadDetails?.assigned_technician?.name}
+                      <div className={`${styles.secRow} ${styles.width25}`}>
+                        <div className={styles.secColleft}>Name</div>
+                        <div className={styles.secColRight}>
+                          {leadDetails?.assigned_technician?.name}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className={`${styles.secRow} ${styles.width25}`}>
-                      <div className={styles.secColleft}>Role</div>
-                      <div className={styles.secColRight}>
-                        {leadDetails?.assigned_technician?.role}
+                      <div className={`${styles.secRow} ${styles.width25}`}>
+                        <div className={styles.secColleft}>Role</div>
+                        <div className={styles.secColRight}>
+                          {leadDetails?.assigned_technician?.role}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className={`${styles.secRow} ${styles.width25}`}>
-                      <div className={styles.secColleft}>Email Address</div>
-                      <div className={styles.secColRight}>
-                        {leadDetails?.assigned_technician?.email}
+                      <div className={`${styles.secRow} ${styles.width25}`}>
+                        <div className={styles.secColleft}>Email Address</div>
+                        <div className={styles.secColRight}>
+                          {leadDetails?.assigned_technician?.email}
+                        </div>
                       </div>
                     </div>
-                    </div>
-                   
                   </div>
                 ) : (
                   <div className={styles.notFound}>No technician assigned.</div>
@@ -145,9 +146,17 @@ const ViewLead: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <ViewAndEditTemplateNote leadId={leadId || ""} leadStatus={leadDetails?.lead_status || ""}/>
-            </div>
+            {leadDetails?.lead_status &&
+              ["Positive lead", "Double Positive", "Triple Positive"].includes(
+                leadDetails.lead_status
+              ) && (
+                <div>
+                  <ViewAndEditTemplateNote
+                    leadId={leadId || ""}
+                    leadStatus={leadDetails?.lead_status || ""}
+                  />
+                </div>
+              )}
 
             <div className={styles.LeadcolRow}>
               <div className={styles.LeaddetailsCol}>

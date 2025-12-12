@@ -24,6 +24,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
+import AddNotes from "../../modal/add-note/addNote";
 
 const FollowUp: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -39,6 +40,8 @@ const FollowUp: React.FC = () => {
   const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeLeadId, setActiveLeadId] = useState<string | null>(null);
+  const [selectedLeadId, setSelectedLeadId] = useState<string>("");
+  const [addNoteModalOpen, setAddNoteModalOpen] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const navigate = useNavigate();
   useEffect(() => {
@@ -176,6 +179,14 @@ const FollowUp: React.FC = () => {
   };
   const navigateToViewLeadPage = (leadId: string) => {
     navigate(`/view-lead/${leadId}`);
+  };
+    const openAddNoteModal = (leadId: string) => {
+    setAddNoteModalOpen(true);
+    setSelectedLeadId(leadId);
+  };
+  const closeAddNoteModal = (isFetchApi = false) => {
+    setAddNoteModalOpen(false);
+    setSelectedLeadId("");
   };
 
   return (
@@ -346,6 +357,16 @@ const FollowUp: React.FC = () => {
                         >
                           View Lead Details
                         </MenuItem>
+                        {(userInfo?.role && ["Admin", "User"].includes(userInfo?.role)) && (
+                          <MenuItem
+                            onClick={() => {
+                              handleMenuClose();
+                              openAddNoteModal(lead.id);
+                            }}
+                          >
+                            Add Note
+                          </MenuItem>
+                        )}
                       </Menu>
                     </div>
                   </li>
@@ -354,6 +375,11 @@ const FollowUp: React.FC = () => {
             ))}
           </div>
         </div>
+        <AddNotes
+          open={addNoteModalOpen}
+          onClose={closeAddNoteModal}
+          leadId={selectedLeadId}
+        />
 
         <div className={styles.container}>
           {leads.length === 0 && !loading && (

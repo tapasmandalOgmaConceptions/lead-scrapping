@@ -104,7 +104,7 @@ const Header: React.FC  = () => {
                {isAuthenticated && (
                   <ul className="navbar-nav" onClick={handleNavLinkClick}>
                     <li>
-                      <NavLink to={"/"}>FollowUp Leads</NavLink>
+                      <NavLink to={"/"}>Positive Leads</NavLink>
                     </li>
                     {!userInfo?.isAdmin ? (
                       <li>
