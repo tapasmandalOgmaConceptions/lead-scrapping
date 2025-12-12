@@ -43,7 +43,25 @@
 }
 
 
-
+.css-b62m3t-container{
+  margin-top: 5px;
+}
 .css-13cymwt-control{
+  border-radius: 10px !important;  
+}
+.css-19bb58m{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.css-hlgwow{
+  padding: 0 10px !important;
+}
+.css-t3ipsp-control:hover {
+    border: 1px solid #D5CFCF !important;
+    border-radius: 10px !important;
+}
+.css-t3ipsp-control{
+  border: 1px solid #D5CFCF !important;
+  box-shadow: none !important;
   border-radius: 10px !important;
 }
