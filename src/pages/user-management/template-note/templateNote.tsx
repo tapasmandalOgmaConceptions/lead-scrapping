@@ -1023,7 +1023,7 @@ const ViewAndEditTemplateNote: React.FC<{
                       )}
                       <span className={styles.pl10}>
                         <label>Package Skills</label>
-                        <ul>
+                        <ul className={styles.chipsList}>
                           {wp?.required_skills?.map((skill) => (
                             <li key={skill?.id}>{skill?.name || ""}</li>
                           ))}
@@ -1033,7 +1033,7 @@ const ViewAndEditTemplateNote: React.FC<{
                     <div className={styles.editInfoCol}>
                       <span className={styles.borderRight}>
                         <label>Primary Tools</label>
-                        <ul>
+                        <ul className={styles.chipsList}>
                           {wp?.primary_tools?.map((tool) => (
                             <li key={tool?.id}>{tool?.name || ""}</li>
                           ))}
@@ -1049,7 +1049,7 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                       <span className={styles.pl10}>
                         <label>Package Skills</label>
-                        <ul>
+                        <ul className={styles.chipsList}>
                           {wp?.dependencies?.map((dependency) => (
                             <li key={dependency?.id}>
                               {dependency?.name || ""}
@@ -1135,19 +1135,14 @@ const ViewAndEditTemplateNote: React.FC<{
                                     />
                                   </span>
                                   <span className={styles.threeClm}>
-                                    <label>Packages Price</label>
-                                    <Field
-                                      name={`work_packages.${ind}.package_price_allocation`}
-                                      placeholder="Enter Packages Price"
-                                      onKeyPress={(e: any) => {
-                                        if (!/[0-9]/.test(e?.key)) {
-                                          e.preventDefault();
-                                        }
-                                      }}
+                                    <label>Package Type</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.package_type`}
+                                      options={packageTypes}
                                     />
                                     <ErrorMessage
                                       className={styles.error}
-                                      name={`work_packages.${ind}.package_price_allocation`}
+                                      name={`work_packages.${ind}.package_type`}
                                       component="p"
                                     />
                                   </span>
@@ -1165,7 +1160,43 @@ const ViewAndEditTemplateNote: React.FC<{
                                         component="p"
                                       />
                                     </span>
-                                  )}
+                                  )}                                  
+                                  
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.twoClm}>
+                                    <label>Packages Price</label>
+                                    <Field
+                                      name={`work_packages.${ind}.package_price_allocation`}
+                                      placeholder="Enter Packages Price"
+                                      onKeyPress={(e: any) => {
+                                        if (!/[0-9]/.test(e?.key)) {
+                                          e.preventDefault();
+                                        }
+                                      }}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_price_allocation`}
+                                      component="p"
+                                    />
+                                  </span>
+                                   <span className={styles.twoClm}>
+                                    <label>Complexity</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.package_estimated_complexity`}
+                                      options={[
+                                        { value: "Small", label: "Small" },
+                                        { value: "Medium", label: "Medium" },
+                                        { value: "Large", label: "Large" },
+                                      ]}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.package_estimated_complexity`}
+                                      component="p"
+                                    />
+                                  </span>
                                 </div>
                                 <div className={styles.editInfoCol}>
                                   <span className={styles.oneClm}>
@@ -1212,36 +1243,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                     />
                                   </span>
                                 </div>
-                                <div className={styles.editInfoCol}>
-                                  <span className={styles.twoClm}>
-                                    <label>Package Type</label>
-                                    <FormikReactSelect
-                                      name={`work_packages.${ind}.package_type`}
-                                      options={packageTypes}
-                                    />
-                                    <ErrorMessage
-                                      className={styles.error}
-                                      name={`work_packages.${ind}.package_type`}
-                                      component="p"
-                                    />
-                                  </span>
-                                  <span className={styles.twoClm}>
-                                    <label>Complexity</label>
-                                    <FormikReactSelect
-                                      name={`work_packages.${ind}.package_estimated_complexity`}
-                                      options={[
-                                        { value: "Small", label: "Small" },
-                                        { value: "Medium", label: "Medium" },
-                                        { value: "Large", label: "Large" },
-                                      ]}
-                                    />
-                                    <ErrorMessage
-                                      className={styles.error}
-                                      name={`work_packages.${ind}.package_estimated_complexity`}
-                                      component="p"
-                                    />
-                                  </span>
-                                </div>
+                                
                                 <div className={styles.editInfoCol}>
                                   <span className={styles.threeClm}>
                                     <label>Packages Summary</label>
