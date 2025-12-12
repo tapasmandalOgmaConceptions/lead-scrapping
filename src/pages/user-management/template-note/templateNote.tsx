@@ -35,6 +35,7 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import FormikReactSelect from "../../../components/formik-react-select/formikReactSelect";
+import { NumericFormat, PatternFormat } from "react-number-format";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -292,7 +293,12 @@ const ViewAndEditTemplateNote: React.FC<{
           getCommunicationData(res.data?.id);
           getWorkPackageData(res.data?.id);
         }
-        if (!res.data?.id && userInfo?.role !== "Technician" && (leadStatus !== "Triple Positive" && leadStatus !== "new")) {
+        if (
+          !res.data?.id &&
+          userInfo?.role !== "Technician" &&
+          leadStatus !== "Triple Positive" &&
+          leadStatus !== "new"
+        ) {
           setSectionName(TemplateNoteEnum.DEAL);
         }
       }
@@ -571,7 +577,8 @@ const ViewAndEditTemplateNote: React.FC<{
       })
     );
     workPackagesFormFormikRef.current?.setValues({
-      work_packages: formatPackage,
+      work_packages:
+        workPackageData.length > 0 ? formatPackage : [workPackageValue],
     });
   };
   const checkAndSetSectionValue = (sectionName: TemplateNoteEnum) => {
@@ -652,7 +659,10 @@ const ViewAndEditTemplateNote: React.FC<{
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
-  const hideEditButton = userInfo?.role === "Technician" || leadStatus === "Triple Positive" || leadStatus === "new";
+  const hideEditButton =
+    userInfo?.role === "Technician" ||
+    leadStatus === "Triple Positive" ||
+    leadStatus === "new";
 
   return (
     <div className={styles.LeadcolRow}>
@@ -660,7 +670,7 @@ const ViewAndEditTemplateNote: React.FC<{
       <div className={styles.LeaddetailsCol}>
         <div className={styles.sectionHeading}>
           <h2>Deal</h2>
-          {(sectionName !== TemplateNoteEnum.DEAL && !hideEditButton) && (
+          {sectionName !== TemplateNoteEnum.DEAL && !hideEditButton && (
             <span
               className={styles.editBtn}
               onClick={() => editSection(TemplateNoteEnum.DEAL)}
@@ -813,15 +823,21 @@ const ViewAndEditTemplateNote: React.FC<{
                   </span>
                   <span>
                     <label>Primary Contact Phone (Optional)</label>
-                    <Field
-                      name="primary_contact_phone"
-                      placeholder="Enter Primary Contact Phone"
-                      onKeyPress={(e: any) => {
-                        if (!/[0-9]/.test(e?.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
+                    <Field name="primary_contact_phone">
+                      {({ field, form }: any) => (
+                        <PatternFormat
+                          format="(###) ###-####"
+                          placeholder="Enter Primary Contact Phone"
+                          value={form.values.primary_contact_phone}
+                          onValueChange={(values) =>
+                            form.setFieldValue(
+                              "primary_contact_phone",
+                              values.value
+                            )
+                          }
+                        />
+                      )}
+                    </Field>
                     <ErrorMessage
                       className={styles.error}
                       name="primary_contact_phone"
@@ -985,14 +1001,15 @@ const ViewAndEditTemplateNote: React.FC<{
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Work Packages</h2>
-              {(sectionName !== TemplateNoteEnum.WORK_PACKAGE && !hideEditButton) && (
-                <span
-                  className={styles.editBtn}
-                  onClick={() => editSection(TemplateNoteEnum.WORK_PACKAGE)}
-                >
-                  Edit <EditIcon />
-                </span>
-              )}
+              {sectionName !== TemplateNoteEnum.WORK_PACKAGE &&
+                !hideEditButton && (
+                  <span
+                    className={styles.editBtn}
+                    onClick={() => editSection(TemplateNoteEnum.WORK_PACKAGE)}
+                  >
+                    Edit <EditIcon />
+                  </span>
+                )}
               {sectionName === TemplateNoteEnum.WORK_PACKAGE && (
                 <span className={styles.cancelBtn} onClick={cancelEditSection}>
                   Cancel <CancelIcon />
@@ -1045,7 +1062,14 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                       <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Packages Price</label>
-                        <p>{wp?.package_price_allocation || ""}</p>
+                        <p>
+                          {wp?.package_price_allocation
+                            ? new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                              }).format(Number(wp?.package_price_allocation))
+                            : ""}
+                        </p>
                       </span>
                       <span className={styles.pl10}>
                         <label>Package Skills</label>
@@ -1074,6 +1098,9 @@ const ViewAndEditTemplateNote: React.FC<{
                     </div>
                   </div>
                 ))}
+                {workPackageData?.length === 0 && (
+                  <p className={styles.loading}>No work packages available.</p>
+                )}
               </div>
             )}
             <div
@@ -1160,28 +1187,39 @@ const ViewAndEditTemplateNote: React.FC<{
                                         component="p"
                                       />
                                     </span>
-                                  )}                                  
-                                  
+                                  )}
                                 </div>
                                 <div className={styles.editInfoCol}>
                                   <span className={styles.twoClm}>
                                     <label>Packages Price</label>
                                     <Field
                                       name={`work_packages.${ind}.package_price_allocation`}
-                                      placeholder="Enter Packages Price"
-                                      onKeyPress={(e: any) => {
-                                        if (!/[0-9]/.test(e?.key)) {
-                                          e.preventDefault();
-                                        }
-                                      }}
-                                    />
+                                    >
+                                      {({ field, form }: any) => (
+                                        <NumericFormat
+                                          value={field.value}
+                                          thousandSeparator=","
+                                          decimalScale={2}
+                                          fixedDecimalScale={true}
+                                          prefix={field.value ? "$" : ""}
+                                          allowNegative={false}
+                                          placeholder="Enter Packages Price"
+                                          onValueChange={(values) => {
+                                            form.setFieldValue(
+                                              field.name,
+                                              values.floatValue ?? ""
+                                            );
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
                                     <ErrorMessage
                                       className={styles.error}
                                       name={`work_packages.${ind}.package_price_allocation`}
                                       component="p"
                                     />
                                   </span>
-                                   <span className={styles.twoClm}>
+                                  <span className={styles.twoClm}>
                                     <label>Complexity</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_estimated_complexity`}
@@ -1243,7 +1281,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                     />
                                   </span>
                                 </div>
-                                
+
                                 <div className={styles.editInfoCol}>
                                   <span className={styles.threeClm}>
                                     <label>Packages Summary</label>
@@ -1324,16 +1362,17 @@ const ViewAndEditTemplateNote: React.FC<{
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Technical Context</h2>
-              {(sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && !hideEditButton) && (
-                <span
-                  className={styles.editBtn}
-                  onClick={() =>
-                    editSection(TemplateNoteEnum.TECHNICAL_CONTEXT)
-                  }
-                >
-                  Edit <EditIcon />
-                </span>
-              )}
+              {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT &&
+                !hideEditButton && (
+                  <span
+                    className={styles.editBtn}
+                    onClick={() =>
+                      editSection(TemplateNoteEnum.TECHNICAL_CONTEXT)
+                    }
+                  >
+                    Edit <EditIcon />
+                  </span>
+                )}
               {sectionName === TemplateNoteEnum.TECHNICAL_CONTEXT && (
                 <span className={styles.cancelBtn} onClick={cancelEditSection}>
                   Cancel <CancelIcon />
@@ -1474,16 +1513,19 @@ const ViewAndEditTemplateNote: React.FC<{
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Communication</h2>
-              {(sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && !hideEditButton) && (
-                <span
-                  className={styles.editBtn}
-                  onClick={() =>
-                    editSection(TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT)
-                  }
-                >
-                  Edit <EditIcon />
-                </span>
-              )}
+              {sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT &&
+                !hideEditButton && (
+                  <span
+                    className={styles.editBtn}
+                    onClick={() =>
+                      editSection(
+                        TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT
+                      )
+                    }
+                  >
+                    Edit <EditIcon />
+                  </span>
+                )}
               {sectionName ===
                 TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT && (
                 <span className={styles.cancelBtn} onClick={cancelEditSection}>
@@ -1608,14 +1650,15 @@ const ViewAndEditTemplateNote: React.FC<{
           <div className={styles.LeaddetailsCol}>
             <div className={styles.sectionHeading}>
               <h2>Internal Note</h2>
-              {(sectionName !== TemplateNoteEnum.INTERNAL_NOTE && !hideEditButton) && (
-                <span
-                  className={styles.editBtn}
-                  onClick={() => editSection(TemplateNoteEnum.INTERNAL_NOTE)}
-                >
-                  Edit <EditIcon />
-                </span>
-              )}
+              {sectionName !== TemplateNoteEnum.INTERNAL_NOTE &&
+                !hideEditButton && (
+                  <span
+                    className={styles.editBtn}
+                    onClick={() => editSection(TemplateNoteEnum.INTERNAL_NOTE)}
+                  >
+                    Edit <EditIcon />
+                  </span>
+                )}
               {sectionName === TemplateNoteEnum.INTERNAL_NOTE && (
                 <span className={styles.cancelBtn} onClick={cancelEditSection}>
                   Cancel <CancelIcon />
