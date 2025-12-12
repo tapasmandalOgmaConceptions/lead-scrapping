@@ -10,11 +10,12 @@ import {
 } from "../../../interfaces/leadScrapeInterface";
 import moment from "moment";
 import alert from "../../../services/alert";
+import ViewAndEditTemplateNote from "../template-note/templateNote";
 
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
   const [leadNotes, setLeadNotes] = useState<LeadNote[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { leadId } = useParams();
   useEffect(() => {
     getLead();
@@ -144,10 +145,14 @@ const ViewLead: React.FC = () => {
               </div>
             </div>
 
+            <div>
+              <ViewAndEditTemplateNote leadId={leadId || ""} leadStatus={leadDetails?.lead_status || ""}/>
+            </div>
+
             <div className={styles.LeadcolRow}>
               <div className={styles.LeaddetailsCol}>
                 <h2>Notes</h2>
-                {leadNotes.map((note: LeadNote) => (
+                {leadNotes?.map((note: LeadNote) => (
                   <div
                     key={note.id}
                     className={`${styles.secBox} ${styles.width100}`}
@@ -197,7 +202,7 @@ const ViewLead: React.FC = () => {
                   </div>
                 ))}
 
-                {leadNotes.length === 0 && (
+                {leadNotes?.length === 0 && (
                   <div className={styles.notFound}>No notes found.</div>
                 )}
               </div>
