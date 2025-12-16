@@ -56,7 +56,7 @@ const ViewLead: React.FC = () => {
             </div>
 
             <div className={styles.LeadcolRow}>
-              <div className={styles.LeaddetailsCol}>
+              <div className={`${styles.LeaddetailsCol} ${styles.leadDtlsInfoPrt}`}>
                 <h2>Leads Details</h2>
                 <div
                   className={`${styles.secBox} ${styles.width100} ${styles.flexRow}`}
@@ -113,109 +113,159 @@ const ViewLead: React.FC = () => {
                 </div>
               </div>
 
-              <div className={styles.LeaddetailsCol}>
-                <h2>Assigned Technician</h2>
-                {leadDetails?.assigned_technician ? (
-                  <div className={`${styles.secBox} ${styles.width100}`}>
-                    <div className={styles.flexRow}>
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Name</div>
-                        <div className={styles.secColRight}>
-                          {leadDetails?.assigned_technician?.name}
-                        </div>
-                      </div>
 
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Role</div>
-                        <div className={styles.secColRight}>
-                          {leadDetails?.assigned_technician?.role}
-                        </div>
-                      </div>
-
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Email Address</div>
-                        <div className={styles.secColRight}>
-                          {leadDetails?.assigned_technician?.email}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.notFound}>No technician assigned.</div>
-                )}
-              </div>
-            </div>
-
-            {leadDetails?.lead_status &&
-              ["Positive lead", "Double Positive", "Triple Positive"].includes(
-                leadDetails.lead_status
-              ) && (
-                <div>
-                  <ViewAndEditTemplateNote
-                    leadId={leadId || ""}
-                    leadStatus={leadDetails?.lead_status || ""}
-                  />
+              <div className={styles.leadDtlsBdyRow}>
+                <div className={styles.leadDtlsBdyLeftClm}>
+                  <ul>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Assigned Technician</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}>Pending</span>
+                    </li>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}>Draft</span>
+                    </li>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Work Packages</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}>Complete</span>
+                    </li>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Technical Context</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}>Pending</span>
+                    </li>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Communication</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}>Draft</span>
+                    </li>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Internal Note</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}>Complete</span>
+                    </li>
+                    <li>
+                      <span className={styles.leadDtlsLeftClmMenu}>Notes</span>
+                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}>Pending</span>
+                    </li>
+                  </ul>
                 </div>
-              )}
+                <div className={styles.leadDtlsBdyRightClm}>
+                  <div className={styles.LeaddetailsCol}>
+                    <h2>Assigned Technician</h2>
+                    {leadDetails?.assigned_technician ? (
+                      <div className={`${styles.secBox} ${styles.width100}`}>
+                        <div className={styles.flexRow}>
+                          <div className={`${styles.secRow} ${styles.width25}`}>
+                            <div className={styles.secColleft}>Name</div>
+                            <div className={styles.secColRight}>
+                              {leadDetails?.assigned_technician?.name}
+                            </div>
+                          </div>
 
-            <div className={styles.LeadcolRow}>
-              <div className={styles.LeaddetailsCol}>
-                <h2>Notes</h2>
-                {leadNotes?.map((note: LeadNote) => (
-                  <div
-                    key={note.id}
-                    className={`${styles.secBox} ${styles.width100}`}
-                  >
-                    <div className={styles.flexRow}>
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Created At</div>
-                        <div className={styles.secColRight}>
-                          {moment(note?.created_at).format(
-                            "MM-DD-YYYY h:mm:ss a"
-                          )}
+                          <div className={`${styles.secRow} ${styles.width25}`}>
+                            <div className={styles.secColleft}>Role</div>
+                            <div className={styles.secColRight}>
+                              {leadDetails?.assigned_technician?.role}
+                            </div>
+                          </div>
+
+                          <div className={`${styles.secRow} ${styles.width25}`}>
+                            <div className={styles.secColleft}>Email Address</div>
+                            <div className={styles.secColRight}>
+                              {leadDetails?.assigned_technician?.email}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Name</div>
-                        <div className={styles.secColRight}>
-                          {note?.created_by_user?.name}
+                    ) : (
+                      <div className={styles.notFound}>No technician assigned.</div>
+                    )}
+                  </div>
+
+                  {leadDetails?.lead_status &&
+                    ["Positive lead", "Double Positive", "Triple Positive"].includes(
+                      leadDetails.lead_status
+                    ) && (
+                      <div>
+                        <ViewAndEditTemplateNote
+                          leadId={leadId || ""}
+                          leadStatus={leadDetails?.lead_status || ""}
+                        />
+                      </div>
+                    )}
+
+                  <div className={styles.LeadcolRow}>
+                    <div className={`${styles.LeaddetailsCol} ${styles.leadDetailsLastCol}`}>
+                      <h2>Notes</h2>
+                      {leadNotes?.map((note: LeadNote) => (
+                        <div
+                          key={note.id}
+                          className={`${styles.secBox} ${styles.width100}`}
+                        >
+                          <div className={styles.flexRow}>
+                            <div className={`${styles.secRow} ${styles.width25}`}>
+                              <div className={styles.secColleft}>Created At</div>
+                              <div className={styles.secColRight}>
+                                {moment(note?.created_at).format(
+                                  "MM-DD-YYYY h:mm:ss a"
+                                )}
+                              </div>
+                            </div>
+                            <div className={`${styles.secRow} ${styles.width25}`}>
+                              <div className={styles.secColleft}>Name</div>
+                              <div className={styles.secColRight}>
+                                {note?.created_by_user?.name}
+                              </div>
+                            </div>
+                            <div className={`${styles.secRow} ${styles.width25}`}>
+                              <div className={styles.secColleft}>Email Address</div>
+                              <div className={styles.secColRight}>
+                                {note?.created_by_user?.email}
+                              </div>
+                            </div>
+                            <div className={`${styles.secRow} ${styles.width25}`}>
+                              <div className={styles.secColleft}>Role</div>
+                              <div className={styles.secColRight}>
+                                {note?.created_by_user?.role}
+                              </div>
+                            </div>
+                          </div>
+                          <div className={`${styles.secRow} ${styles.width100}`}>
+                            <div
+                              style={{ width: "8%" }}
+                              className={styles.secColleft}
+                            >
+                              Notes
+                            </div>
+                            <div
+                              style={{ width: "92%" }}
+                              className={styles.secColRight}
+                            >
+                              {note?.notes}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Email Address</div>
-                        <div className={styles.secColRight}>
-                          {note?.created_by_user?.email}
-                        </div>
-                      </div>
-                      <div className={`${styles.secRow} ${styles.width25}`}>
-                        <div className={styles.secColleft}>Role</div>
-                        <div className={styles.secColRight}>
-                          {note?.created_by_user?.role}
-                        </div>
-                      </div>
-                    </div>
-                    <div className={`${styles.secRow} ${styles.width100}`}>
-                      <div
-                        style={{ width: "8%" }}
-                        className={styles.secColleft}
-                      >
-                        Notes
-                      </div>
-                      <div
-                        style={{ width: "92%" }}
-                        className={styles.secColRight}
-                      >
-                        {note?.notes}
-                      </div>
+                      ))}
+
+                      {leadNotes?.length === 0 && (
+                        <div className={styles.notFound}>No notes found.</div>
+                      )}
                     </div>
                   </div>
-                ))}
-
-                {leadNotes?.length === 0 && (
-                  <div className={styles.notFound}>No notes found.</div>
-                )}
+                </div>
               </div>
+
+
+
+
+
+
+
+
+
+              
             </div>
+            
+
+            
           </div>
         </div>
       ) : (

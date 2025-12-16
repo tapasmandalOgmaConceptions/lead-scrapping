@@ -2,7 +2,7 @@
 
 .myProfileBdyPrt{
     position: relative;
-    background-color: $loginBodyBg;
+    background-color: $darkBodyBgColor;
     padding: 50px 0;
     height: 100vh;
     @media (max-width: 991px){
@@ -109,7 +109,7 @@
             }
             h1{
                 font-size: 40px;
-                color: $blackColor;
+                color: $whiteColor;
                 font-weight: 600;
                 margin-bottom: 40px;
                 @media (max-width: 991px){
@@ -173,6 +173,9 @@
         position: absolute;
         top: 15px;
         right: 15px;
+        svg{
+            color: $darkBgFormLabelColor;
+        }
     }
 }
 

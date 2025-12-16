@@ -1097,7 +1097,7 @@ const ViewAndEditTemplateNote: React.FC<{
                   </div>
                 ))}
                 {workPackageData?.length === 0 && (
-                  <p className={styles.loading}>No work packages available.</p>
+                  <p className={styles.notFound}>No work packages available.</p>
                 )}
               </div>
             )}
