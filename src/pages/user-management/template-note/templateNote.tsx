@@ -1401,27 +1401,31 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && (
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Client Main System</label>
                     <p>{technicalContextData?.client_main_systems}</p>
                   </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
-                    <label>Integration Targets</label>
-                    <p>{technicalContextData?.integration_targets}</p>
-                  </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
-                    <label>Tools In Scope</label>
-                    <p>{technicalContextData?.tools_in_scope}</p>
-                  </span>
-                  <span className={styles.pl10}>
-                    <label>Access Required List</label>
-                    <p>{technicalContextData?.access_required_list}</p>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
+                    <label>Credential Provision Method</label>
+                    <p>{technicalContextData?.credential_provision_method}</p>
                   </span>
                 </div>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
-                    <label>Credential Provision Method</label>
-                    <p>{technicalContextData?.credential_provision_method}</p>
+                  <span className={styles.clmOne}>
+                    <label>Integration Targets</label>
+                    <p>{technicalContextData?.integration_targets}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
+                    <label>Tools In Scope</label>
+                    <p>{technicalContextData?.tools_in_scope}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
+                    <label>Access Required List</label>
+                    <p>{technicalContextData?.access_required_list}</p>
                   </span>
                 </div>
               </div>
@@ -1687,15 +1691,17 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.INTERNAL_NOTE && (
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Risk and Warnings</label>
                     <p>{internalNoteData?.internal_risks_and_warnings}</p>
                   </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Margin Sensitivity</label>
                     <p>{internalNoteData?.internal_margin_sensitivity}</p>
                   </span>
-                  <span className={styles.pl10}>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
                     <label>Note</label>
                     <p>{internalNoteData?.internal_notes}</p>
                   </span>

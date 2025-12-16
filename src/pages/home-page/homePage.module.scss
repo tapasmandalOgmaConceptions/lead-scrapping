@@ -57,26 +57,29 @@
               border-radius: 8px;
               padding: 10px 40px 10px 15px;
               font-size: 15px;
-              color: #ffffff;
+              color: $whiteColor;
               outline: none;
               @media only screen and (max-width: 991px) {
                 width: 100%;
               }
               &::-webkit-input-placeholder {
-                color: #ffffff;
+                color: $whiteColor;
               }
               &::-moz-placeholder {
-                color: #ffffff;
+                color: $whiteColor;
               }
               &::-ms-placeholder {
-                color: #ffffff;
+                color: $whiteColor;
               }
               &::placeholder {
-                color: #ffffff;
+                color: $whiteColor;
               }
               &:hover{
                 border: 1px solid $darkBorderColor !important;
               }
+            }
+            button{
+              padding: 9px 15px;
             }
             .errorMessage{
               margin-bottom: 0 !important; 
