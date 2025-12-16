@@ -7,16 +7,24 @@ import endpoints from "../../../helpers/endpoints";
 import {
   LeadListResponse,
   LeadNote,
+  LeadStatusType,
 } from "../../../interfaces/leadScrapeInterface";
 import moment from "moment";
 import alert from "../../../services/alert";
 import ViewAndEditTemplateNote from "../template-note/templateNote";
+import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus";
+import { changeStatusConfirmationAlert } from "../../../services/confirmationAlert";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
 
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
   const [leadNotes, setLeadNotes] = useState<LeadNote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
+    useState<boolean>(false);
   const { leadId } = useParams();
+  const sectionStatus = useSelector((state: RootState) => state.templateNoteSectionStatus);
   useEffect(() => {
     getLead();
     getLeadNotes();
@@ -44,6 +52,26 @@ const ViewLead: React.FC = () => {
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
+  const openLeadStatusModal = () => {
+    setChangeLeadStatusModalOpen(true);
+  };
+  const changeLeadStatus = async (status: LeadStatusType) => {
+    const confirmation = await changeStatusConfirmationAlert();
+    if (!confirmation.isConfirmed) return;
+    try {
+      const res = await api.put(
+        `${endpoints.leadScrape.changeLeadStatus(
+          leadId || ""
+        )}?status=${status}`
+      );
+      if (res.status === 200) {
+        alert(res.data?.message, "success");
+        getLead();
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
   return (
     <div className={styles.productListBdyPrt}>
       {!loading ? (
@@ -52,11 +80,39 @@ const ViewLead: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Lead Information</h1>
+                {leadDetails?.lead_status &&
+                  ["new", "Not interested"].includes(
+                    leadDetails?.lead_status
+                  ) && (
+                    <button onClick={openLeadStatusModal}>Change Status</button>
+                  )}
+                {leadDetails?.lead_status &&
+                  ["Positive lead", "Double Positive"].includes(
+                    leadDetails?.lead_status
+                  ) && (
+                    <button
+                      onClick={() => {
+                        changeLeadStatus(
+                          leadDetails?.lead_status === "Positive lead"
+                            ? "Double Positive"
+                            : "Triple Positive"
+                        );
+                      }}
+                    >
+                       Mark as{" "}
+                            {leadDetails.lead_status === "Positive lead"
+                              ? "Double"
+                              : "Triple"}{" "}
+                            Positive
+                    </button>
+                  )}
               </div>
             </div>
 
             <div className={styles.LeadcolRow}>
-              <div className={`${styles.LeaddetailsCol} ${styles.leadDtlsInfoPrt}`}>
+              <div
+                className={`${styles.LeaddetailsCol} ${styles.leadDtlsInfoPrt}`}
+              >
                 <h2>Leads Details</h2>
                 <div
                   className={`${styles.secBox} ${styles.width100} ${styles.flexRow}`}
@@ -113,37 +169,74 @@ const ViewLead: React.FC = () => {
                 </div>
               </div>
 
-
               <div className={styles.leadDtlsBdyRow}>
                 <div className={styles.leadDtlsBdyLeftClm}>
                   <ul>
                     <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Assigned Technician</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}>Pending</span>
+                      <span className={styles.leadDtlsLeftClmMenu}>
+                        Assigned Technician
+                      </span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}
+                      >
+                        Pending
+                      </span>
                     </li>
                     <li>
                       <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}>Draft</span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}
+                      >
+                        Draft
+                      </span>
                     </li>
                     <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Work Packages</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}>Complete</span>
+                      <span className={styles.leadDtlsLeftClmMenu}>
+                        Work Packages
+                      </span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}
+                      >
+                        Complete
+                      </span>
                     </li>
                     <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Technical Context</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}>Pending</span>
+                      <span className={styles.leadDtlsLeftClmMenu}>
+                        Technical Context
+                      </span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}
+                      >
+                        Pending
+                      </span>
                     </li>
                     <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Communication</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}>Draft</span>
+                      <span className={styles.leadDtlsLeftClmMenu}>
+                        Communication
+                      </span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}
+                      >
+                        Draft
+                      </span>
                     </li>
                     <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Internal Note</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}>Complete</span>
+                      <span className={styles.leadDtlsLeftClmMenu}>
+                        Internal Note
+                      </span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}
+                      >
+                        Complete
+                      </span>
                     </li>
                     <li>
                       <span className={styles.leadDtlsLeftClmMenu}>Notes</span>
-                      <span className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}>Pending</span>
+                      <span
+                        className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}
+                      >
+                        Pending
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -168,7 +261,9 @@ const ViewLead: React.FC = () => {
                           </div>
 
                           <div className={`${styles.secRow} ${styles.width25}`}>
-                            <div className={styles.secColleft}>Email Address</div>
+                            <div className={styles.secColleft}>
+                              Email Address
+                            </div>
                             <div className={styles.secColRight}>
                               {leadDetails?.assigned_technician?.email}
                             </div>
@@ -176,14 +271,18 @@ const ViewLead: React.FC = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className={styles.notFound}>No technician assigned.</div>
+                      <div className={styles.notFound}>
+                        No technician assigned.
+                      </div>
                     )}
                   </div>
 
                   {leadDetails?.lead_status &&
-                    ["Positive lead", "Double Positive", "Triple Positive"].includes(
-                      leadDetails.lead_status
-                    ) && (
+                    [
+                      "Positive lead",
+                      "Double Positive",
+                      "Triple Positive",
+                    ].includes(leadDetails.lead_status) && (
                       <div>
                         <ViewAndEditTemplateNote
                           leadId={leadId || ""}
@@ -193,7 +292,9 @@ const ViewLead: React.FC = () => {
                     )}
 
                   <div className={styles.LeadcolRow}>
-                    <div className={`${styles.LeaddetailsCol} ${styles.leadDetailsLastCol}`}>
+                    <div
+                      className={`${styles.LeaddetailsCol} ${styles.leadDetailsLastCol}`}
+                    >
                       <h2>Notes</h2>
                       {leadNotes?.map((note: LeadNote) => (
                         <div
@@ -201,34 +302,48 @@ const ViewLead: React.FC = () => {
                           className={`${styles.secBox} ${styles.width100}`}
                         >
                           <div className={styles.flexRow}>
-                            <div className={`${styles.secRow} ${styles.width25}`}>
-                              <div className={styles.secColleft}>Created At</div>
+                            <div
+                              className={`${styles.secRow} ${styles.width25}`}
+                            >
+                              <div className={styles.secColleft}>
+                                Created At
+                              </div>
                               <div className={styles.secColRight}>
                                 {moment(note?.created_at).format(
                                   "MM-DD-YYYY h:mm:ss a"
                                 )}
                               </div>
                             </div>
-                            <div className={`${styles.secRow} ${styles.width25}`}>
+                            <div
+                              className={`${styles.secRow} ${styles.width25}`}
+                            >
                               <div className={styles.secColleft}>Name</div>
                               <div className={styles.secColRight}>
                                 {note?.created_by_user?.name}
                               </div>
                             </div>
-                            <div className={`${styles.secRow} ${styles.width25}`}>
-                              <div className={styles.secColleft}>Email Address</div>
+                            <div
+                              className={`${styles.secRow} ${styles.width25}`}
+                            >
+                              <div className={styles.secColleft}>
+                                Email Address
+                              </div>
                               <div className={styles.secColRight}>
                                 {note?.created_by_user?.email}
                               </div>
                             </div>
-                            <div className={`${styles.secRow} ${styles.width25}`}>
+                            <div
+                              className={`${styles.secRow} ${styles.width25}`}
+                            >
                               <div className={styles.secColleft}>Role</div>
                               <div className={styles.secColRight}>
                                 {note?.created_by_user?.role}
                               </div>
                             </div>
                           </div>
-                          <div className={`${styles.secRow} ${styles.width100}`}>
+                          <div
+                            className={`${styles.secRow} ${styles.width100}`}
+                          >
                             <div
                               style={{ width: "8%" }}
                               className={styles.secColleft}
@@ -252,25 +367,24 @@ const ViewLead: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-
-
-
-
-
-
-
-
-              
             </div>
-            
-
-            
           </div>
         </div>
       ) : (
-        <div className={styles.loading}>Please wait...</div>
+        <div className={styles.loading} style={{ color: "white" }}>
+          Please wait...
+        </div>
       )}
+      <ChangeLeadStatus
+        open={changeLeadStatusModalOpen}
+        onClose={() => setChangeLeadStatusModalOpen(false)}
+        leadId={leadId || ""}
+        confirmLeadStatusModal={() => {
+          setChangeLeadStatusModalOpen(false);
+          getLead();
+        }}
+        leadStatus={leadDetails?.lead_status || ""}
+      />
     </div>
   );
 };

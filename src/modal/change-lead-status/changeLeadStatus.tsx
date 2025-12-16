@@ -31,7 +31,7 @@ const ChangeLeadStatus: React.FC<ChangeLeadStatusModalProps> = ({
     } else {
       formikRef.current?.setFieldValue("status", "");
     }
-  }, [leadStatus, leadId]);
+  }, [leadStatus, leadId, open]);
   const initialValue: LeadStatus = {
     status: "",
   };

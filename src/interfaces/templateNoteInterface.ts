@@ -136,3 +136,10 @@ export interface SkillsAndPrimaryTools {
   name: string;
   created_at: string;
 }
+export interface templateNoteStatus  {
+  deal: boolean,
+  workPackage: boolean,
+  technicalContext: boolean,
+  communication: boolean,
+  internalNote: boolean
+};

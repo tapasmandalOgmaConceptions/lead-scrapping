@@ -4,4 +4,11 @@ export enum TemplateNoteEnum {
   TECHNICAL_CONTEXT = "TECHNICAL_CONTEXT",
   PROJECT_COMMUNICATION_CONTACT = "PROJECT_COMMUNICATION_CONTACT",
   INTERNAL_NOTE = "INTERNAL_NOTE"
+};
+export enum TemplateNoteStatusEnum {
+  deal = "deal",
+  workPackage = "workPackage",
+  technicalContext = "technicalContext",
+  communication = "communication",
+  internalNote = "internalNote"
 }

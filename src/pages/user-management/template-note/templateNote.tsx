@@ -27,19 +27,28 @@ import {
 } from "../../../interfaces/templateNoteInterface";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { TemplateNoteEnum } from "../../../enum/templateNoteEnum";
+import {
+  TemplateNoteEnum,
+  TemplateNoteStatusEnum,
+} from "../../../enum/templateNoteEnum";
 import api from "../../../services/api";
 import endpoints from "../../../helpers/endpoints";
 import alert from "../../../services/alert";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { AppDispatch, RootState } from "../../../store";
 import FormikReactSelect from "../../../components/formik-react-select/formikReactSelect";
 import { NumericFormat, PatternFormat } from "react-number-format";
+import { LeadStatusType } from "../../../interfaces/leadScrapeInterface";
+import { useDispatch } from "react-redux";
+import {
+  resetSectionStatus,
+  setSectionStatus,
+} from "../../../store/templateNoteSectionStatusSlice";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
-  leadStatus: string;
+  leadStatus: LeadStatusType;
 }> = ({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
@@ -76,12 +85,18 @@ const ViewAndEditTemplateNote: React.FC<{
   const internalNoteFormFormikRef = useRef<FormikProps<InternalNote>>(null);
   const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const dispatch: AppDispatch = useDispatch();
+  const hideEditButton =
+    userInfo?.role === "Technician" || leadStatus === "Triple Positive";
   useEffect(() => {
-    getDealSectorPackages();
+    dispatch(resetSectionStatus());
+    if (!hideEditButton) {
+      getDealSectorPackages();
+      getPackageTypes();
+      getSkills();
+      getTools();
+    }
     getDeals();
-    getPackageTypes();
-    getSkills();
-    getTools();
   }, []);
   const dealInitialFormValue: DealClientForm = {
     client_name: "",
@@ -288,6 +303,7 @@ const ViewAndEditTemplateNote: React.FC<{
       if (res.status === 200) {
         setDealData(res.data || null);
         if (res.data?.id) {
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.deal));
           getTechnicianContextData(res.data?.id);
           getInternalNotesData(res.data?.id);
           getCommunicationData(res.data?.id);
@@ -363,6 +379,8 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setTechnicalContextData(res.data || null);
+         if (res.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.technicalContext));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -409,6 +427,8 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setInternalNoteData(res.data || null);
+        if (res.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.internalNote));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -454,6 +474,8 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setCommunicationData(res.data || null);
+        if (res.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.communication));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -526,6 +548,8 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setWorkPackageData(res.data?.packages || []);
+        if (res.data && res.data?.length > 0)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -658,9 +682,6 @@ const ViewAndEditTemplateNote: React.FC<{
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
-  const hideEditButton =
-    userInfo?.role === "Technician" ||
-    leadStatus === "Triple Positive";
 
   return (
     <div className={styles.LeadcolRow}>
