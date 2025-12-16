@@ -24,7 +24,9 @@ const ViewLead: React.FC = () => {
   const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
     useState<boolean>(false);
   const { leadId } = useParams();
-  const sectionStatus = useSelector((state: RootState) => state.templateNoteSectionStatus);
+  const sectionStatus = useSelector(
+    (state: RootState) => state.templateNoteSectionStatus
+  );
   useEffect(() => {
     getLead();
     getLeadNotes();
@@ -72,6 +74,20 @@ const ViewLead: React.FC = () => {
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
+  const checkSectionStatus = (sectionName: boolean): string => {
+    return ["new", "Not interested"].includes(leadDetails?.lead_status || "")
+      ? "N/A"
+      : sectionName
+      ? "Complete"
+      : "Pending";
+  };
+  const setColorClass = (statusText: string) => {
+    return statusText === "N/A"
+      ? styles.draftColor
+      : statusText === "Complete"
+      ? styles.completeColor
+      : styles.pendingColor;
+  };
   return (
     <div className={styles.productListBdyPrt}>
       {!loading ? (
@@ -99,11 +115,11 @@ const ViewLead: React.FC = () => {
                         );
                       }}
                     >
-                       Mark as{" "}
-                            {leadDetails.lead_status === "Positive lead"
-                              ? "Double"
-                              : "Triple"}{" "}
-                            Positive
+                      Mark as{" "}
+                      {leadDetails.lead_status === "Positive lead"
+                        ? "Double"
+                        : "Triple"}{" "}
+                      Positive
                     </button>
                   )}
               </div>
@@ -173,21 +189,11 @@ const ViewLead: React.FC = () => {
                 <div className={styles.leadDtlsBdyLeftClm}>
                   <ul>
                     <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>
-                        Assigned Technician
-                      </span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}
-                      >
-                        Pending
-                      </span>
-                    </li>
-                    <li>
                       <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
                       <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}
+                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.deal))}`}
                       >
-                        Draft
+                        {checkSectionStatus(sectionStatus.deal)}
                       </span>
                     </li>
                     <li>
@@ -195,9 +201,9 @@ const ViewLead: React.FC = () => {
                         Work Packages
                       </span>
                       <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}
+                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.workPackage))}`}
                       >
-                        Complete
+                        {checkSectionStatus(sectionStatus.workPackage)}
                       </span>
                     </li>
                     <li>
@@ -205,9 +211,9 @@ const ViewLead: React.FC = () => {
                         Technical Context
                       </span>
                       <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}
+                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.technicalContext))}`}
                       >
-                        Pending
+                        {checkSectionStatus(sectionStatus.technicalContext)}
                       </span>
                     </li>
                     <li>
@@ -215,9 +221,9 @@ const ViewLead: React.FC = () => {
                         Communication
                       </span>
                       <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.draftColor}`}
+                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.communication))}`}
                       >
-                        Draft
+                        {checkSectionStatus(sectionStatus.communication)}
                       </span>
                     </li>
                     <li>
@@ -225,17 +231,9 @@ const ViewLead: React.FC = () => {
                         Internal Note
                       </span>
                       <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.completeColor}`}
+                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.internalNote))}`}
                       >
-                        Complete
-                      </span>
-                    </li>
-                    <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Notes</span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${styles.pendingColor}`}
-                      >
-                        Pending
+                        {checkSectionStatus(sectionStatus.internalNote)}
                       </span>
                     </li>
                   </ul>

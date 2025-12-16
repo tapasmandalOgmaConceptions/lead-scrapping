@@ -301,16 +301,16 @@ const ViewAndEditTemplateNote: React.FC<{
     try {
       const res = await api.get(endpoints.templateNote.deals.getDeals(leadId));
       if (res.status === 200) {
-        setDealData(res.data || null);
-        if (res.data?.id) {
+        setDealData(res.data?.data || null);
+        if (res.data?.data?.id) {
           dispatch(setSectionStatus(TemplateNoteStatusEnum.deal));
-          getTechnicianContextData(res.data?.id);
-          getInternalNotesData(res.data?.id);
-          getCommunicationData(res.data?.id);
-          getWorkPackageData(res.data?.id);
+          getTechnicianContextData(res.data?.data?.id);
+          getInternalNotesData(res.data?.data?.id);
+          getCommunicationData(res.data?.data?.id);
+          getWorkPackageData(res.data?.data?.id);
         }
         if (
-          !res.data?.id &&
+          !res.data?.data?.id &&
           userInfo?.role !== "Technician" &&
           leadStatus !== "Triple Positive"
         ) {
@@ -378,8 +378,8 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.technicalContext.getTechnicalContext(dealId)
       );
       if (res.status === 200) {
-        setTechnicalContextData(res.data || null);
-         if (res.data)
+        setTechnicalContextData(res.data?.data || null);
+         if (res.data?.data)
           dispatch(setSectionStatus(TemplateNoteStatusEnum.technicalContext));
       }
     } catch (err: any) {
@@ -426,8 +426,8 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.internalNote.getInternalNote(dealId)
       );
       if (res.status === 200) {
-        setInternalNoteData(res.data || null);
-        if (res.data)
+        setInternalNoteData(res.data?.data || null);
+        if (res.data?.data)
           dispatch(setSectionStatus(TemplateNoteStatusEnum.internalNote));
       }
     } catch (err: any) {
@@ -473,8 +473,8 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.communication.getCommunication(dealId)
       );
       if (res.status === 200) {
-        setCommunicationData(res.data || null);
-        if (res.data)
+        setCommunicationData(res.data?.data || null);
+        if (res.data?.data)
           dispatch(setSectionStatus(TemplateNoteStatusEnum.communication));
       }
     } catch (err: any) {
@@ -548,7 +548,7 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setWorkPackageData(res.data?.packages || []);
-        if (res.data && res.data?.length > 0)
+        if (res.data?.packages && res.data?.packages?.length > 0)
           dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
       }
     } catch (err: any) {
