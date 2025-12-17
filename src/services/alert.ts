@@ -9,6 +9,9 @@ const alert = (message: string, type: AlertType) => {
     position: "top-end",
     showConfirmButton: false,
     timer: 3000,
+    customClass: {
+      popup: "popup-alert",
+    },
   });
 };
 

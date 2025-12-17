@@ -96,6 +96,8 @@ const ViewLead: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Lead Information</h1>
+              </div>
+              <div className={styles.productListTitleBtn}>
                 {leadDetails?.lead_status &&
                   ["new", "Not interested"].includes(
                     leadDetails?.lead_status
