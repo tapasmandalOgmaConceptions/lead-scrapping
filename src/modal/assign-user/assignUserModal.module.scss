@@ -28,6 +28,14 @@
     margin-right: 20px;
     color: #d32f2f;
     cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #d32f2f;
+    border-radius: 100%;
+    text-align: center;
+    svg{
+        font-size: 18px;
+    }
 }
 .mRight2{
     margin-right: 10px !important;

@@ -196,7 +196,7 @@ const FollowUp: React.FC = () => {
           <div className={styles.container}>
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
-                <h1>Followup Leads</h1>
+                <h1>Positive Leads</h1>
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik

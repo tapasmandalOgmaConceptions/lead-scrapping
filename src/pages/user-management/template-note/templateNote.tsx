@@ -27,19 +27,28 @@ import {
 } from "../../../interfaces/templateNoteInterface";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { TemplateNoteEnum } from "../../../enum/templateNoteEnum";
+import {
+  TemplateNoteEnum,
+  TemplateNoteStatusEnum,
+} from "../../../enum/templateNoteEnum";
 import api from "../../../services/api";
 import endpoints from "../../../helpers/endpoints";
 import alert from "../../../services/alert";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { AppDispatch, RootState } from "../../../store";
 import FormikReactSelect from "../../../components/formik-react-select/formikReactSelect";
 import { NumericFormat, PatternFormat } from "react-number-format";
+import { LeadStatusType } from "../../../interfaces/leadScrapeInterface";
+import { useDispatch } from "react-redux";
+import {
+  resetSectionStatus,
+  setSectionStatus,
+} from "../../../store/templateNoteSectionStatusSlice";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
-  leadStatus: string;
+  leadStatus: LeadStatusType;
 }> = ({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
@@ -76,12 +85,18 @@ const ViewAndEditTemplateNote: React.FC<{
   const internalNoteFormFormikRef = useRef<FormikProps<InternalNote>>(null);
   const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const dispatch: AppDispatch = useDispatch();
+  const hideEditButton =
+    userInfo?.role === "Technician" || leadStatus === "Triple Positive";
   useEffect(() => {
-    getDealSectorPackages();
+    dispatch(resetSectionStatus());
+    if (!hideEditButton) {
+      getDealSectorPackages();
+      getPackageTypes();
+      getSkills();
+      getTools();
+    }
     getDeals();
-    getPackageTypes();
-    getSkills();
-    getTools();
   }, []);
   const dealInitialFormValue: DealClientForm = {
     client_name: "",
@@ -286,15 +301,16 @@ const ViewAndEditTemplateNote: React.FC<{
     try {
       const res = await api.get(endpoints.templateNote.deals.getDeals(leadId));
       if (res.status === 200) {
-        setDealData(res.data || null);
-        if (res.data?.id) {
-          getTechnicianContextData(res.data?.id);
-          getInternalNotesData(res.data?.id);
-          getCommunicationData(res.data?.id);
-          getWorkPackageData(res.data?.id);
+        setDealData(res.data?.data || null);
+        if (res.data?.data?.id) {
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.deal));
+          getTechnicianContextData(res.data?.data?.id);
+          getInternalNotesData(res.data?.data?.id);
+          getCommunicationData(res.data?.data?.id);
+          getWorkPackageData(res.data?.data?.id);
         }
         if (
-          !res.data?.id &&
+          !res.data?.data?.id &&
           userInfo?.role !== "Technician" &&
           leadStatus !== "Triple Positive"
         ) {
@@ -362,7 +378,9 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.technicalContext.getTechnicalContext(dealId)
       );
       if (res.status === 200) {
-        setTechnicalContextData(res.data || null);
+        setTechnicalContextData(res.data?.data || null);
+         if (res.data?.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.technicalContext));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -408,7 +426,9 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.internalNote.getInternalNote(dealId)
       );
       if (res.status === 200) {
-        setInternalNoteData(res.data || null);
+        setInternalNoteData(res.data?.data || null);
+        if (res.data?.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.internalNote));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -453,7 +473,9 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.communication.getCommunication(dealId)
       );
       if (res.status === 200) {
-        setCommunicationData(res.data || null);
+        setCommunicationData(res.data?.data || null);
+        if (res.data?.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.communication));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -526,6 +548,8 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setWorkPackageData(res.data?.packages || []);
+        if (res.data?.packages && res.data?.packages?.length > 0)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -658,9 +682,6 @@ const ViewAndEditTemplateNote: React.FC<{
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
-  const hideEditButton =
-    userInfo?.role === "Technician" ||
-    leadStatus === "Triple Positive";
 
   return (
     <div className={styles.LeadcolRow}>
@@ -1380,27 +1401,31 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && (
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Client Main System</label>
                     <p>{technicalContextData?.client_main_systems}</p>
                   </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
-                    <label>Integration Targets</label>
-                    <p>{technicalContextData?.integration_targets}</p>
-                  </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
-                    <label>Tools In Scope</label>
-                    <p>{technicalContextData?.tools_in_scope}</p>
-                  </span>
-                  <span className={styles.pl10}>
-                    <label>Access Required List</label>
-                    <p>{technicalContextData?.access_required_list}</p>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
+                    <label>Credential Provision Method</label>
+                    <p>{technicalContextData?.credential_provision_method}</p>
                   </span>
                 </div>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
-                    <label>Credential Provision Method</label>
-                    <p>{technicalContextData?.credential_provision_method}</p>
+                  <span className={styles.clmOne}>
+                    <label>Integration Targets</label>
+                    <p>{technicalContextData?.integration_targets}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
+                    <label>Tools In Scope</label>
+                    <p>{technicalContextData?.tools_in_scope}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
+                    <label>Access Required List</label>
+                    <p>{technicalContextData?.access_required_list}</p>
                   </span>
                 </div>
               </div>
@@ -1666,15 +1691,17 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.INTERNAL_NOTE && (
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Risk and Warnings</label>
                     <p>{internalNoteData?.internal_risks_and_warnings}</p>
                   </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Margin Sensitivity</label>
                     <p>{internalNoteData?.internal_margin_sensitivity}</p>
                   </span>
-                  <span className={styles.pl10}>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
                     <label>Note</label>
                     <p>{internalNoteData?.internal_notes}</p>
                   </span>
