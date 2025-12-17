@@ -27,19 +27,28 @@ import {
 } from "../../../interfaces/templateNoteInterface";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { TemplateNoteEnum } from "../../../enum/templateNoteEnum";
+import {
+  TemplateNoteEnum,
+  TemplateNoteStatusEnum,
+} from "../../../enum/templateNoteEnum";
 import api from "../../../services/api";
 import endpoints from "../../../helpers/endpoints";
 import alert from "../../../services/alert";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { AppDispatch, RootState } from "../../../store";
 import FormikReactSelect from "../../../components/formik-react-select/formikReactSelect";
 import { NumericFormat, PatternFormat } from "react-number-format";
+import { LeadStatusType } from "../../../interfaces/leadScrapeInterface";
+import { useDispatch } from "react-redux";
+import {
+  resetSectionStatus,
+  setSectionStatus,
+} from "../../../store/templateNoteSectionStatusSlice";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
-  leadStatus: string;
+  leadStatus: LeadStatusType;
 }> = ({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
@@ -76,12 +85,18 @@ const ViewAndEditTemplateNote: React.FC<{
   const internalNoteFormFormikRef = useRef<FormikProps<InternalNote>>(null);
   const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const dispatch: AppDispatch = useDispatch();
+  const hideEditButton =
+    userInfo?.role === "Technician" || leadStatus === "Triple Positive";
   useEffect(() => {
-    getDealSectorPackages();
+    dispatch(resetSectionStatus());
+    if (!hideEditButton) {
+      getDealSectorPackages();
+      getPackageTypes();
+      getSkills();
+      getTools();
+    }
     getDeals();
-    getPackageTypes();
-    getSkills();
-    getTools();
   }, []);
   const dealInitialFormValue: DealClientForm = {
     client_name: "",
@@ -194,6 +209,8 @@ const ViewAndEditTemplateNote: React.FC<{
     package_price_allocation: "",
     dependencies: [],
     custom_package_type: "",
+    required_tools: [],
+    bidding_duration_days: "",
   };
   const workPackagesInitialFormValue: WorkPackages = {
     work_packages: [workPackageValue],
@@ -208,12 +225,20 @@ const ViewAndEditTemplateNote: React.FC<{
       "Acceptance criteria is required"
     ),
     required_skills: Yup.array().min(1, "At least one skill is required"),
-    primary_tools: Yup.array(),
+    primary_tools: Yup.array().min(1, "At least one primary tool is required"),
     package_estimated_complexity: Yup.string().required(
       "Package estimated complexity is required"
     ),
     package_price_allocation: Yup.string(),
     dependencies: Yup.array().min(1, "At least one dependency is required"),
+    required_tools: Yup.array().min(
+      1,
+      "At least one required tools is required"
+    ),
+    bidding_duration_days: Yup.number()
+      .integer("Must be an integer")
+      .required("Bidding duration is required")
+      .min(1, "Minimum value must be 1"),
     custom_package_type: Yup.string().when("package_type", {
       is: (val: string) => val === "12",
       then: (schema) =>
@@ -286,18 +311,18 @@ const ViewAndEditTemplateNote: React.FC<{
     try {
       const res = await api.get(endpoints.templateNote.deals.getDeals(leadId));
       if (res.status === 200) {
-        setDealData(res.data || null);
-        if (res.data?.id) {
-          getTechnicianContextData(res.data?.id);
-          getInternalNotesData(res.data?.id);
-          getCommunicationData(res.data?.id);
-          getWorkPackageData(res.data?.id);
+        setDealData(res.data?.data || null);
+        if (res.data?.data?.id) {
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.deal));
+          getTechnicianContextData(res.data?.data?.id);
+          getInternalNotesData(res.data?.data?.id);
+          getCommunicationData(res.data?.data?.id);
+          getWorkPackageData(res.data?.data?.id);
         }
         if (
-          !res.data?.id &&
+          !res.data?.data?.id &&
           userInfo?.role !== "Technician" &&
-          leadStatus !== "Triple Positive" &&
-          leadStatus !== "new"
+          leadStatus !== "Triple Positive"
         ) {
           setSectionName(TemplateNoteEnum.DEAL);
         }
@@ -363,7 +388,9 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.technicalContext.getTechnicalContext(dealId)
       );
       if (res.status === 200) {
-        setTechnicalContextData(res.data || null);
+        setTechnicalContextData(res.data?.data || null);
+        if (res.data?.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.technicalContext));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -409,7 +436,9 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.internalNote.getInternalNote(dealId)
       );
       if (res.status === 200) {
-        setInternalNoteData(res.data || null);
+        setInternalNoteData(res.data?.data || null);
+        if (res.data?.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.internalNote));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -454,7 +483,9 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.communication.getCommunication(dealId)
       );
       if (res.status === 200) {
-        setCommunicationData(res.data || null);
+        setCommunicationData(res.data?.data || null);
+        if (res.data?.data)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.communication));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -497,6 +528,8 @@ const ViewAndEditTemplateNote: React.FC<{
           dependencies_ids: p.dependencies.map((item) => Number(item)),
           custom_package_type:
             p.package_type === "12" ? p.custom_package_type : "",
+          required_tools_ids: p.required_tools.map((item) => Number(item)),
+          bidding_duration_days: Number(p.bidding_duration_days),
           ...(p.id ? { id: p.id } : {}),
         })
       );
@@ -527,6 +560,8 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setWorkPackageData(res.data?.packages || []);
+        if (res.data?.packages && res.data?.packages?.length > 0)
+          dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -574,6 +609,12 @@ const ViewAndEditTemplateNote: React.FC<{
         package_price_allocation: pack.package_price_allocation || "",
         dependencies: pack.dependencies.map((item) => String(item.id)),
         custom_package_type: pack.custom_package_type || "",
+        required_tools: pack.required_tools
+          ? pack.required_tools.map((item) => String(item.id))
+          : [],
+        bidding_duration_days: pack.bidding_duration_days
+          ? String(pack.bidding_duration_days)
+          : "",
       })
     );
     workPackagesFormFormikRef.current?.setValues({
@@ -659,10 +700,6 @@ const ViewAndEditTemplateNote: React.FC<{
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
-  const hideEditButton =
-    userInfo?.role === "Technician" ||
-    leadStatus === "Triple Positive" ||
-    leadStatus === "new";
 
   return (
     <div className={styles.LeadcolRow}>
@@ -689,37 +726,37 @@ const ViewAndEditTemplateNote: React.FC<{
             <div className={styles.editInfoCol}>
               <span className={styles.borderRight}>
                 <label>Client Name</label>
-                <p>{dealData?.client_name}</p>
+                <p>{dealData?.client_name || "N/A"}</p>
               </span>
               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Name</label>
-                <p>{dealData?.primary_contact_name}</p>
+                <p>{dealData?.primary_contact_name || "N/A"}</p>
               </span>
               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Primary Contact Email</label>
-                <p>{dealData?.primary_contact_email}</p>
+                <p>{dealData?.primary_contact_email || "N/A"}</p>
               </span>
               <span className={styles.pl10}>
                 <label>Primary Contact Phone</label>
-                <p>{dealData?.primary_contact_phone}</p>
+                <p>{dealData?.primary_contact_phone || "N/A"}</p>
               </span>
             </div>
             <div className={styles.editInfoCol}>
               <span className={styles.borderRight}>
                 <label>Industry</label>
-                <p>{dealData?.industry}</p>
+                <p>{dealData?.industry || "N/A"}</p>
               </span>
               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Deal Name</label>
-                <p>{dealData?.deal_name}</p>
+                <p>{dealData?.deal_name || "N/A"}</p>
               </span>
               <span className={`${styles.borderRight} ${styles.pl10}`}>
                 <label>Sale Person Name</label>
-                <p>{dealData?.salesperson_name}</p>
+                <p>{dealData?.salesperson_name || "N/A"}</p>
               </span>
               <span className={styles.pl10}>
                 <label>Special Terms</label>
-                <p>{dealData?.special_terms}</p>
+                <p>{dealData?.special_terms || "N/A"}</p>
               </span>
             </div>
             <div className={styles.editInfoCol}>
@@ -728,7 +765,7 @@ const ViewAndEditTemplateNote: React.FC<{
                 <p>
                   {dealData?.deal_close_date
                     ? moment(dealData?.deal_close_date).format("MM-DD-YYYY")
-                    : ""}
+                    : "N/A"}
                 </p>
               </span>
               <span className={`${styles.borderRight} ${styles.pl10}`}>
@@ -736,7 +773,7 @@ const ViewAndEditTemplateNote: React.FC<{
                 <p>
                   {dealData?.expected_start_date
                     ? moment(dealData?.expected_start_date).format("MM-DD-YYYY")
-                    : ""}
+                    : "N/A"}
                 </p>
               </span>
               <span className={`${styles.borderRight} ${styles.pl10}`}>
@@ -746,12 +783,12 @@ const ViewAndEditTemplateNote: React.FC<{
                     ? moment(dealData?.expected_end_date_or_deadline).format(
                         "MM-DD-YYYY"
                       )
-                    : ""}
+                    : "N/A"}
                 </p>
               </span>
               <span className={styles.pl10}>
                 <label>Client Approved Scope Summary</label>
-                <p>{dealData?.client_approved_scope_summary}</p>
+                <p>{dealData?.client_approved_scope_summary || "N/A"}</p>
               </span>
             </div>
             <div className={styles.editInfoCol}>
@@ -761,12 +798,12 @@ const ViewAndEditTemplateNote: React.FC<{
                 }
               >
                 <label>Sector Package</label>
-                <p>{dealData?.sector_package?.name}</p>
+                <p>{dealData?.sector_package?.name || "N/A"}</p>
               </span>
               {dealData?.custom_sector_package && (
                 <span className={styles.pl10}>
                   <label>Custom Sector Package</label>
-                  <p>{dealData?.custom_sector_package}</p>
+                  <p>{dealData?.custom_sector_package || "N/A"}</p>
                 </span>
               )}
             </div>
@@ -1024,18 +1061,18 @@ const ViewAndEditTemplateNote: React.FC<{
                     <div className={styles.editInfoCol}>
                       <span className={styles.borderRight}>
                         <label>Packages Title</label>
-                        <p>{wp?.package_title || ""}</p>
+                        <p>{wp?.package_title || "N/A"}</p>
                       </span>
                       <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Package Type</label>
-                        <p>{wp?.package_type?.name || ""}</p>
+                        <p>{wp?.package_type?.name || "N/A"}</p>
                       </span>
                       {wp.custom_package_type && (
                         <span
                           className={`${styles.borderRight} ${styles.pl10}`}
                         >
                           <label>Custom Work Package</label>
-                          <p>{wp?.custom_package_type || ""}</p>
+                          <p>{wp?.custom_package_type || "N/A"}</p>
                         </span>
                       )}
                       <span className={styles.pl10}>
@@ -1058,7 +1095,7 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                       <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Complexity</label>
-                        <p>{wp?.package_estimated_complexity || ""}</p>
+                        <p>{wp?.package_estimated_complexity || "N/A"}</p>
                       </span>
                       <span className={`${styles.borderRight} ${styles.pl10}`}>
                         <label>Packages Price</label>
@@ -1068,7 +1105,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                 style: "currency",
                                 currency: "USD",
                               }).format(Number(wp?.package_price_allocation))
-                            : ""}
+                            : "N/A"}
                         </p>
                       </span>
                       <span className={styles.pl10}>
@@ -1083,23 +1120,27 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                     </div>
                     <div className={styles.editInfoCol}>
-                      <span className={styles.borderRight}>
+                      <span className={styles.clmOne}>
                         <label>Packages Summary</label>
-                        <p>{wp?.package_summary || ""}</p>
+                        <p>{wp?.package_summary || "N/A"}</p>
                       </span>
-                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.clmOne}>
                         <label>Key Deliverables</label>
-                        <p>{wp?.key_deliverables || ""}</p>
+                        <p>{wp?.key_deliverables || "N/A"}</p>
                       </span>
-                      <span className={styles.pl10}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.clmOne}>
                         <label>Acceptance Criteria</label>
-                        <p>{wp?.acceptance_criteria || ""}</p>
+                        <p>{wp?.acceptance_criteria || "N/A"}</p>
                       </span>
                     </div>
                   </div>
                 ))}
                 {workPackageData?.length === 0 && (
-                  <p className={styles.loading}>No work packages available.</p>
+                  <p className={styles.notFound}>No work packages available.</p>
                 )}
               </div>
             )}
@@ -1149,7 +1190,8 @@ const ViewAndEditTemplateNote: React.FC<{
                                   </button>
                                 )}
                                 <div className={styles.editInfoCol}>
-                                  <span className={styles.threeClm}>
+                                  <span className={values.work_packages[ind].package_type ===
+                                    "12" ? styles.threeClm : styles.twoClm}>
                                     <label>Packages Title</label>
                                     <Field
                                       name={`work_packages.${ind}.package_title`}
@@ -1161,7 +1203,8 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.threeClm}>
+                                  <span className={values.work_packages[ind].package_type ===
+                                    "12" ? styles.threeClm : styles.twoClm}>
                                     <label>Package Type</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_type`}
@@ -1190,7 +1233,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                   )}
                                 </div>
                                 <div className={styles.editInfoCol}>
-                                  <span className={styles.twoClm}>
+                                  <span className={styles.threeClm}>
                                     <label>Packages Price</label>
                                     <Field
                                       name={`work_packages.${ind}.package_price_allocation`}
@@ -1219,7 +1262,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.twoClm}>
+                                  <span className={styles.threeClm}>
                                     <label>Complexity</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_estimated_complexity`}
@@ -1232,6 +1275,41 @@ const ViewAndEditTemplateNote: React.FC<{
                                     <ErrorMessage
                                       className={styles.error}
                                       name={`work_packages.${ind}.package_estimated_complexity`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.threeClm}>
+                                    <label>Bidding Duration</label>
+                                    <Field
+                                      name={`work_packages.${ind}.bidding_duration_days`}
+                                    >
+                                      {({ field, form }: any) => (
+                                        <NumericFormat
+                                          value={field.value}
+                                          thousandSeparator=","
+                                          decimalScale={0}
+                                          fixedDecimalScale={true}
+                                          suffix={field.value ? " days" : ""}
+                                          allowNegative={false}
+                                          placeholder="Enter Binding Duration"
+                                          onValueChange={(values) => {
+                                            form.setFieldValue(
+                                              field.name,
+                                              values.floatValue ?? ""
+                                            );
+                                          }}
+                                          onBlur={() => {
+                                            form.setFieldTouched(
+                                              field.name,
+                                              true
+                                            );
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.bidding_duration_days`}
                                       component="p"
                                     />
                                   </span>
@@ -1268,6 +1346,21 @@ const ViewAndEditTemplateNote: React.FC<{
                                 </div>
                                 <div className={styles.editInfoCol}>
                                   <span className={styles.oneClm}>
+                                    <label>Required Tools</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.required_tools`}
+                                      options={packageTools}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.required_tools`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
                                     <label>Dependencies</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.dependencies`}
@@ -1283,7 +1376,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                 </div>
 
                                 <div className={styles.editInfoCol}>
-                                  <span className={styles.threeClm}>
+                                  <span className={styles.oneClm}>
                                     <label>Packages Summary</label>
                                     <Field
                                       as="textarea"
@@ -1296,7 +1389,9 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.threeClm}>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
                                     <label>Key Deliverables</label>
                                     <Field
                                       as="textarea"
@@ -1309,7 +1404,9 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.threeClm}>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
                                     <label>Acceptance Criteria</label>
                                     <Field
                                       as="textarea"
@@ -1382,27 +1479,34 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT && (
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Client Main System</label>
-                    <p>{technicalContextData?.client_main_systems}</p>
+                    <p>{technicalContextData?.client_main_systems || "N/A"}</p>
                   </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
-                    <label>Integration Targets</label>
-                    <p>{technicalContextData?.integration_targets}</p>
-                  </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
-                    <label>Tools In Scope</label>
-                    <p>{technicalContextData?.tools_in_scope}</p>
-                  </span>
-                  <span className={styles.pl10}>
-                    <label>Access Required List</label>
-                    <p>{technicalContextData?.access_required_list}</p>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
+                    <label>Credential Provision Method</label>
+                    <p>
+                      {technicalContextData?.credential_provision_method ||
+                        "N/A"}
+                    </p>
                   </span>
                 </div>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
-                    <label>Credential Provision Method</label>
-                    <p>{technicalContextData?.credential_provision_method}</p>
+                  <span className={styles.clmOne}>
+                    <label>Integration Targets</label>
+                    <p>{technicalContextData?.integration_targets || "N/A"}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
+                    <label>Tools In Scope</label>
+                    <p>{technicalContextData?.tools_in_scope || "N/A"}</p>
+                  </span>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
+                    <label>Access Required List</label>
+                    <p>{technicalContextData?.access_required_list || "N/A"}</p>
                   </span>
                 </div>
               </div>
@@ -1451,7 +1555,7 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                     </div>
                     <div className={styles.editInfoCol}>
-                      <span className={styles.threeClm}>
+                      <span className={styles.oneClm}>
                         <label>Integration Targets (Optional)</label>
                         <Field
                           as="textarea"
@@ -1464,7 +1568,9 @@ const ViewAndEditTemplateNote: React.FC<{
                           component="p"
                         />
                       </span>
-                      <span className={styles.threeClm}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.oneClm}>
                         <label>Tools In Scope</label>
                         <Field
                           name="tools_in_scope"
@@ -1477,7 +1583,9 @@ const ViewAndEditTemplateNote: React.FC<{
                           component="p"
                         />
                       </span>
-                      <span className={styles.threeClm}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.oneClm}>
                         <label>Access Required List</label>
                         <Field
                           name="access_required_list"
@@ -1538,19 +1646,23 @@ const ViewAndEditTemplateNote: React.FC<{
                 <div className={styles.editInfoCol}>
                   <span className={styles.borderRight}>
                     <label>Client Project Contact Name</label>
-                    <p>{communicationData?.client_project_contact_name}</p>
+                    <p>
+                      {communicationData?.client_project_contact_name || "N/A"}
+                    </p>
                   </span>
                   <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Project Contact Email</label>
-                    <p>{communicationData?.client_project_contact_email}</p>
+                    <p>
+                      {communicationData?.client_project_contact_email || "N/A"}
+                    </p>
                   </span>
                   <span className={`${styles.borderRight} ${styles.pl10}`}>
                     <label>Preferred Channel</label>
-                    <p>{communicationData?.preferred_channel}</p>
+                    <p>{communicationData?.preferred_channel || "N/A"}</p>
                   </span>
                   <span className={styles.pl10}>
                     <label>Update Frequency</label>
-                    <p>{communicationData?.update_frequency}</p>
+                    <p>{communicationData?.update_frequency || "N/A"}</p>
                   </span>
                 </div>
               </div>
@@ -1668,17 +1780,23 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.INTERNAL_NOTE && (
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
-                  <span className={styles.borderRight}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Risk and Warnings</label>
-                    <p>{internalNoteData?.internal_risks_and_warnings}</p>
+                    <p>
+                      {internalNoteData?.internal_risks_and_warnings || "N/A"}
+                    </p>
                   </span>
-                  <span className={`${styles.borderRight} ${styles.pl10}`}>
+                  <span className={`${styles.borderRight} ${styles.clmTwo}`}>
                     <label>Margin Sensitivity</label>
-                    <p>{internalNoteData?.internal_margin_sensitivity}</p>
+                    <p>
+                      {internalNoteData?.internal_margin_sensitivity || "N/A"}
+                    </p>
                   </span>
-                  <span className={styles.pl10}>
+                </div>
+                <div className={styles.editInfoCol}>
+                  <span className={styles.clmOne}>
                     <label>Note</label>
-                    <p>{internalNoteData?.internal_notes}</p>
+                    <p>{internalNoteData?.internal_notes || "N/A"}</p>
                   </span>
                 </div>
               </div>

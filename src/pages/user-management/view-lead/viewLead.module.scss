@@ -2,7 +2,7 @@
 
 .productListBdyPrt {
   position: relative;
-  background-color: $loginBodyBg;
+  background-color: $darkBodyBgColor;
   padding: 50px 0;
   min-height: 100vh;
   @media only screen and (max-width: 991px) {
@@ -16,12 +16,28 @@
       .productListTitle {
         h1 {
           font-size: 40px;
+          color: $whiteColor;
           font-weight: 600;
           @media only screen and (max-width: 991px) {
             font-size: 30px;
           }
           @media (max-width: 576px) {
             font-size: 27px;
+          }
+        }
+      }
+      .productListTitleBtn{
+        button{
+          border: none;
+          border-radius: 25px;
+          background: $secondaryColor;
+          color: #fff;
+          padding: 10px 25px;
+          margin: 15px 0;
+          cursor: pointer;
+          width: auto !important;
+          &:hover{
+            background-color: $darkBoxBgColorTwo;
           }
         }
       }
@@ -34,15 +50,17 @@
       width: 100%;
       @include justify-space-between;
       h2 {
-        font-size: 25px;
+        font-size: 20px;
+        color: $whiteColor;
         font-weight: 600;
-        border-bottom: solid 1px #ccc;
+        // border-bottom: solid 1px $darkBorderColor;
         width: 100%;
         margin: 25px 0;
         padding-bottom: 10px;
         &.packageSubHdn{
-          font-size: 20px;
-          margin-top: 15px
+          font-size: 17px;
+          margin-top: 10px;
+          margin-bottom: 0;
         }
       }
       .removePoButton{
@@ -72,7 +90,7 @@
         .secColleft {
           width: 30%;
           font-size: 15px;
-          color: #000;
+          color: $whiteColor;
           padding: 10px 15px;
           font-weight: 600;
           @media (max-width: 576px) {
@@ -82,7 +100,7 @@
         .secColRight {
           width: 69.3%;
           font-size: 15px;
-          color: #000;
+          color: $darkBgTextColor;
           padding: 10px 15px;
         }
       }
@@ -91,16 +109,16 @@
 
   .flexRow {
     @include justify-space-between;
-    border-bottom: solid 1px #dfdfdf;
+    border-bottom: solid 1px $darkBorderColor;
     @media (max-width: 576px) {
       flex-wrap: wrap;
     }
   }
   .secBox {
-    border: solid 1px #ccc;
+    border: solid 1px $darkBorderColor;
     border-radius: 10px;
     width: 49%;
-    background: #f3f3f3;
+    background: $darkBoxBgColor;
     margin-bottom: 10px;
     @media (max-width: 576px) {
       width: 100%;
@@ -114,7 +132,7 @@
     text-align: center;
   }
   .notFound {
-    text-align: center;
+    text-align: left;
     width: 100%;
     color: red;
   }
@@ -133,20 +151,60 @@
   .width100 {
     width: 100% !important;
   }
+
+
+
+  .leadDtlsInfoPrt{
+    h2{
+      font-size: 25px;
+      border-bottom: none !important;
+      margin-bottom: 0 !important;
+    }
+    .secBox{
+      justify-content: flex-start;
+      padding: 10px 0;
+      margin: 0 -10px;
+      border: none;
+      background-color: transparent;
+      .secRow{
+        width: auto !important;
+        margin: 5px 10px;
+        padding: 5px 5px;
+        background-color: $darkBoxBgColorTwo;
+        border-radius: 5px;
+        .secColleft{
+          position: relative;
+          width: auto;
+          padding: 0;
+          margin-right: 10px;
+          &::after{
+            position: relative;
+            content: ':';
+            margin-left: 5px;
+          }
+        }
+        .secColRight{
+          width: auto;
+          padding: 0;
+        }
+      }
+    }
+  }
 }
 
 
 
 .sectionHeading{
-  border-bottom: solid 1px #ccc;
+  // border-bottom: solid 1px $darkBorderColor;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 25px 0;
+  margin: 0 0 10px 0;
   h2{
     border-bottom: none !important;
     margin: 0 !important;
+    padding-bottom: 0 !important;
   }
   .cancelBtn{
     border: solid 1px red;
@@ -191,32 +249,52 @@
 
 .viewInfo{
   width: 100%;
-  background: #f3f3f3;
-  border: solid 1px #ccc;
-  border-radius: 10px;
-  padding: 20px 20px; 
+  // background: transparent;
+  // border: solid 1px $darkBorderColor;
+  // border-radius: 10px;
+  // padding: 20px 20px; 
    .editInfoCol{
     display: flex;
     // justify-content: space-between;
     margin-bottom: 25px;
+    span{
+      label{
+        font-size: 14px;
+        color: $whiteColor;
+      }
+      p{
+        font-size: 14px;
+        color: $darkBgTextColor;
+      }
+    }
     .pl10{
       padding-left: 2%;
     }
     .chipsList{
       display: flex;
       flex-wrap: wrap;
+      margin-top: 6px;
       li{
-      background: #dfdfdf;
+      background: $darkBoxBgColorTwo;
       border-radius: 5px;
       padding: 2px 7px 3px;
       margin-right: 5px;
-      color: #535353;
+      color: $darkBgTextColor;
       font-size: 13px;
       margin-bottom: 5px;
       }
     }
     span{
-      width: 25%;      
+      width: 25%;
+    }
+    span.clmOne{
+      width: 100%;
+    }
+    span.clmTwo{
+      width: 50%;
+    }
+    span.clmThree{
+      width: 33.3%;
     }
   }
   p{
@@ -224,16 +302,16 @@
     margin-bottom: 0;
   }
   .borderRight{
-    border-right: solid 1px #c5c5c5;
+    // border-right: solid 1px $darkBorderColor;
   }
 }
 .editInfo{
   position: relative;
   width: 100%;
-  background: #f3f3f3;
-  border: solid 1px #ccc;
-  border-radius: 10px;
-  padding: 20px 20px;  
+  // background: #f3f3f3;
+  // border: solid 1px #ccc;
+  // border-radius: 10px;
+  padding: 10px 0;  
   .editInfoCol{
     display: flex;
     flex-wrap: wrap;
@@ -257,17 +335,23 @@
       &.threeClm{
         width: 32.3%;
       }
+      label{
+        color: $darkBgFormLabelColor;
+      }
       input{
-        background: #fff;
+        background: $darkFormFieldColor;
+        border: 1px solid $darkBorderColor;
         margin-top: 5px;
       }
       select{
         height: 50px;
-        background-color: #fff;
+        background-color: $darkFormFieldColor;
+        border: 1px solid $darkBorderColor;
         margin-top: 5px;
       }
       textarea{
-        background: #fff;
+        background: $darkFormFieldColor;
+        border: 1px solid $darkBorderColor;
         margin-top: 5px;
         resize: none;
       }
@@ -304,6 +388,78 @@
       width: 100%;
       button{
         margin-bottom: 0;
+      }
+    }
+  }
+}
+
+
+.leadDtlsBdyRow{
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  color: $whiteColor;
+  margin: 30px 0 30px 0;
+  .leadDtlsBdyLeftClm{
+    position: sticky;
+    top: 10px;
+    width: 30%;
+    height: 95vh;
+    background-color: $darkBoxBgColor;
+    border: 1px solid $darkBorderColor;
+    padding: 15px 15px;
+    border-radius: 10px;
+    ul{
+      li{
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        border-radius: 5px;
+        &:hover{
+          background-color: $darkBoxBgColorTwo;
+        }
+        span{
+          width: 70%;
+        }
+        .leadDtlsLeftClmStatus{
+          width: 28%;
+          font-size: 12px;
+          text-align: right;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-left: 2%;
+          &.draftColor{
+            color: $darkBgTextColor;
+          }
+          &.pendingColor{
+            color: #dbb300;
+          }
+          &.completeColor{
+            color: #42b100;
+          }
+        }
+      }
+    }
+  }
+  .leadDtlsBdyRightClm{
+    width: 65%;
+    background-color: $darkBoxBgColor;
+    border: 1px solid $darkBorderColor;
+    padding: 15px 15px;
+    margin-left: 2%;
+    border-radius: 10px;
+    .LeaddetailsCol{
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid $darkBorderColor;
+      &.leadDetailsLastCol{
+        padding: 0;
+        margin: 0;
+        border-bottom: none;
+        h2{
+          margin-top: 0;
+        }
       }
     }
   }

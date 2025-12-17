@@ -47,6 +47,8 @@
   margin-top: 5px;
 }
 .css-13cymwt-control{
+  background-color: #101115 !important;
+  border-color: #333438 !important;
   border-radius: 10px !important;  
 }
 .css-19bb58m{
@@ -64,4 +66,44 @@
   border: 1px solid #D5CFCF !important;
   box-shadow: none !important;
   border-radius: 10px !important;
+}
+
+
+.swal2-popup.swal2-modal{
+  background-color: #131419;
+}
+.swal2-popup.swal2-modal h2{
+  color: #ffffff;
+}
+.swal2-html-container{
+  color: #ffffff;
+}
+
+.MuiDialog-paper.MuiDialog-paperScrollPaper{
+  background-color: #131419;
+}
+.MuiDialog-paper.MuiDialog-paperScrollPaper .addNote_modalBodyPart__v3MZg{
+  border-bottom-color: #333438;
+}
+.MuiDialog-paper.MuiDialog-paperScrollPaper h2{
+  color: #ffffff;
+}
+.MuiDialog-paper.MuiDialog-paperScrollPaper .addNote_closeIcon__4-VfM{
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d32f2f;
+  border-radius: 100%;
+  text-align: center;
+}
+.MuiDialog-paper.MuiDialog-paperScrollPaper .addNote_closeIcon__4-VfM svg{
+  font-size: 18px;
+}
+.MuiDialog-paper.MuiDialog-paperScrollPaper form label{
+  color: #9b9b9b;
+  margin-bottom: 5px;
+}
+.MuiDialog-paper.MuiDialog-paperScrollPaper form textarea{
+  background-color: #101115;
+  border-color: #333438;
+  color: #ffffff;
 }

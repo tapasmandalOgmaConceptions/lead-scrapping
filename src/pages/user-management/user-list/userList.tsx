@@ -193,7 +193,7 @@ const UserList: React.FC = () => {
                       <Menu
                         id="long-menu"
                         anchorEl={anchorEl}
-                        open={activeUserId === user.id} // Show menu only for the active user
+                        open={activeUserId === user.id}
                         onClose={handleMenuClose}
                         slotProps={{
                           paper: {
