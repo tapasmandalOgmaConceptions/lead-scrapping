@@ -345,16 +345,10 @@ const ViewLead: React.FC = () => {
                           <div
                             className={`${styles.secRow} ${styles.width100}`}
                           >
-                            <div
-                              style={{ width: "8%" }}
-                              className={styles.secColleft}
-                            >
+                            <div className={styles.secColleft}>
                               Notes
                             </div>
-                            <div
-                              style={{ width: "92%" }}
-                              className={styles.secColRight}
-                            >
+                            <div className={styles.secColRight}>
                               {note?.notes}
                             </div>
                           </div>
