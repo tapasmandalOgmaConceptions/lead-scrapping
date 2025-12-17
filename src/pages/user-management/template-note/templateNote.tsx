@@ -1190,7 +1190,8 @@ const ViewAndEditTemplateNote: React.FC<{
                                   </button>
                                 )}
                                 <div className={styles.editInfoCol}>
-                                  <span className={styles.threeClm}>
+                                  <span className={values.work_packages[ind].package_type ===
+                                    "12" ? styles.threeClm : styles.twoClm}>
                                     <label>Packages Title</label>
                                     <Field
                                       name={`work_packages.${ind}.package_title`}
@@ -1202,7 +1203,8 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.threeClm}>
+                                  <span className={values.work_packages[ind].package_type ===
+                                    "12" ? styles.threeClm : styles.twoClm}>
                                     <label>Package Type</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_type`}
@@ -1231,7 +1233,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                   )}
                                 </div>
                                 <div className={styles.editInfoCol}>
-                                  <span className={styles.twoClm}>
+                                  <span className={styles.threeClm}>
                                     <label>Packages Price</label>
                                     <Field
                                       name={`work_packages.${ind}.package_price_allocation`}
@@ -1260,7 +1262,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.twoClm}>
+                                  <span className={styles.threeClm}>
                                     <label>Complexity</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_estimated_complexity`}
@@ -1273,6 +1275,41 @@ const ViewAndEditTemplateNote: React.FC<{
                                     <ErrorMessage
                                       className={styles.error}
                                       name={`work_packages.${ind}.package_estimated_complexity`}
+                                      component="p"
+                                    />
+                                  </span>
+                                  <span className={styles.threeClm}>
+                                    <label>Bidding Duration</label>
+                                    <Field
+                                      name={`work_packages.${ind}.bidding_duration_days`}
+                                    >
+                                      {({ field, form }: any) => (
+                                        <NumericFormat
+                                          value={field.value}
+                                          thousandSeparator=","
+                                          decimalScale={0}
+                                          fixedDecimalScale={true}
+                                          suffix={field.value ? " days" : ""}
+                                          allowNegative={false}
+                                          placeholder="Enter Binding Duration"
+                                          onValueChange={(values) => {
+                                            form.setFieldValue(
+                                              field.name,
+                                              values.floatValue ?? ""
+                                            );
+                                          }}
+                                          onBlur={() => {
+                                            form.setFieldTouched(
+                                              field.name,
+                                              true
+                                            );
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.bidding_duration_days`}
                                       component="p"
                                     />
                                   </span>
@@ -1303,6 +1340,21 @@ const ViewAndEditTemplateNote: React.FC<{
                                     <ErrorMessage
                                       className={styles.error}
                                       name={`work_packages.${ind}.primary_tools`}
+                                      component="p"
+                                    />
+                                  </span>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
+                                    <label>Required Tools</label>
+                                    <FormikReactSelect
+                                      name={`work_packages.${ind}.required_tools`}
+                                      options={packageTools}
+                                      isMulti={true}
+                                    />
+                                    <ErrorMessage
+                                      className={styles.error}
+                                      name={`work_packages.${ind}.required_tools`}
                                       component="p"
                                     />
                                   </span>
