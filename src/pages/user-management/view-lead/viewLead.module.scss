@@ -61,6 +61,7 @@
           font-size: 17px;
           margin-top: 10px;
           margin-bottom: 0;
+          border-bottom: 1px solid $darkBorderColor;
         }
       }
       .removePoButton{
@@ -88,20 +89,20 @@
           width: 100%;
         }
         .secColleft {
-          width: 30%;
+          width: 100%;
           font-size: 15px;
           color: $whiteColor;
-          padding: 10px 15px;
+          padding: 10px 15px 0 15px;
           font-weight: 600;
           @media (max-width: 576px) {
             width: 30% !important;
           }
         }
         .secColRight {
-          width: 69.3%;
+          width: 100%;
           font-size: 15px;
           color: $darkBgTextColor;
-          padding: 10px 15px;
+          padding: 5px 15px 10px 15px;
         }
       }
     }
