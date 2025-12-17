@@ -26,6 +26,21 @@
           }
         }
       }
+      .productListTitleBtn{
+        button{
+          border: none;
+          border-radius: 25px;
+          background: $secondaryColor;
+          color: #fff;
+          padding: 10px 25px;
+          margin: 15px 0;
+          cursor: pointer;
+          width: auto !important;
+          &:hover{
+            background-color: $darkBoxBgColorTwo;
+          }
+        }
+      }
     }
   }
 
@@ -258,18 +273,28 @@
     .chipsList{
       display: flex;
       flex-wrap: wrap;
+      margin-top: 6px;
       li{
-      background: #dfdfdf;
+      background: $darkBoxBgColorTwo;
       border-radius: 5px;
       padding: 2px 7px 3px;
       margin-right: 5px;
-      color: #535353;
+      color: $darkBgTextColor;
       font-size: 13px;
       margin-bottom: 5px;
       }
     }
     span{
-      width: 25%;      
+      width: 25%;
+    }
+    span.clmOne{
+      width: 100%;
+    }
+    span.clmTwo{
+      width: 50%;
+    }
+    span.clmThree{
+      width: 33.3%;
     }
   }
   p{
