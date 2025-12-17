@@ -67,18 +67,18 @@
       .removePoButton{
         position: absolute;
         top: -5px;
-        right: -5px;
+        right: 0;
         z-index: 1;
-        width: 25px;
-        height: 25px;
-        background-color: #ffffff;
-        border-radius: 100%;
+        width: 35px;
+        height: 35px;
+        background-color: transparent;
+        border-radius: 6px;
         border: 1px solid red;
         color: red;
         i{
           position: relative;
-          top: -2px;
-          font-size: 14px;
+          top: 1px;
+          font-size: 18px;
         }
       }
       .secRow {
@@ -90,17 +90,17 @@
         }
         .secColleft {
           width: 100%;
-          font-size: 15px;
+          font-size: 14px;
           color: $whiteColor;
           padding: 10px 15px 0 15px;
-          font-weight: 600;
+          font-weight: 400;
           @media (max-width: 576px) {
             width: 30% !important;
           }
         }
         .secColRight {
           width: 100%;
-          font-size: 15px;
+          font-size: 14px;
           color: $darkBgTextColor;
           padding: 5px 15px 10px 15px;
         }
@@ -407,40 +407,53 @@
     top: 10px;
     width: 30%;
     height: 95vh;
-    background-color: $darkBoxBgColor;
-    border: 1px solid $darkBorderColor;
-    padding: 15px 15px;
-    border-radius: 10px;
-    ul{
-      li{
-        display: flex;
-        align-items: center;
-        padding: 8px 15px;
-        border-radius: 5px;
-        &:hover{
-          background-color: $darkBoxBgColorTwo;
-        }
-        span{
-          width: 70%;
-        }
-        .leadDtlsLeftClmStatus{
-          width: 28%;
-          font-size: 12px;
-          text-align: right;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-left: 2%;
-          &.draftColor{
-            color: $darkBgTextColor;
+    .leadDtlsBdyLeftstatusInfo{
+      position: relative;
+      width: 100%;
+      background-color: $darkBoxBgColor;
+      border: 1px solid $darkBorderColor;
+      padding: 15px 15px;
+      border-radius: 10px;
+      ul{
+        li{
+          display: flex;
+          align-items: center;
+          padding: 8px 15px;
+          border-radius: 5px;
+          &:hover{
+            background-color: $darkBoxBgColorTwo;
           }
-          &.pendingColor{
-            color: #dbb300;
+          span{
+            width: 70%;
           }
-          &.completeColor{
-            color: #42b100;
+          .leadDtlsLeftClmStatus{
+            width: 28%;
+            font-size: 12px;
+            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 2%;
+            &.draftColor{
+              color: $darkBgTextColor;
+            }
+            &.pendingColor{
+              color: #dbb300;
+            }
+            &.completeColor{
+              color: #42b100;
+            }
           }
         }
       }
+    }
+    .leadDtlsBdyLeftAssignedTechnician{
+      position: relative;
+      width: 100%;
+      background-color: $darkBoxBgColor;
+      border: 1px solid $darkBorderColor;
+      padding: 15px 15px;
+      border-radius: 10px;
+      margin-top: 20px;
     }
   }
   .leadDtlsBdyRightClm{
@@ -464,4 +477,9 @@
       }
     }
   }
+}
+
+.packageItemDeleteIcon{
+  position: relative;
+  top: -50px;
 }
