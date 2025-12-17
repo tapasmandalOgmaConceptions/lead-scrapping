@@ -1120,15 +1120,19 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                     </div>
                     <div className={styles.editInfoCol}>
-                      <span className={styles.borderRight}>
+                      <span className={styles.clmOne}>
                         <label>Packages Summary</label>
                         <p>{wp?.package_summary || "N/A"}</p>
                       </span>
-                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.clmOne}>
                         <label>Key Deliverables</label>
                         <p>{wp?.key_deliverables || "N/A"}</p>
                       </span>
-                      <span className={styles.pl10}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.clmOne}>
                         <label>Acceptance Criteria</label>
                         <p>{wp?.acceptance_criteria || "N/A"}</p>
                       </span>
@@ -1320,7 +1324,7 @@ const ViewAndEditTemplateNote: React.FC<{
                                 </div>
 
                                 <div className={styles.editInfoCol}>
-                                  <span className={styles.threeClm}>
+                                  <span className={styles.oneClm}>
                                     <label>Packages Summary</label>
                                     <Field
                                       as="textarea"
@@ -1333,7 +1337,9 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.threeClm}>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
                                     <label>Key Deliverables</label>
                                     <Field
                                       as="textarea"
@@ -1346,7 +1352,9 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={styles.threeClm}>
+                                </div>
+                                <div className={styles.editInfoCol}>
+                                  <span className={styles.oneClm}>
                                     <label>Acceptance Criteria</label>
                                     <Field
                                       as="textarea"
@@ -1495,7 +1503,7 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                     </div>
                     <div className={styles.editInfoCol}>
-                      <span className={styles.threeClm}>
+                      <span className={styles.oneClm}>
                         <label>Integration Targets (Optional)</label>
                         <Field
                           as="textarea"
@@ -1508,7 +1516,9 @@ const ViewAndEditTemplateNote: React.FC<{
                           component="p"
                         />
                       </span>
-                      <span className={styles.threeClm}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.oneClm}>
                         <label>Tools In Scope</label>
                         <Field
                           name="tools_in_scope"
@@ -1521,7 +1531,9 @@ const ViewAndEditTemplateNote: React.FC<{
                           component="p"
                         />
                       </span>
-                      <span className={styles.threeClm}>
+                    </div>
+                    <div className={styles.editInfoCol}>
+                      <span className={styles.oneClm}>
                         <label>Access Required List</label>
                         <Field
                           name="access_required_list"
