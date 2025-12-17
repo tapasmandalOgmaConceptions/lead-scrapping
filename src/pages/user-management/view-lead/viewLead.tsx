@@ -27,6 +27,7 @@ const ViewLead: React.FC = () => {
   const sectionStatus = useSelector(
     (state: RootState) => state.templateNoteSectionStatus
   );
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   useEffect(() => {
     getLead();
     getLeadNotes();
@@ -98,13 +99,13 @@ const ViewLead: React.FC = () => {
                 <h1>Lead Information</h1>
               </div>
               <div className={styles.productListTitleBtn}>
-                {leadDetails?.lead_status &&
+                {userInfo?.role !== "Technician" && leadDetails?.lead_status &&
                   ["new", "Not interested"].includes(
                     leadDetails?.lead_status
                   ) && (
                     <button onClick={openLeadStatusModal}>Change Status</button>
                   )}
-                {leadDetails?.lead_status &&
+                {userInfo?.role !== "Technician" &&leadDetails?.lead_status &&
                   ["Positive lead", "Double Positive"].includes(
                     leadDetails?.lead_status
                   ) && (

@@ -28,6 +28,8 @@ export interface WorkPackage {
   package_price_allocation: string;
   dependencies: string[];
   custom_package_type: string;
+  required_tools: string[];
+  bidding_duration_days: string;
 }
 export interface WorkPackages {
   work_packages: WorkPackage[];
@@ -116,6 +118,8 @@ export interface WorkPackagePayload {
   package_price_allocation: string | null;
   dependencies_ids: Number[];
   custom_package_type: string;
+  required_tools_ids: number[];
+  bidding_duration_days: number;
 }
 export interface WorkPackageResponse {
   id: string;
@@ -130,6 +134,8 @@ export interface WorkPackageResponse {
   package_price_allocation: string | null;
   dependencies: SkillsAndPrimaryTools[];
   custom_package_type: string;
+  required_tools: SkillsAndPrimaryTools[];
+  bidding_duration_days: number;
 }
 export interface SkillsAndPrimaryTools {
   id: number;
