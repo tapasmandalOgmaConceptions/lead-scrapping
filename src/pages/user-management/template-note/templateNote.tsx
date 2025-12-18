@@ -1120,6 +1120,20 @@ const ViewAndEditTemplateNote: React.FC<{
                       </span>
                     </div>
                     <div className={styles.editInfoCol}>
+                      <span className={styles.borderRight}>
+                        <label>Required Tools</label>
+                        <ul className={styles.chipsList}>
+                          {wp?.required_tools?.map((tool) => (
+                            <li key={tool?.id}>{tool?.name || ""}</li>
+                          ))}
+                        </ul>
+                      </span>
+                      <span className={`${styles.borderRight} ${styles.pl10}`}>
+                        <label>Bidding Duration</label>
+                        <p>{wp?.bidding_duration_days ? `${wp?.bidding_duration_days} days` : "N/A"}</p>
+                      </span>
+                    </div>
+                    <div className={styles.editInfoCol}>
                       <span className={styles.clmOne}>
                         <label>Packages Summary</label>
                         <p>{wp?.package_summary || "N/A"}</p>
@@ -1173,22 +1187,24 @@ const ViewAndEditTemplateNote: React.FC<{
                                 </h2>
                               </div>
                               <div className={styles.editInfo}>
-                                {values.work_packages.length > 1 && (
-                                  <button
-                                    type="button"
-                                    disabled={sectionChanging}
-                                    onClick={() => {
-                                      removePackage(
-                                        remove,
-                                        ind,
-                                        workPackage.id || ""
-                                      );
-                                    }}
-                                    className={styles.removePoButton}
-                                  >
-                                    <i className="fa-solid fa-xmark"></i>
-                                  </button>
-                                )}
+                                <div className={styles.packageItemDeleteIcon}>
+                                  {values.work_packages.length > 1 && (
+                                    <button
+                                      type="button"
+                                      disabled={sectionChanging}
+                                      onClick={() => {
+                                        removePackage(
+                                          remove,
+                                          ind,
+                                          workPackage.id || ""
+                                        );
+                                      }}
+                                      className={styles.removePoButton}
+                                    >
+                                      <i className="fa-regular fa-trash-can"></i>
+                                    </button>
+                                  )}
+                                </div>
                                 <div className={styles.editInfoCol}>
                                   <span className={values.work_packages[ind].package_type ===
                                     "12" ? styles.threeClm : styles.twoClm}>

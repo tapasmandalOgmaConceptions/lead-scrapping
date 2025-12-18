@@ -28,6 +28,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { changeStatusConfirmationAlert } from "../../../services/confirmationAlert";
 import AddNotes from "../../../modal/add-note/addNote";
+import { UserInterface } from "../../../interfaces/userInterface";
 
 const AssignUserLeadList: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -50,10 +51,12 @@ const AssignUserLeadList: React.FC = () => {
   const [sectors, setSectors] = useState<SectorListResponse[]>([]);
   const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
   const [addNoteModalOpen, setAddNoteModalOpen] = useState<boolean>(false);
+  const [userData, setUserdata] = useState<UserInterface | null>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { userId } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
+    if (userId) getUserInfo();
     getSectors();
   }, []);
   useEffect(() => {
@@ -210,6 +213,16 @@ const AssignUserLeadList: React.FC = () => {
     setSelectedLeadId("");
     if (isFetchApi) getAssignUserLeadList();
   };
+  const getUserInfo = async () => {
+    try {
+      const res = await api.get(endpoints.user.getUserDetails(userId!));
+      if (res.status === 200) {
+        setUserdata(res.data);
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
 
   return (
     <>
@@ -219,6 +232,7 @@ const AssignUserLeadList: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Assigned Leads</h1>
+                {userId && userData?.name && <p style={{color:"white"}}>To {userData?.name}</p>}
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik

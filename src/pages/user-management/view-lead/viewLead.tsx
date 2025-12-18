@@ -190,56 +190,61 @@ const ViewLead: React.FC = () => {
 
               <div className={styles.leadDtlsBdyRow}>
                 <div className={styles.leadDtlsBdyLeftClm}>
-                  <ul>
-                    <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.deal))}`}
-                      >
-                        {checkSectionStatus(sectionStatus.deal)}
-                      </span>
-                    </li>
-                    <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>
-                        Work Packages
-                      </span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.workPackage))}`}
-                      >
-                        {checkSectionStatus(sectionStatus.workPackage)}
-                      </span>
-                    </li>
-                    <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>
-                        Technical Context
-                      </span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.technicalContext))}`}
-                      >
-                        {checkSectionStatus(sectionStatus.technicalContext)}
-                      </span>
-                    </li>
-                    <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>
-                        Communication
-                      </span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.communication))}`}
-                      >
-                        {checkSectionStatus(sectionStatus.communication)}
-                      </span>
-                    </li>
-                    <li>
-                      <span className={styles.leadDtlsLeftClmMenu}>
-                        Internal Note
-                      </span>
-                      <span
-                        className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.internalNote))}`}
-                      >
-                        {checkSectionStatus(sectionStatus.internalNote)}
-                      </span>
-                    </li>
-                  </ul>
+                  <div className={styles.leadDtlsBdyLeftstatusInfo}>
+                    <ul>
+                      <li>
+                        <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
+                        <span
+                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.deal))}`}
+                        >
+                          {checkSectionStatus(sectionStatus.deal)}
+                        </span>
+                      </li>
+                      <li>
+                        <span className={styles.leadDtlsLeftClmMenu}>
+                          Work Packages
+                        </span>
+                        <span
+                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.workPackage))}`}
+                        >
+                          {checkSectionStatus(sectionStatus.workPackage)}
+                        </span>
+                      </li>
+                      <li>
+                        <span className={styles.leadDtlsLeftClmMenu}>
+                          Technical Context
+                        </span>
+                        <span
+                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.technicalContext))}`}
+                        >
+                          {checkSectionStatus(sectionStatus.technicalContext)}
+                        </span>
+                      </li>
+                      <li>
+                        <span className={styles.leadDtlsLeftClmMenu}>
+                          Communication
+                        </span>
+                        <span
+                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.communication))}`}
+                        >
+                          {checkSectionStatus(sectionStatus.communication)}
+                        </span>
+                      </li>
+                      <li>
+                        <span className={styles.leadDtlsLeftClmMenu}>
+                          Internal Note
+                        </span>
+                        <span
+                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.internalNote))}`}
+                        >
+                          {checkSectionStatus(sectionStatus.internalNote)}
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className={styles.leadDtlsBdyLeftAssignedTechnician}>
+                    Test
+                  </div>
                 </div>
                 <div className={styles.leadDtlsBdyRightClm}>
                   <div className={styles.LeaddetailsCol}>
@@ -345,16 +350,10 @@ const ViewLead: React.FC = () => {
                           <div
                             className={`${styles.secRow} ${styles.width100}`}
                           >
-                            <div
-                              style={{ width: "8%" }}
-                              className={styles.secColleft}
-                            >
+                            <div className={styles.secColleft}>
                               Notes
                             </div>
-                            <div
-                              style={{ width: "92%" }}
-                              className={styles.secColRight}
-                            >
+                            <div className={styles.secColRight}>
                               {note?.notes}
                             </div>
                           </div>
