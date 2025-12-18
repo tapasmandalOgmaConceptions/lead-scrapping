@@ -243,13 +243,9 @@ const ViewLead: React.FC = () => {
                     </ul>
                   </div>
                   <div className={styles.leadDtlsBdyLeftAssignedTechnician}>
-                    Test
-                  </div>
-                </div>
-                <div className={styles.leadDtlsBdyRightClm}>
-                  <div className={styles.LeaddetailsCol}>
-                    <h2>Assigned Technician</h2>
-                    {leadDetails?.assigned_technician ? (
+                    <div className={styles.LeaddetailsCol}>
+                    <h2 className={styles.mtb0}>Assigned Technician</h2>
+                    {/* {leadDetails?.assigned_technician ? (
                       <div className={`${styles.secBox} ${styles.width100}`}>
                         <div className={styles.flexRow}>
                           <div className={`${styles.secRow} ${styles.width25}`}>
@@ -280,8 +276,51 @@ const ViewLead: React.FC = () => {
                       <div className={styles.notFound}>
                         No technician assigned.
                       </div>
-                    )}
+                    )} */}
                   </div>
+                    <div className={styles.assignedTecFlxRow}>
+                      <div className={styles.assignedTecFlxCol}>
+                        Tapas Mandal
+                      </div>
+                      <div>
+                        <ul className={styles.chipsList}>
+                          <li>Python</li>
+                          <li>OpenAI</li>
+                          <li>PostgreSQL</li>                          
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className={styles.assignedTecFlxRow}>
+                      <div className={styles.assignedTecFlxCol}>
+                        Tapas Mandal
+                      </div>
+                      <div>
+                        <ul className={styles.chipsList}>
+                          <li>Python</li>
+                          <li>OpenAI</li>
+                          <li>PostgreSQL</li>                          
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className={styles.assignedTecFlxRow}>
+                      <div className={styles.assignedTecFlxCol}>
+                        Tapas Mandal
+                      </div>
+                      <div>
+                        <ul className={styles.chipsList}>
+                          <li>Python</li>
+                          <li>OpenAI</li>
+                          <li>PostgreSQL</li>                          
+                        </ul>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+                <div className={styles.leadDtlsBdyRightClm}>
+                  
 
                   {leadDetails?.lead_status &&
                     [

@@ -104,9 +104,15 @@ const Header: React.FC  = () => {
                {isAuthenticated && (
                   <ul className="navbar-nav" onClick={handleNavLinkClick}>
                     <li>
-                      <NavLink to={"/"}>Positive Leads</NavLink>
+                      <NavLink to={"/"}>{userInfo?.isAdmin ? "Lead Scrape" : "Assigned Leads"}</NavLink>
                     </li>
-                    {!userInfo?.isAdmin ? (
+                    <li>
+                      <NavLink to={"/positive-leads"}>Positive Leads</NavLink>
+                    </li>
+                   { userInfo?.isAdmin && (<li>
+                      <NavLink to={"/user-list"}>User List</NavLink>
+                    </li>)}
+                    {/* {!userInfo?.isAdmin ? (
                       <li>
                         <NavLink to={"/assigned-leads"}>Assigned Leads</NavLink>
                       </li>
@@ -119,7 +125,7 @@ const Header: React.FC  = () => {
                           <NavLink to={"/user-list"}>User List</NavLink>
                         </li>
                       </>
-                    )}
+                    )} */}
 
                     {/* <li className="dropdown">
                     <span className='subLink' onClick={handleNavLinkClick}>Place Purchase Orders</span>
