@@ -497,3 +497,9 @@ body.body-fixed::before {
 .css-1dimb5e-singleValue{
     color: #515151 !important;
 }
+.MuiMenu-list li{
+    color: #ffffff !important;
+}
+.MuiMenu-list li:hover{
+    color: #1565c0 !important;
+}
