@@ -319,6 +319,7 @@ const PositiveLeads: React.FC = () => {
                   <li data-label="Action" className={styles.actionCell}>
                     <div>
                       <IconButton
+                        className={styles.actionBtn}
                         aria-label="more"
                         id="long-button"
                         aria-controls={
@@ -342,9 +343,11 @@ const PositiveLeads: React.FC = () => {
                             style: {
                               maxHeight: 48 * 4.5,
                               width: "20ch",
+                              borderRadius: "10px",
                             },
                           },
                           list: {
+                            className: styles.actionDropDown,
                             "aria-labelledby": "long-button",
                           },
                         }}
@@ -388,7 +391,7 @@ const PositiveLeads: React.FC = () => {
           {loading && <p className={styles.loader}>Please wait...</p>}
           {leads.length > 0 && (
             <Pagination
-              className="product-pagination"
+              className={styles.productPagination}
               variant="outlined"
               shape="rounded"
               count={totalPage}

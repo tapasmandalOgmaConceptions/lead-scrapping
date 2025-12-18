@@ -286,7 +286,7 @@ const LeadScrappingList: React.FC = () => {
           {loading && <p className={styles.loader}>Please wait...</p>}
           {leads.length > 0 && (
             <Pagination
-              className="product-pagination"
+              className={styles.productPagination}
               variant="outlined"
               shape="rounded"
               count={totalPage}

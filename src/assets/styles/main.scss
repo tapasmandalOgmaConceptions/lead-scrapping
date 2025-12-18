@@ -225,3 +225,33 @@ p{
 
 
 
+.actionBtn{
+  background-color: $blackColor !important;
+  color: $whiteColor !important;
+}
+.actionDropDown{
+  background-color: $blackColor !important;
+  border: 1px solid $darkBorderColor !important;
+}
+.productPagination{
+  position: relative;
+  margin-top: 25px;
+  ul{
+    justify-content: center;
+    li{
+      button,
+      div{
+        width: 32px;
+        height: 32px !important;
+        color: $whiteColor !important;
+        border: 1px solid $darkBorderColor !important;
+        border-radius: 5px !important;
+      }
+      button{
+        &:hover{
+          background-color: $darkBoxBgColorTwo !important;
+        }
+      }
+    }
+  }
+}
