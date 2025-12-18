@@ -1661,7 +1661,7 @@ const ViewAndEditTemplateNote: React.FC<{
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
                   <span className={styles.borderRight}>
-                    <label>Client Project Contact Name</label>
+                    <label>Project Contact Name</label>
                     <p>
                       {communicationData?.client_project_contact_name || "N/A"}
                     </p>
