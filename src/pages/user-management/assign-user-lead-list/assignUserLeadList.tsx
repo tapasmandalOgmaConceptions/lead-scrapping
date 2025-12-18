@@ -232,7 +232,7 @@ const AssignUserLeadList: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Assigned Leads</h1>
-                {userId && userData?.name && <p style={{color:"white"}}>To {userData?.name}</p>}
+                {userId && userData?.name && <p style={{color:"grey"}}>To {userData?.name}</p>}
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik
@@ -355,6 +355,7 @@ const AssignUserLeadList: React.FC = () => {
                   <li data-label="Action" className={styles.actionCell}>
                     <div>
                       <IconButton
+                      className={styles.actionBtn}
                         aria-label="more"
                         id="long-button"
                         aria-controls={
@@ -378,9 +379,11 @@ const AssignUserLeadList: React.FC = () => {
                             style: {
                               maxHeight: 48 * 4.5,
                               width: "20ch",
+                              borderRadius: "10px",
                             },
                           },
                           list: {
+                            className: styles.actionDropDown,
                             "aria-labelledby": "long-button",
                           },
                         }}
@@ -465,7 +468,7 @@ const AssignUserLeadList: React.FC = () => {
           {loading && <p className={styles.loader}>Please wait...</p>}
           {leads.length > 0 && (
             <Pagination
-              className="product-pagination"
+              className={styles.productPagination}
               variant="outlined"
               shape="rounded"
               count={totalPage}
