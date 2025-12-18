@@ -49,8 +49,15 @@
 .react-select__control{
   background-color: #101115 !important;
   border-color: #333438 !important;
-  border-radius: 10px !important;  
+  border-radius: 10px !important;
 }
+.react-select__menu .react-select__option--is-focused {
+  background-color: #000000 !important;
+  color: white;
+}
+
+
+
 .css-19bb58m{
   margin: 0 !important;
   padding: 0 !important;
