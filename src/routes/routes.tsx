@@ -9,10 +9,10 @@ const Login = lazy(() => import("../pages/auth/login/login"));
 const PageNotFound = lazy(() => import("../pages/page-not-found/pageNotFound"));
 const UserList = lazy(() => import("../pages/user-management/user-list/userList"));
 const CreateUpdateUser = lazy(() => import("../pages/user-management/create-update-user/create-update-user"));
-const LeadScrappingList = lazy(() => import("../pages/lead-scrapping/lead-scrapping-list/leadScrappingList"));
 const FollowUp = lazy(() => import("../pages/home-page/homePage"));
 const AssignUserLeadList = lazy(() => import("../pages/user-management/assign-user-lead-list/assignUserLeadList"));
 const ViewLead = lazy(() => import("../pages/user-management/view-lead/viewLead"));
+const PositiveLeads = lazy(() => import("../pages/positive-leads/positiveLeads"));
 
 function AppRouter() {
   return (
@@ -27,13 +27,12 @@ function AppRouter() {
         {/* ProtectedRoute for routes that require authentication */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<FollowUp />} />
-          <Route path="/lead-scrape" element={<LeadScrappingList />} />
           <Route path="/user-list" element={<UserList />} />
           <Route path="/create-user" element={<CreateUpdateUser />} />
           <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
-          <Route path="/assigned-leads" element={<AssignUserLeadList />} />
           <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
           <Route path="/view-lead/:leadId" element={< ViewLead/>} />
+          <Route path="/positive-leads" element={<PositiveLeads />} />
         </Route>
 
         {/* Catch-all for 404 Not Found */}

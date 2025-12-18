@@ -1058,81 +1058,102 @@ const ViewAndEditTemplateNote: React.FC<{
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
                     <h2 className={styles.packageSubHdn}>Package #{ind + 1}</h2>
-                    <div className={styles.editInfoCol}>
-                      <span className={styles.borderRight}>
-                        <label>Packages Title</label>
-                        <p>{wp?.package_title || "N/A"}</p>
+
+                    <div className={styles.editInfoColFlx}>
+                      <div className={styles.editInfoWidth50}>
+                          <div className={styles.editInfoCol}>
+                            <span className={styles.editInfoWidth50}>
+                            <label>Title</label>
+                            <p>{wp?.package_title || "N/A"}</p>
+                          </span>
+                          <span className={`${styles.autoWidth} ${styles.pl10}`}>
+                            <label>Type</label>
+                            <p>{wp?.package_type?.name || "N/A"}</p>
+                          </span>
+                          </div>
+
+                          <div className={styles.editInfoCol}>                            
+                            <span className={styles.editInfoWidth50}>
+                              <label>Bidding Duration</label>
+                              <p>{wp?.bidding_duration_days ? `${wp?.bidding_duration_days} days` : "N/A"}</p>
+                            </span>
+                           <span className={`${styles.autoWidth} ${styles.pl10}`}>
+                              <label>Primary Tools</label>
+                              <ul className={styles.chipsList}>
+                                {wp?.primary_tools?.map((tool) => (
+                                  <li key={tool?.id}>{tool?.name || ""}</li>
+                                ))}
+                              </ul>
+                            </span>
+                          </div>
+                          <div className={styles.editInfoCol}>
+                          <span className={styles.autoWidth}>
+                            <label>Required Tools</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.required_tools?.map((tool) => (
+                                <li key={tool?.id}>{tool?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>                      
+                        </div>
+                          
+                      </div>
+
+
+                      <div className={styles.editInfoWidth50}>
+                        <div className={styles.editInfoCol}>
+                             {wp.custom_package_type && (
+                              <span
+                                className={styles.editInfoWidth50}>
+                                <label>Custom Work Package</label>
+                                <p>{wp?.custom_package_type || "N/A"}</p>
+                              </span>
+                            )}
+
+                            <span className={`${styles.borderRight} ${styles.pl10}`}>
+                            <label>Price</label>
+                            <p>
+                              {wp?.package_price_allocation
+                                ? new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                  }).format(Number(wp?.package_price_allocation))
+                                : "N/A"}
+                            </p>
+                          </span>                            
+                        </div>
+                        
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.editInfoWidth50}>
+                              <label>Complexity</label>
+                              <p>{wp?.package_estimated_complexity || "N/A"}</p>
+                            </span>
+
+                          <span className={`${styles.autoWidth} ${styles.pl10}`}>
+                            <label>Skills</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.required_skills?.map((skill) => (
+                                <li key={skill?.id}>{skill?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+                        
+
+                        <span className={styles.pl10}>
+                          <label>Dependencies</label>
+                          <ul className={styles.chipsList}>
+                            {wp?.dependencies?.map((dependency) => (
+                              <li key={dependency?.id}>
+                                {dependency?.name || ""}
+                              </li>
+                            ))}
+                          </ul>
                       </span>
-                      <span className={`${styles.borderRight} ${styles.pl10}`}>
-                        <label>Package Type</label>
-                        <p>{wp?.package_type?.name || "N/A"}</p>
-                      </span>
-                      {wp.custom_package_type && (
-                        <span
-                          className={`${styles.borderRight} ${styles.pl10}`}
-                        >
-                          <label>Custom Work Package</label>
-                          <p>{wp?.custom_package_type || "N/A"}</p>
-                        </span>
-                      )}
-                      <span className={styles.pl10}>
-                        <label>Package Skills</label>
-                        <ul className={styles.chipsList}>
-                          {wp?.required_skills?.map((skill) => (
-                            <li key={skill?.id}>{skill?.name || ""}</li>
-                          ))}
-                        </ul>
-                      </span>
+
+                      </div>
                     </div>
-                    <div className={styles.editInfoCol}>
-                      <span className={styles.borderRight}>
-                        <label>Primary Tools</label>
-                        <ul className={styles.chipsList}>
-                          {wp?.primary_tools?.map((tool) => (
-                            <li key={tool?.id}>{tool?.name || ""}</li>
-                          ))}
-                        </ul>
-                      </span>
-                      <span className={`${styles.borderRight} ${styles.pl10}`}>
-                        <label>Complexity</label>
-                        <p>{wp?.package_estimated_complexity || "N/A"}</p>
-                      </span>
-                      <span className={`${styles.borderRight} ${styles.pl10}`}>
-                        <label>Packages Price</label>
-                        <p>
-                          {wp?.package_price_allocation
-                            ? new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              }).format(Number(wp?.package_price_allocation))
-                            : "N/A"}
-                        </p>
-                      </span>
-                      <span className={styles.pl10}>
-                        <label>Package Skills</label>
-                        <ul className={styles.chipsList}>
-                          {wp?.dependencies?.map((dependency) => (
-                            <li key={dependency?.id}>
-                              {dependency?.name || ""}
-                            </li>
-                          ))}
-                        </ul>
-                      </span>
-                    </div>
-                    <div className={styles.editInfoCol}>
-                      <span className={styles.borderRight}>
-                        <label>Required Tools</label>
-                        <ul className={styles.chipsList}>
-                          {wp?.required_tools?.map((tool) => (
-                            <li key={tool?.id}>{tool?.name || ""}</li>
-                          ))}
-                        </ul>
-                      </span>
-                      <span className={`${styles.borderRight} ${styles.pl10}`}>
-                        <label>Bidding Duration</label>
-                        <p>{wp?.bidding_duration_days ? `${wp?.bidding_duration_days} days` : "N/A"}</p>
-                      </span>
-                    </div>
+                    
                     <div className={styles.editInfoCol}>
                       <span className={styles.clmOne}>
                         <label>Packages Summary</label>
@@ -1661,7 +1682,7 @@ const ViewAndEditTemplateNote: React.FC<{
               <div className={styles.viewInfo}>
                 <div className={styles.editInfoCol}>
                   <span className={styles.borderRight}>
-                    <label>Client Project Contact Name</label>
+                    <label>Project Contact Name</label>
                     <p>
                       {communicationData?.client_project_contact_name || "N/A"}
                     </p>

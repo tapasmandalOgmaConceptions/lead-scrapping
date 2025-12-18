@@ -442,11 +442,11 @@ body.body-fixed::before {
 }
 
 
-.css-53g0n7-MuiButtonBase-root-MuiIconButton-root{
+/* .css-53g0n7-MuiButtonBase-root-MuiIconButton-root{
     background-color: #000000 !important;
     color: #ffffff !important;
-}
-.css-ptck8z-MuiButtonBase-root-MuiPaginationItem-root{
+} */
+/* .css-ptck8z-MuiButtonBase-root-MuiPaginationItem-root{
     border-color: #383838 !important;
     color: #ffffff !important;
 }
@@ -456,12 +456,19 @@ body.body-fixed::before {
     border: 1px solid #383838 !important;
     border-radius: 5px !important;
     color: #ffffff !important;
-}
+} */
 
-.css-1tktgsa-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
+/* .css-1tktgsa-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
     background-color: #000000 !important;
     border: 1px solid #333438 !important;
+} */
+
+.css-ptck8z-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected,
+.css-2ge3ma.Mui-selected{
+    background-color: #131419 !important;
 }
+
+
 .css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root{
     color: #ffffff !important;
 }

@@ -1,36 +1,32 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from "react";
-import styles from "./assignUserLeadList.module.scss";
-import api from "../../../services/api";
+import styles from "./positiveLeads.module.scss";
+import api from "../../services/api";
 import Pagination from "@mui/material/Pagination";
-import alert from "../../../services/alert";
-import endpoints from "../../../helpers/endpoints";
+import alert from "../../services/alert";
+import endpoints from "../../helpers/endpoints";
 import * as Yup from "yup";
 import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
   LeadScrape,
-  LeadStatusType,
   SectorListResponse,
-} from "../../../interfaces/leadScrapeInterface";
+} from "../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
 import moment from "moment";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import debounce from "lodash/debounce";
-import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { useNavigate } from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
-import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
-import { changeStatusConfirmationAlert } from "../../../services/confirmationAlert";
-import AddNotes from "../../../modal/add-note/addNote";
-import { UserInterface } from "../../../interfaces/userInterface";
+import AddNotes from "../../modal/add-note/addNote";
 
-const AssignUserLeadList: React.FC = () => {
+const PositiveLeads: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
   const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(30);
@@ -40,43 +36,54 @@ const AssignUserLeadList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [activeUserId, setActiveUserId] = useState<string | null>(null);
-  const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
-    useState<boolean>(false);
-  const [selectedLeadId, setSelectedLeadId] = useState<string>("");
-  const [selectedLeadStatus, setSelectedLeadStatus] = useState<
-    LeadStatusType | ""
-  >("");
   const [sectors, setSectors] = useState<SectorListResponse[]>([]);
   const [isSectorFetching, setIsSectorFetching] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeLeadId, setActiveLeadId] = useState<string | null>(null);
+  const [selectedLeadId, setSelectedLeadId] = useState<string>("");
   const [addNoteModalOpen, setAddNoteModalOpen] = useState<boolean>(false);
-  const [userData, setUserdata] = useState<UserInterface | null>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const { userId } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
-    if (userId) getUserInfo();
     getSectors();
   }, []);
   useEffect(() => {
-    getAssignUserLeadList();
+    userInfo?.role === "Technician"
+      ? getTechnicianLeadList()
+      : getFollowUpLeadList();
   }, [page, size, city, sector]);
 
-  const getAssignUserLeadList = async () => {
+  const getFollowUpLeadList = async () => {
     setLoading(true);
-    const userIdToFetch = userId || userInfo?.id;
     try {
       const res = await api.get(
         `${endpoints.user.assignUserLead}?page=${page}&limit=${size}${
           city ? `&city=${city}` : ""
-        }${
-          sector ? `&sector=${sector}` : ""
-        }&user_id=${userIdToFetch}&is_followup=false`
+        }${sector ? `&sector=${sector}` : ""}${
+          !userInfo?.isAdmin ? `&user_id=${userInfo?.id}` : ""
+        }&is_followup=true`
       );
       if (res.status === 200) {
         setLeads(res.data?.data || []);
         setTotalPage(res.data?.meta?.pages || 0);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getTechnicianLeadList = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(
+        `${endpoints.technician.getTechniciansLead}?page=${page}&limit=${size}${
+          city ? `&city=${city}` : ""
+        }${sector ? `&sector=${sector}` : ""}`
+      );
+      if (res.status === 200) {
+        setLeads(res.data?.data?.leads || []);
+        setTotalPage(res.data?.data?.meta?.pages || 0);
       }
     } catch (error: any) {
       alert(error?.response?.data?.detail || error?.message, "error");
@@ -132,34 +139,6 @@ const AssignUserLeadList: React.FC = () => {
     debounce(fetchCitySuggestions, 500),
     []
   );
-  const handleMenuClick = (
-    event: React.MouseEvent<HTMLElement>,
-    leadId: string
-  ) => {
-    setActiveUserId(leadId);
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setActiveUserId(null);
-  };
-  const openLeadStatusModal = (leadId: string, leadStatus: LeadStatusType) => {
-    setChangeLeadStatusModalOpen(true);
-    setSelectedLeadId(leadId);
-    setSelectedLeadStatus(leadStatus);
-  };
-  const closeLeadStatusModal = () => {
-    setChangeLeadStatusModalOpen(false);
-    setSelectedLeadId("");
-    setSelectedLeadStatus("");
-  };
-  const confirmLeadStatusModal = () => {
-    setChangeLeadStatusModalOpen(false);
-    setSelectedLeadId("");
-    setSelectedLeadStatus("");
-    getAssignUserLeadList();
-  };
   const getSectors = async (keyword?: string) => {
     setIsSectorFetching(true);
     try {
@@ -186,42 +165,28 @@ const AssignUserLeadList: React.FC = () => {
     debounce(getSectors, 500),
     []
   );
-  const changeLeadStatus = async (leadId: string, status: LeadStatusType) => {
-    const confirmation = await changeStatusConfirmationAlert();
-    if (!confirmation.isConfirmed) return;
-    try {
-      const res = await api.put(
-        `${endpoints.leadScrape.changeLeadStatus(leadId)}?status=${status}`
-      );
-      if (res.status === 200) {
-        alert(res.data?.message, "success");
-        getAssignUserLeadList();
-      }
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || err?.message, "error");
-    }
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLElement>,
+    leadId: string
+  ) => {
+    setActiveLeadId(leadId);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setActiveLeadId(null);
   };
   const navigateToViewLeadPage = (leadId: string) => {
     navigate(`/view-lead/${leadId}`);
   };
-  const openAddNoteModal = (leadId: string) => {
+    const openAddNoteModal = (leadId: string) => {
     setAddNoteModalOpen(true);
     setSelectedLeadId(leadId);
   };
   const closeAddNoteModal = (isFetchApi = false) => {
     setAddNoteModalOpen(false);
     setSelectedLeadId("");
-    if (isFetchApi) getAssignUserLeadList();
-  };
-  const getUserInfo = async () => {
-    try {
-      const res = await api.get(endpoints.user.getUserDetails(userId!));
-      if (res.status === 200) {
-        setUserdata(res.data);
-      }
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || err?.message, "error");
-    }
   };
 
   return (
@@ -231,8 +196,7 @@ const AssignUserLeadList: React.FC = () => {
           <div className={styles.container}>
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
-                <h1>Assigned Leads</h1>
-                {userId && userData?.name && <p style={{color:"grey"}}>To {userData?.name}</p>}
+                <h1>Positive Leads</h1>
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik
@@ -355,14 +319,14 @@ const AssignUserLeadList: React.FC = () => {
                   <li data-label="Action" className={styles.actionCell}>
                     <div>
                       <IconButton
-                      className={styles.actionBtn}
+                        className={styles.actionBtn}
                         aria-label="more"
                         id="long-button"
                         aria-controls={
-                          activeUserId === lead.id ? "long-menu" : undefined
+                          activeLeadId === lead.id ? "long-menu" : undefined
                         }
                         aria-expanded={
-                          activeUserId === lead.id ? "true" : undefined
+                          activeLeadId === lead.id ? "true" : undefined
                         }
                         aria-haspopup="true"
                         onClick={(event) => handleMenuClick(event, lead.id)}
@@ -372,7 +336,7 @@ const AssignUserLeadList: React.FC = () => {
                       <Menu
                         id="long-menu"
                         anchorEl={anchorEl}
-                        open={activeUserId === lead.id} // Show menu only for the active user
+                        open={activeLeadId === lead.id}
                         onClose={handleMenuClose}
                         slotProps={{
                           paper: {
@@ -396,41 +360,7 @@ const AssignUserLeadList: React.FC = () => {
                         >
                           View Lead Details
                         </MenuItem>
-                        {["new", "Not interested"].includes(
-                          lead.lead_status
-                        ) && (
-                          <MenuItem
-                            onClick={() => {
-                              handleMenuClose();
-                              openLeadStatusModal(lead.id, lead.lead_status);
-                            }}
-                          >
-                            Change Status
-                          </MenuItem>
-                        )}
-                        {(lead.lead_status === "Positive lead" ||
-                          lead.lead_status === "Double Positive") && (
-                          <MenuItem
-                            onClick={() => {
-                              handleMenuClose();
-                              changeLeadStatus(
-                                lead.id,
-                                lead.lead_status === "Positive lead"
-                                  ? "Double Positive"
-                                  : "Triple Positive"
-                              );
-                            }}
-                          >
-                            Mark as{" "}
-                            {lead.lead_status === "Positive lead"
-                              ? "Double"
-                              : "Triple"}{" "}
-                            Positive
-                          </MenuItem>
-                        )}
-                        {!["new", "Not interested"].includes(
-                          lead.lead_status
-                        ) && (
+                        {(userInfo?.role && ["Admin", "User"].includes(userInfo?.role)) && (
                           <MenuItem
                             onClick={() => {
                               handleMenuClose();
@@ -448,13 +378,6 @@ const AssignUserLeadList: React.FC = () => {
             ))}
           </div>
         </div>
-        <ChangeLeadStatus
-          open={changeLeadStatusModalOpen}
-          onClose={closeLeadStatusModal}
-          leadId={selectedLeadId}
-          confirmLeadStatusModal={confirmLeadStatusModal}
-          leadStatus={selectedLeadStatus}
-        />
         <AddNotes
           open={addNoteModalOpen}
           onClose={closeAddNoteModal}
@@ -482,4 +405,4 @@ const AssignUserLeadList: React.FC = () => {
   );
 };
 
-export default AssignUserLeadList;
+export default PositiveLeads;
