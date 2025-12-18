@@ -1173,22 +1173,24 @@ const ViewAndEditTemplateNote: React.FC<{
                                 </h2>
                               </div>
                               <div className={styles.editInfo}>
-                                {values.work_packages.length > 1 && (
-                                  <button
-                                    type="button"
-                                    disabled={sectionChanging}
-                                    onClick={() => {
-                                      removePackage(
-                                        remove,
-                                        ind,
-                                        workPackage.id || ""
-                                      );
-                                    }}
-                                    className={styles.removePoButton}
-                                  >
-                                    <i className="fa-solid fa-xmark"></i>
-                                  </button>
-                                )}
+                                <div className={styles.packageItemDeleteIcon}>
+                                  {values.work_packages.length > 1 && (
+                                    <button
+                                      type="button"
+                                      disabled={sectionChanging}
+                                      onClick={() => {
+                                        removePackage(
+                                          remove,
+                                          ind,
+                                          workPackage.id || ""
+                                        );
+                                      }}
+                                      className={styles.removePoButton}
+                                    >
+                                      <i className="fa-regular fa-trash-can"></i>
+                                    </button>
+                                  )}
+                                </div>
                                 <div className={styles.editInfoCol}>
                                   <span className={values.work_packages[ind].package_type ===
                                     "12" ? styles.threeClm : styles.twoClm}>
