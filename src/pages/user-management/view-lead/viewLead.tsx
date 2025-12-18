@@ -148,41 +148,41 @@ const ViewLead: React.FC = () => {
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>Phone No</div>
                     <div className={styles.secColRight}>
-                      {leadDetails?.phone}
+                      {leadDetails?.phone || "N/A"}
                     </div>
                   </div>
 
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>City</div>
                     <div className={styles.secColRight}>
-                      {leadDetails?.city}
+                      {leadDetails?.city || "N/A"}
                     </div>
                   </div>
 
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>Address</div>
                     <div className={styles.secColRight}>
-                      {leadDetails?.address}
+                      {leadDetails?.address || "N/A"}
                     </div>
                   </div>
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>Lead Status</div>
                     <div className={styles.secColRight}>
-                      {leadDetails?.lead_status}
+                      {leadDetails?.lead_status || "N/A"}
                     </div>
                   </div>
 
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>Sector</div>
                     <div className={styles.secColRight}>
-                      {leadDetails?.sector}
+                      {leadDetails?.sector || "N/A"}
                     </div>
                   </div>
 
                   <div className={`${styles.secRow} ${styles.width50}`}>
                     <div className={styles.secColleft}>Summary</div>
                     <div className={styles.secColRight}>
-                      {leadDetails?.summary}
+                      {leadDetails?.summary || "N/A"}
                     </div>
                   </div>
                 </div>
