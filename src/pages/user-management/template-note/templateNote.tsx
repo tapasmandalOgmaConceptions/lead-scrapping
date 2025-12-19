@@ -45,6 +45,7 @@ import {
   resetSectionStatus,
   setSectionStatus,
 } from "../../../store/templateNoteSectionStatusSlice";
+import Loader from "../../../../src/assets/images/loader.gif";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -704,7 +705,7 @@ const ViewAndEditTemplateNote: React.FC<{
   return (
     <div className={styles.LeadcolRow}>
       {/*  ****** DEAL SECTION ****** */}
-      <div className={styles.LeaddetailsCol}>
+      <div className={styles.LeaddetailsCol} id="dealSection">
         <div className={styles.sectionHeading}>
           <h2>Deal</h2>
           {sectionName !== TemplateNoteEnum.DEAL && !hideEditButton && (
@@ -1035,7 +1036,7 @@ const ViewAndEditTemplateNote: React.FC<{
       {dealData?.id && (
         <>
           {/*  ****** WORK PACKAGE SECTION ****** */}
-          <div className={styles.LeaddetailsCol}>
+          <div className={styles.LeaddetailsCol} id="workPackageSection">
             <div className={styles.sectionHeading}>
               <h2>Work Packages</h2>
               {sectionName !== TemplateNoteEnum.WORK_PACKAGE &&
@@ -1061,32 +1062,40 @@ const ViewAndEditTemplateNote: React.FC<{
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
-                          <div className={styles.editInfoCol}>
-                            <span className={styles.editInfoWidth50}>
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.editInfoWidth50}>
                             <label>Title</label>
                             <p>{wp?.package_title || "N/A"}</p>
                           </span>
-                          <span className={`${styles.autoWidth} ${styles.pl10}`}>
+                          <span
+                            className={`${styles.autoWidth} ${styles.pl10}`}
+                          >
                             <label>Type</label>
                             <p>{wp?.package_type?.name || "N/A"}</p>
                           </span>
-                          </div>
+                        </div>
 
-                          <div className={styles.editInfoCol}>                            
-                            <span className={styles.editInfoWidth50}>
-                              <label>Bidding Duration</label>
-                              <p>{wp?.bidding_duration_days ? `${wp?.bidding_duration_days} days` : "N/A"}</p>
-                            </span>
-                           <span className={`${styles.autoWidth} ${styles.pl10}`}>
-                              <label>Primary Tools</label>
-                              <ul className={styles.chipsList}>
-                                {wp?.primary_tools?.map((tool) => (
-                                  <li key={tool?.id}>{tool?.name || ""}</li>
-                                ))}
-                              </ul>
-                            </span>
-                          </div>
-                          <div className={styles.editInfoCol}>
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.editInfoWidth50}>
+                            <label>Bidding Duration</label>
+                            <p>
+                              {wp?.bidding_duration_days
+                                ? `${wp?.bidding_duration_days} days`
+                                : "N/A"}
+                            </p>
+                          </span>
+                          <span
+                            className={`${styles.autoWidth} ${styles.pl10}`}
+                          >
+                            <label>Primary Tools</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.primary_tools?.map((tool) => (
+                                <li key={tool?.id}>{tool?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol}>
                           <span className={styles.autoWidth}>
                             <label>Required Tools</label>
                             <ul className={styles.chipsList}>
@@ -1094,42 +1103,45 @@ const ViewAndEditTemplateNote: React.FC<{
                                 <li key={tool?.id}>{tool?.name || ""}</li>
                               ))}
                             </ul>
-                          </span>                      
+                          </span>
                         </div>
-                          
                       </div>
-
 
                       <div className={styles.editInfoWidth50}>
                         <div className={styles.editInfoCol}>
-                             {wp.custom_package_type && (
-                              <span
-                                className={styles.editInfoWidth50}>
-                                <label>Custom Work Package</label>
-                                <p>{wp?.custom_package_type || "N/A"}</p>
-                              </span>
-                            )}
+                          {wp.custom_package_type && (
+                            <span className={styles.editInfoWidth50}>
+                              <label>Custom Work Package</label>
+                              <p>{wp?.custom_package_type || "N/A"}</p>
+                            </span>
+                          )}
 
-                            <span className={`${styles.borderRight} ${styles.pl10}`}>
+                          <span
+                            className={`${styles.borderRight} ${styles.pl10}`}
+                          >
                             <label>Price</label>
                             <p>
                               {wp?.package_price_allocation
                                 ? new Intl.NumberFormat("en-US", {
                                     style: "currency",
                                     currency: "USD",
-                                  }).format(Number(wp?.package_price_allocation))
+                                  }).format(
+                                    Number(wp?.package_price_allocation)
+                                  )
                                 : "N/A"}
                             </p>
-                          </span>                            
+                          </span>
                         </div>
-                        
+
                         <div className={styles.editInfoCol}>
                           <span className={styles.editInfoWidth50}>
-                              <label>Complexity</label>
-                              <p>{wp?.package_estimated_complexity || "N/A"}</p>
-                            </span>
+                            <label>Complexity</label>
+                            <p>{wp?.package_estimated_complexity || "N/A"}</p>
+                          </span>
 
-                          <span className={`${styles.autoWidth} ${styles.pl10}`}>
+                          <span
+                            className={`${styles.autoWidth} ${styles.pl10}`}
+                          >
                             <label>Skills</label>
                             <ul className={styles.chipsList}>
                               {wp?.required_skills?.map((skill) => (
@@ -1138,7 +1150,6 @@ const ViewAndEditTemplateNote: React.FC<{
                             </ul>
                           </span>
                         </div>
-                        
 
                         <span className={styles.pl10}>
                           <label>Dependencies</label>
@@ -1149,11 +1160,10 @@ const ViewAndEditTemplateNote: React.FC<{
                               </li>
                             ))}
                           </ul>
-                      </span>
-
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div className={styles.editInfoCol}>
                       <span className={styles.clmOne}>
                         <label>Packages Summary</label>
@@ -1227,8 +1237,14 @@ const ViewAndEditTemplateNote: React.FC<{
                                   )}
                                 </div>
                                 <div className={styles.editInfoCol}>
-                                  <span className={values.work_packages[ind].package_type ===
-                                    "12" ? styles.threeClm : styles.twoClm}>
+                                  <span
+                                    className={
+                                      values.work_packages[ind].package_type ===
+                                      "12"
+                                        ? styles.threeClm
+                                        : styles.twoClm
+                                    }
+                                  >
                                     <label>Packages Title</label>
                                     <Field
                                       name={`work_packages.${ind}.package_title`}
@@ -1240,8 +1256,14 @@ const ViewAndEditTemplateNote: React.FC<{
                                       component="p"
                                     />
                                   </span>
-                                  <span className={values.work_packages[ind].package_type ===
-                                    "12" ? styles.threeClm : styles.twoClm}>
+                                  <span
+                                    className={
+                                      values.work_packages[ind].package_type ===
+                                      "12"
+                                        ? styles.threeClm
+                                        : styles.twoClm
+                                    }
+                                  >
                                     <label>Package Type</label>
                                     <FormikReactSelect
                                       name={`work_packages.${ind}.package_type`}
@@ -1464,23 +1486,33 @@ const ViewAndEditTemplateNote: React.FC<{
                             className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                           >
                             <span>
-                              <button
-                                type="button"
-                                disabled={sectionChanging}
-                                className={styles.addMoreBtn}
-                                onClick={() => {
-                                  push(workPackageValue);
-                                }}
-                              >
-                                Add More
-                              </button>
-                              <button
-                                type="submit"
-                                disabled={sectionChanging}
-                                className={styles.submitBtn}
-                              >
-                                Submit
-                              </button>
+                              {!sectionChanging ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={sectionChanging}
+                                    className={styles.addMoreBtn}
+                                    onClick={() => {
+                                      push(workPackageValue);
+                                    }}
+                                  >
+                                    Add More
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    disabled={sectionChanging}
+                                    className={styles.submitBtn}
+                                  >
+                                    Submit
+                                  </button>
+                                </>
+                              ) : (
+                                <img
+                                  src={Loader}
+                                  alt="loader"
+                                  className={styles.loaderImg}
+                                />
+                              )}
                             </span>
                           </div>
                         </>
@@ -1493,7 +1525,7 @@ const ViewAndEditTemplateNote: React.FC<{
           </div>
 
           {/*  ******TECHNICAL CONTEXT SECTION ****** */}
-          <div className={styles.LeaddetailsCol}>
+          <div className={styles.LeaddetailsCol} id="technicalContextSection">
             <div className={styles.sectionHeading}>
               <h2>Technical Context</h2>
               {sectionName !== TemplateNoteEnum.TECHNICAL_CONTEXT &&
@@ -1640,13 +1672,21 @@ const ViewAndEditTemplateNote: React.FC<{
                       className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                     >
                       <span>
-                        <button
-                          type="submit"
-                          className={styles.submitBtn}
-                          disabled={sectionChanging}
-                        >
-                          Submit
-                        </button>
+                        {!sectionChanging ? (
+                          <button
+                            className={styles.submitBtn}
+                            type="submit"
+                            disabled={sectionChanging}
+                          >
+                            Submit
+                          </button>
+                        ) : (
+                          <img
+                            src={Loader}
+                            alt="loader"
+                            className={styles.loaderImg}
+                          />
+                        )}
                       </span>
                     </div>
                   </Form>
@@ -1655,7 +1695,7 @@ const ViewAndEditTemplateNote: React.FC<{
             </div>
           </div>
           {/*  ****** COMMUNICATION SECTION ****** */}
-          <div className={styles.LeaddetailsCol}>
+          <div className={styles.LeaddetailsCol} id="communicationSection">
             <div className={styles.sectionHeading}>
               <h2>Communication</h2>
               {sectionName !== TemplateNoteEnum.PROJECT_COMMUNICATION_CONTACT &&
@@ -1750,10 +1790,10 @@ const ViewAndEditTemplateNote: React.FC<{
                         <label>Preferred Channel</label>
                         <Field name="preferred_channel" as="select">
                           <option value="">Select Option</option>
-                          <option value="EMAIL">Email</option>
-                          <option value="SLACK">Slack</option>
-                          <option value="TEAMS">Teams</option>
-                          <option value="MEETING">Meeting</option>
+                          <option value="Email">Email</option>
+                          <option value="Slack">Slack</option>
+                          <option value="Teams">Teams</option>
+                          <option value="Meeting">Meeting</option>
                         </Field>
                         <ErrorMessage
                           className={styles.error}
@@ -1781,13 +1821,21 @@ const ViewAndEditTemplateNote: React.FC<{
                       className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                     >
                       <span>
-                        <button
-                          className={styles.submitBtn}
-                          type="submit"
-                          disabled={sectionChanging}
-                        >
-                          Submit
-                        </button>
+                        {!sectionChanging ? (
+                          <button
+                            className={styles.submitBtn}
+                            type="submit"
+                            disabled={sectionChanging}
+                          >
+                            Submit
+                          </button>
+                        ) : (
+                          <img
+                            src={Loader}
+                            alt="loader"
+                            className={styles.loaderImg}
+                          />
+                        )}
                       </span>
                     </div>
                   </Form>
@@ -1796,7 +1844,7 @@ const ViewAndEditTemplateNote: React.FC<{
             </div>
           </div>
           {/*  ****** INTERNAL NOTE SECTION ****** */}
-          <div className={styles.LeaddetailsCol}>
+          <div className={styles.LeaddetailsCol} id="InternalNoteSection">
             <div className={styles.sectionHeading}>
               <h2>Internal Note</h2>
               {sectionName !== TemplateNoteEnum.INTERNAL_NOTE &&
@@ -1902,13 +1950,21 @@ const ViewAndEditTemplateNote: React.FC<{
                       className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                     >
                       <span>
-                        <button
-                          className={styles.submitBtn}
-                          type="submit"
-                          disabled={sectionChanging}
-                        >
-                          Submit
-                        </button>
+                        {!sectionChanging ? (
+                          <button
+                            className={styles.submitBtn}
+                            type="submit"
+                            disabled={sectionChanging}
+                          >
+                            Submit
+                          </button>
+                        ) : (
+                          <img
+                            src={Loader}
+                            alt="loader"
+                            className={styles.loaderImg}
+                          />
+                        )}
                       </span>
                     </div>
                   </Form>

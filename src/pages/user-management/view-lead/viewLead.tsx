@@ -89,6 +89,14 @@ const ViewLead: React.FC = () => {
       ? styles.completeColor
       : styles.pendingColor;
   };
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
   return (
     <div className={styles.productListBdyPrt}>
       {!loading ? (
@@ -192,7 +200,7 @@ const ViewLead: React.FC = () => {
                 <div className={styles.leadDtlsBdyLeftClm}>
                   <div className={styles.leadDtlsBdyLeftstatusInfo}>
                     <ul>
-                      <li>
+                      <li onClick={()=> scrollToSection("dealSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
                         <span
                           className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.deal))}`}
@@ -200,7 +208,7 @@ const ViewLead: React.FC = () => {
                           {checkSectionStatus(sectionStatus.deal)}
                         </span>
                       </li>
-                      <li>
+                      <li onClick={()=> scrollToSection("workPackageSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Work Packages
                         </span>
@@ -210,7 +218,7 @@ const ViewLead: React.FC = () => {
                           {checkSectionStatus(sectionStatus.workPackage)}
                         </span>
                       </li>
-                      <li>
+                      <li onClick={()=> scrollToSection("technicalContextSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Technical Context
                         </span>
@@ -220,7 +228,7 @@ const ViewLead: React.FC = () => {
                           {checkSectionStatus(sectionStatus.technicalContext)}
                         </span>
                       </li>
-                      <li>
+                      <li onClick={()=> scrollToSection("communicationSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Communication
                         </span>
@@ -230,7 +238,7 @@ const ViewLead: React.FC = () => {
                           {checkSectionStatus(sectionStatus.communication)}
                         </span>
                       </li>
-                      <li>
+                      <li onClick={()=> scrollToSection("InternalNoteSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Internal Note
                         </span>
