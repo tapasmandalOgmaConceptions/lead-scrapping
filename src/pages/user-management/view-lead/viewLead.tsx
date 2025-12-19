@@ -300,7 +300,7 @@ const ViewLead: React.FC = () => {
                           {item?.assigned_technician?.name || ""}
                         </div>
                         {item?.assigned_technician ? (
-                          <div>
+                          <div style={{width:"60%"}}>
                             <ul className={styles.chipsList}>
                               {item.required_skills.map((skill) => (
                                 <li key={skill.id}>{skill.name}</li>
@@ -308,7 +308,7 @@ const ViewLead: React.FC = () => {
                             </ul>
                           </div>
                         ) : (
-                          <span className={styles.notFound}>No technician assigned yet</span>
+                          <span style={{width:"60%"}} className={styles.notFound}>No technician assigned yet</span>
                         )}
                       </div>
                     ))}
