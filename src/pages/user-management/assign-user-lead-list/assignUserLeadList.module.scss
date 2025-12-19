@@ -14,6 +14,22 @@
       @include justify-space-between;
       align-items: center;
       .productListTitle {
+        .greyBg{
+            background-color: #101115;
+            padding: 2px 15px 4px;
+            display: inline-block;
+            margin-top: 5px;
+            border-radius: 6px;
+            p{
+              font-size: 20px;              
+              margin: 0;
+              padding: 0;
+              color: #9b9b9b;
+              .textColor{
+                color: #1976d2;
+              }
+            }
+        }
         h1 {
           font-size: 40px;
           color: $whiteColor;

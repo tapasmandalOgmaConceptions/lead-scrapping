@@ -28,16 +28,18 @@
       }
       .productListTitleBtn{
         button{
-          border: none;
+          position: relative;
+         border: 1px solid #333438;
           border-radius: 25px;
-          background: $secondaryColor;
+          background-color: $darkBoxBgColorTwo;
           color: #fff;
           padding: 10px 25px;
           margin: 15px 0;
           cursor: pointer;
           width: auto !important;
           &:hover{
-            background-color: $darkBoxBgColorTwo;
+            background-color: $darkBodyBgColor;            
+            box-shadow: 0 5px 5px rgba(255, 255, 255, 0.1)
           }
         }
       }
@@ -64,6 +66,11 @@
           border-bottom: 1px solid #222;
           padding-bottom: 10px;
           margin-bottom: 25px;
+          color: #c7c7c7;
+          span{            
+            display: inline-block;
+            color: #1976d2;
+          }
         }
       }
       .removePoButton{
@@ -226,24 +233,33 @@
     }
   }
   .editBtn{
-    border: solid 1px #737373;
+    background: #1563df;
+    border: solid 1px #1563df;    
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #737373;
+    color: #fff;
     padding: 3px 8px 3px 10px;
     margin:15px 0;
     cursor: pointer;
+    transition: all ease-in-out 0.3s;
+    -webkit-transition: all ease-in-out 0.3s;
+    -moz-transition: all ease-in-out 0.3s;
+    -o-transition: all ease-in-out 0.3s;
+    position: relative;
+    top: 0;
     svg{
       font-size: 15px;
       margin-left: 3px;
       margin-top: 0;
     }
     &:hover{
-      background: #1563df;
-      border: solid 1px #1563df;
+      background: #1056c7;
+      border: solid 1px #1056c7;
       color: #fff;
+      box-shadow: 0 5px 5px rgba(255, 255, 255, 0.1);
+      top: -6px;
     }
   }
   
@@ -412,6 +428,13 @@
     top: 10px;
     width: 30%;
     height: 95vh;
+     @media (max-width: 767px) {
+      width: 100% !important;
+      position: relative;
+      height: auto;
+      top: auto;
+      margin-bottom: 30px;
+    }
     .leadDtlsBdyLeftstatusInfo{
       position: relative;
       width: 100%;
@@ -485,6 +508,16 @@
         .assignedTecFlxCol{
           width: 40%; 
           color: #ccc;
+          font-size: 14px;
+          color: #9b9b9b;
+          h2{
+            font-size: 17px;
+            color: #c7c7c7;
+            span{
+              display: inline-block;
+              color: #1976d2;
+            }
+          }
         }
       }
     }
@@ -496,6 +529,9 @@
     padding: 15px 15px;
     margin-left: 2%;
     border-radius: 10px;
+    @media (max-width: 767px) {
+      width: 100%;
+    }
     .LeaddetailsCol{
       margin-bottom: 15px;
       padding-bottom: 15px;
