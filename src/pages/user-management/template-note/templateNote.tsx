@@ -1058,7 +1058,7 @@ const ViewAndEditTemplateNote: React.FC<{
               <div className={styles.viewInfo}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <h2 className={styles.packageSubHdn}>Package #{ind + 1}</h2>
+                    <h2 className={styles.packageSubHdn}>Package - <span>#{ind + 1}</span></h2>
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>

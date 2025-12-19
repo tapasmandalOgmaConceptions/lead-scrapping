@@ -288,6 +288,7 @@ const ViewLead: React.FC = () => {
                   </div>
                     <div className={styles.assignedTecFlxRow}>
                       <div className={styles.assignedTecFlxCol}>
+                        <h2 className={styles.packageSubHdn}>Package - <span>#1</span></h2>
                         Tapas Mandal
                       </div>
                       <div>
@@ -301,6 +302,7 @@ const ViewLead: React.FC = () => {
 
                     <div className={styles.assignedTecFlxRow}>
                       <div className={styles.assignedTecFlxCol}>
+                        <h2 className={styles.packageSubHdn}>Package - <span>#2</span></h2>
                         Tapas Mandal
                       </div>
                       <div>
@@ -314,6 +316,7 @@ const ViewLead: React.FC = () => {
 
                     <div className={styles.assignedTecFlxRow}>
                       <div className={styles.assignedTecFlxCol}>
+                        <h2 className={styles.packageSubHdn}>Package - <span>#3</span></h2>
                         Tapas Mandal
                       </div>
                       <div>
