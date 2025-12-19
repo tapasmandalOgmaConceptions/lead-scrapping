@@ -1,3 +1,5 @@
+import { UserListInterface } from "./userInterface";
+
 export interface DealClientForm {
   client_name: string;
   primary_contact_name: string;
@@ -108,7 +110,7 @@ export interface ToolsAndSkillsInterface {
 export interface WorkPackagePayload {
   id?: string;
   package_title: string;
-  package_type_id: string;
+  package_type_id: number;
   package_summary: string;
   key_deliverables: string;
   acceptance_criteria: string;
@@ -136,6 +138,7 @@ export interface WorkPackageResponse {
   custom_package_type: string;
   required_tools: SkillsAndPrimaryTools[];
   bidding_duration_days: number;
+  assigned_technician: UserListInterface | null
 }
 export interface SkillsAndPrimaryTools {
   id: number;

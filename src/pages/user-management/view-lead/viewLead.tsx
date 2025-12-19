@@ -15,7 +15,10 @@ import ViewAndEditTemplateNote from "../template-note/templateNote";
 import ChangeLeadStatus from "../../../modal/change-lead-status/changeLeadStatus";
 import { changeStatusConfirmationAlert } from "../../../services/confirmationAlert";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { AppDispatch, RootState } from "../../../store";
+import { useDispatch } from "react-redux";
+import { resetSectionStatus } from "../../../store/templateNoteSectionStatusSlice";
+import { resetWorkPackage } from "../../../store/workPackageSlicer";
 
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
@@ -28,7 +31,11 @@ const ViewLead: React.FC = () => {
     (state: RootState) => state.templateNoteSectionStatus
   );
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
+  const workPackage = useSelector((state: RootState) => state.workPackage);
+  const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
+    dispatch(resetSectionStatus());
+    dispatch(resetWorkPackage());
     getLead();
     getLeadNotes();
   }, [leadId]);
@@ -107,13 +114,15 @@ const ViewLead: React.FC = () => {
                 <h1>Lead Information</h1>
               </div>
               <div className={styles.productListTitleBtn}>
-                {userInfo?.role !== "Technician" && leadDetails?.lead_status &&
+                {userInfo?.role !== "Technician" &&
+                  leadDetails?.lead_status &&
                   ["new", "Not interested"].includes(
                     leadDetails?.lead_status
                   ) && (
                     <button onClick={openLeadStatusModal}>Change Status</button>
                   )}
-                {userInfo?.role !== "Technician" &&leadDetails?.lead_status &&
+                {userInfo?.role !== "Technician" &&
+                  leadDetails?.lead_status &&
                   ["Positive lead", "Double Positive"].includes(
                     leadDetails?.lead_status
                   ) && (
@@ -200,50 +209,78 @@ const ViewLead: React.FC = () => {
                 <div className={styles.leadDtlsBdyLeftClm}>
                   <div className={styles.leadDtlsBdyLeftstatusInfo}>
                     <ul>
-                      <li onClick={()=> scrollToSection("dealSection")}>
+                      <li onClick={() => scrollToSection("dealSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>Deal</span>
                         <span
-                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.deal))}`}
+                          className={`${
+                            styles.leadDtlsLeftClmStatus
+                          } ${setColorClass(
+                            checkSectionStatus(sectionStatus.deal)
+                          )}`}
                         >
                           {checkSectionStatus(sectionStatus.deal)}
                         </span>
                       </li>
-                      <li onClick={()=> scrollToSection("workPackageSection")}>
+                      <li onClick={() => scrollToSection("workPackageSection")}>
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Work Packages
                         </span>
                         <span
-                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.workPackage))}`}
+                          className={`${
+                            styles.leadDtlsLeftClmStatus
+                          } ${setColorClass(
+                            checkSectionStatus(sectionStatus.workPackage)
+                          )}`}
                         >
                           {checkSectionStatus(sectionStatus.workPackage)}
                         </span>
                       </li>
-                      <li onClick={()=> scrollToSection("technicalContextSection")}>
+                      <li
+                        onClick={() =>
+                          scrollToSection("technicalContextSection")
+                        }
+                      >
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Technical Context
                         </span>
                         <span
-                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.technicalContext))}`}
+                          className={`${
+                            styles.leadDtlsLeftClmStatus
+                          } ${setColorClass(
+                            checkSectionStatus(sectionStatus.technicalContext)
+                          )}`}
                         >
                           {checkSectionStatus(sectionStatus.technicalContext)}
                         </span>
                       </li>
-                      <li onClick={()=> scrollToSection("communicationSection")}>
+                      <li
+                        onClick={() => scrollToSection("communicationSection")}
+                      >
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Communication
                         </span>
                         <span
-                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.communication))}`}
+                          className={`${
+                            styles.leadDtlsLeftClmStatus
+                          } ${setColorClass(
+                            checkSectionStatus(sectionStatus.communication)
+                          )}`}
                         >
                           {checkSectionStatus(sectionStatus.communication)}
                         </span>
                       </li>
-                      <li onClick={()=> scrollToSection("InternalNoteSection")}>
+                      <li
+                        onClick={() => scrollToSection("InternalNoteSection")}
+                      >
                         <span className={styles.leadDtlsLeftClmMenu}>
                           Internal Note
                         </span>
                         <span
-                          className={`${styles.leadDtlsLeftClmStatus} ${setColorClass(checkSectionStatus(sectionStatus.internalNote))}`}
+                          className={`${
+                            styles.leadDtlsLeftClmStatus
+                          } ${setColorClass(
+                            checkSectionStatus(sectionStatus.internalNote)
+                          )}`}
                         >
                           {checkSectionStatus(sectionStatus.internalNote)}
                         </span>
@@ -252,87 +289,32 @@ const ViewLead: React.FC = () => {
                   </div>
                   <div className={styles.leadDtlsBdyLeftAssignedTechnician}>
                     <div className={styles.LeaddetailsCol}>
-                    <h2 className={styles.mtb0}>Assigned Technician</h2>
-                    {/* {leadDetails?.assigned_technician ? (
-                      <div className={`${styles.secBox} ${styles.width100}`}>
-                        <div className={styles.flexRow}>
-                          <div className={`${styles.secRow} ${styles.width25}`}>
-                            <div className={styles.secColleft}>Name</div>
-                            <div className={styles.secColRight}>
-                              {leadDetails?.assigned_technician?.name}
-                            </div>
-                          </div>
-
-                          <div className={`${styles.secRow} ${styles.width25}`}>
-                            <div className={styles.secColleft}>Role</div>
-                            <div className={styles.secColRight}>
-                              {leadDetails?.assigned_technician?.role}
-                            </div>
-                          </div>
-
-                          <div className={`${styles.secRow} ${styles.width25}`}>
-                            <div className={styles.secColleft}>
-                              Email Address
-                            </div>
-                            <div className={styles.secColRight}>
-                              {leadDetails?.assigned_technician?.email}
-                            </div>
-                          </div>
+                      <h2 className={styles.mtb0}>Assigned Technician</h2>
+                    </div>
+                    {workPackage?.map((item) => (
+                      <div className={styles.assignedTecFlxRow} key={item.id}>
+                        <div className={styles.assignedTecFlxCol}>
+                          <h2 className={styles.packageSubHdn}>
+                            <span>{item.package_title}</span>
+                          </h2>
+                          {item?.assigned_technician?.name || ""}
                         </div>
+                        {item?.assigned_technician ? (
+                          <div>
+                            <ul className={styles.chipsList}>
+                              {item.required_skills.map((skill) => (
+                                <li key={skill.id}>{skill.name}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <span className={styles.notFound}>No technician assigned yet</span>
+                        )}
                       </div>
-                    ) : (
-                      <div className={styles.notFound}>
-                        No technician assigned.
-                      </div>
-                    )} */}
-                  </div>
-                    <div className={styles.assignedTecFlxRow}>
-                      <div className={styles.assignedTecFlxCol}>
-                        <h2 className={styles.packageSubHdn}>Package - <span>#1</span></h2>
-                        Tapas Mandal
-                      </div>
-                      <div>
-                        <ul className={styles.chipsList}>
-                          <li>Python</li>
-                          <li>OpenAI</li>
-                          <li>PostgreSQL</li>                          
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className={styles.assignedTecFlxRow}>
-                      <div className={styles.assignedTecFlxCol}>
-                        <h2 className={styles.packageSubHdn}>Package - <span>#2</span></h2>
-                        Tapas Mandal
-                      </div>
-                      <div>
-                        <ul className={styles.chipsList}>
-                          <li>Python</li>
-                          <li>OpenAI</li>
-                          <li>PostgreSQL</li>                          
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className={styles.assignedTecFlxRow}>
-                      <div className={styles.assignedTecFlxCol}>
-                        <h2 className={styles.packageSubHdn}>Package - <span>#3</span></h2>
-                        Tapas Mandal
-                      </div>
-                      <div>
-                        <ul className={styles.chipsList}>
-                          <li>Python</li>
-                          <li>OpenAI</li>
-                          <li>PostgreSQL</li>                          
-                        </ul>
-                      </div>
-                    </div>
-                    
+                    ))}
                   </div>
                 </div>
                 <div className={styles.leadDtlsBdyRightClm}>
-                  
-
                   {leadDetails?.lead_status &&
                     [
                       "Positive lead",
@@ -400,9 +382,7 @@ const ViewLead: React.FC = () => {
                           <div
                             className={`${styles.secRow} ${styles.width100}`}
                           >
-                            <div className={styles.secColleft}>
-                              Notes
-                            </div>
+                            <div className={styles.secColleft}>Notes</div>
                             <div className={styles.secColRight}>
                               {note?.notes}
                             </div>

@@ -41,11 +41,9 @@ import FormikReactSelect from "../../../components/formik-react-select/formikRea
 import { NumericFormat, PatternFormat } from "react-number-format";
 import { LeadStatusType } from "../../../interfaces/leadScrapeInterface";
 import { useDispatch } from "react-redux";
-import {
-  resetSectionStatus,
-  setSectionStatus,
-} from "../../../store/templateNoteSectionStatusSlice";
+import { setSectionStatus } from "../../../store/templateNoteSectionStatusSlice";
 import Loader from "../../../../src/assets/images/loader.gif";
+import { setWorkPackage } from "../../../store/workPackageSlicer";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -90,7 +88,6 @@ const ViewAndEditTemplateNote: React.FC<{
   const hideEditButton =
     userInfo?.role === "Technician" || leadStatus === "Triple Positive";
   useEffect(() => {
-    dispatch(resetSectionStatus());
     if (!hideEditButton) {
       getDealSectorPackages();
       getPackageTypes();
@@ -518,7 +515,7 @@ const ViewAndEditTemplateNote: React.FC<{
       const formatWorkPackage: WorkPackagePayload[] = value.work_packages.map(
         (p: WorkPackage) => ({
           package_title: p.package_title,
-          package_type_id: p.package_type,
+          package_type_id: Number(p.package_type),
           package_summary: p.package_summary,
           key_deliverables: p.key_deliverables,
           acceptance_criteria: p.acceptance_criteria,
@@ -561,8 +558,10 @@ const ViewAndEditTemplateNote: React.FC<{
       );
       if (res.status === 200) {
         setWorkPackageData(res.data?.packages || []);
-        if (res.data?.packages && res.data?.packages?.length > 0)
+        if (res.data?.packages && res.data?.packages?.length > 0) {
           dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
+          dispatch(setWorkPackage(res.data?.packages));
+        }
       }
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
@@ -1058,7 +1057,9 @@ const ViewAndEditTemplateNote: React.FC<{
               <div className={styles.viewInfo}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <h2 className={styles.packageSubHdn}>Package - <span>#{ind + 1}</span></h2>
+                    <h2 className={styles.packageSubHdn}>
+                      Package - <span>#{ind + 1}</span>
+                    </h2>
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
@@ -1214,7 +1215,7 @@ const ViewAndEditTemplateNote: React.FC<{
                             <div key={ind}>
                               <div>
                                 <h2 className={styles.packageSubHdn}>
-                                  Package #{ind + 1}
+                                  Package - <span>#{ind + 1}</span>
                                 </h2>
                               </div>
                               <div className={styles.editInfo}>
