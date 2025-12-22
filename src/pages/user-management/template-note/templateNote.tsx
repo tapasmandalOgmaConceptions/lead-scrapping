@@ -933,7 +933,10 @@ const ViewAndEditTemplateNote: React.FC<{
                     <Field
                       name="deal_close_date"
                       type="date"
-                      min={new Date().toISOString().split("T")[0]}                      
+                      min={new Date().toISOString().split("T")[0]}
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
+                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      }}
                     />
                     <ErrorMessage
                       className={styles.error}
@@ -947,6 +950,9 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="expected_start_date"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
+                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      }}
                     />
                     <ErrorMessage
                       className={styles.error}
@@ -960,6 +966,9 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="expected_end_date_or_deadline"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
+                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      }}
                     />
                     <ErrorMessage
                       className={styles.error}

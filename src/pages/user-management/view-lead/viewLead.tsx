@@ -287,7 +287,8 @@ const ViewLead: React.FC = () => {
                       </li>
                     </ul>
                   </div>
-                  <div className={styles.leadDtlsBdyLeftAssignedTechnician}>
+                  {leadDetails?.lead_status === "Triple Positive" && (
+                    <div className={styles.leadDtlsBdyLeftAssignedTechnician}>
                     <div className={styles.LeaddetailsCol}>
                       <h2 className={styles.mtb0}>Assigned Technician</h2>
                     </div>
@@ -313,6 +314,7 @@ const ViewLead: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                )}
                 </div>
                 <div className={styles.leadDtlsBdyRightClm}>
                   {leadDetails?.lead_status &&

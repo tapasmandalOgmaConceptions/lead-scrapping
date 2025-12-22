@@ -271,7 +271,7 @@ const AssignUserLeadList: React.FC = () => {
                         </li>
                         <li>
                           <Autocomplete
-                            freeSolo
+                            freeSolo={false}
                             options={sectors?.map((option) => option?.name)}
                             onInputChange={(event, value) => {
                               debouncedFetchSectorSuggestions(value);
