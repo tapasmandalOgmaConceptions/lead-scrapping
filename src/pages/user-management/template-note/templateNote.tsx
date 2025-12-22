@@ -933,7 +933,7 @@ const ViewAndEditTemplateNote: React.FC<{
                     <Field
                       name="deal_close_date"
                       type="date"
-                      min={new Date().toISOString().split("T")[0]}
+                      min={new Date().toISOString().split("T")[0]}                      
                     />
                     <ErrorMessage
                       className={styles.error}
@@ -1487,6 +1487,7 @@ const ViewAndEditTemplateNote: React.FC<{
                             className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                           >
                             <span>
+                             
                               {!sectionChanging ? (
                                 <>
                                   <button
@@ -1508,11 +1509,18 @@ const ViewAndEditTemplateNote: React.FC<{
                                   </button>
                                 </>
                               ) : (
-                                <img
-                                  src={Loader}
-                                  alt="loader"
-                                  className={styles.loaderImg}
-                                />
+                                 <button
+                                    type="button"
+                                    disabled={sectionChanging}
+                                    className={styles.addMoreBtn}                                    
+                                  >
+                                    <img
+                                      style={{width:"80px", height:"30px"}}
+                                      src={Loader}
+                                      alt="loader"
+                                      className={styles.loaderImg}
+                                    />
+                                  </button>                                
                               )}
                             </span>
                           </div>
@@ -1682,11 +1690,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                          <img
-                            src={Loader}
-                            alt="loader"
-                            className={styles.loaderImg}
-                          />
+                           <button
+                              type="button"
+                              disabled={sectionChanging}
+                              className={styles.addMoreBtn}                              
+                            >
+                              <img
+                                style={{width:"80px", height:"30px"}}
+                                src={Loader}
+                                alt="loader"
+                                className={styles.loaderImg}
+                              />
+                            </button>
                         )}
                       </span>
                     </div>
@@ -1831,11 +1846,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                          <img
-                            src={Loader}
-                            alt="loader"
-                            className={styles.loaderImg}
-                          />
+                           <button
+                            type="button"
+                            disabled={sectionChanging}
+                            className={styles.addMoreBtn}                                   
+                          >
+                            <img
+                              style={{width:"80px", height:"30px"}}
+                              src={Loader}
+                              alt="loader"
+                              className={styles.loaderImg}
+                            />
+                          </button>
                         )}
                       </span>
                     </div>
@@ -1960,11 +1982,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                          <img
-                            src={Loader}
-                            alt="loader"
-                            className={styles.loaderImg}
-                          />
+                           <button
+                              type="button"
+                              disabled={sectionChanging}
+                              className={styles.addMoreBtn}                             
+                            >
+                              <img
+                                style={{width:"80px", height:"30px"}}
+                                src={Loader}
+                                alt="loader"
+                                className={styles.loaderImg}
+                              />
+                            </button>
                         )}
                       </span>
                     </div>
