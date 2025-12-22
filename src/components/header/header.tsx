@@ -7,7 +7,7 @@ import { AppDispatch, RootState } from "../../store";
 import { setLogout } from "../../store/userSlice";
 import alert from "../../services/alert";
 import noProfileImage from "../../assets/images/no_profile_image.webp";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/white-logo.png";
 
 const Header: React.FC  = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -61,3 +61,8 @@ export interface LeadNote {
   updated_at: string;
   created_by_user: UserInfo;
 }
+export interface PositiveLeadSearch {
+  sector: string;
+  city: string;
+  user?: string
+}
