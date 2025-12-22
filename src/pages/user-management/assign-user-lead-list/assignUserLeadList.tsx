@@ -232,7 +232,7 @@ const AssignUserLeadList: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Assigned Leads</h1>
-                {userId && userData?.name && <p style={{color:"grey"}}>To {userData?.name}</p>}
+                <span className={styles.greyBg}>{userId && userData?.name && <p>To <span className={styles.textColor}>{userData?.name}</span></p>}</span>
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik
@@ -271,7 +271,7 @@ const AssignUserLeadList: React.FC = () => {
                         </li>
                         <li>
                           <Autocomplete
-                            freeSolo
+                            freeSolo={false}
                             options={sectors?.map((option) => option?.name)}
                             onInputChange={(event, value) => {
                               debouncedFetchSectorSuggestions(value);

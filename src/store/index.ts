@@ -12,10 +12,12 @@ import {
 import storage from 'redux-persist/lib/storage';
 import userReducer from './userSlice';
 import sectionStatusReducer from './templateNoteSectionStatusSlice';
+import workPackageReducer from "./workPackageSlicer";
 
 const rootReducer = combineReducers({
   user: userReducer,
   templateNoteSectionStatus: sectionStatusReducer,
+  workPackage: workPackageReducer
 });
 
 const persistConfig = {
@@ -23,7 +25,7 @@ const persistConfig = {
   version: 1,
   storage,
   whitelist: ['user'],
-  blacklist: ['templateNoteSectionStatus'],
+  blacklist: ['templateNoteSectionStatus', 'workPackage'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

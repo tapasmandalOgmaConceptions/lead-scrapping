@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
-  LeadScrape,
+  PositiveLeadSearch,
   SectorListResponse,
 } from "../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
@@ -25,6 +25,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
 import AddNotes from "../../modal/add-note/addNote";
+import { UserListInterface } from "../../interfaces/userInterface";
 
 const PositiveLeads: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -33,6 +34,7 @@ const PositiveLeads: React.FC = () => {
   const [totalPage, setTotalPage] = useState<number>(0);
   const [city, setCity] = useState<string>("");
   const [sector, setSector] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
@@ -42,16 +44,19 @@ const PositiveLeads: React.FC = () => {
   const [activeLeadId, setActiveLeadId] = useState<string | null>(null);
   const [selectedLeadId, setSelectedLeadId] = useState<string>("");
   const [addNoteModalOpen, setAddNoteModalOpen] = useState<boolean>(false);
+  const [users, setUsers] = useState<UserListInterface[]>([]);
+  const [isUserFetching, setIsUserFetching] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const navigate = useNavigate();
   useEffect(() => {
+    if (userInfo?.isAdmin) getSalesUsers();
     getSectors();
   }, []);
   useEffect(() => {
     userInfo?.role === "Technician"
       ? getTechnicianLeadList()
       : getFollowUpLeadList();
-  }, [page, size, city, sector]);
+  }, [page, size, city, sector, selectedUser]);
 
   const getFollowUpLeadList = async () => {
     setLoading(true);
@@ -60,7 +65,11 @@ const PositiveLeads: React.FC = () => {
         `${endpoints.user.assignUserLead}?page=${page}&limit=${size}${
           city ? `&city=${city}` : ""
         }${sector ? `&sector=${sector}` : ""}${
-          !userInfo?.isAdmin ? `&user_id=${userInfo?.id}` : ""
+          !userInfo?.isAdmin
+            ? `&user_id=${userInfo?.id}`
+            : selectedUser
+            ? `&user_id=${selectedUser}`
+            : ""
         }&is_followup=true`
       );
       if (res.status === 200) {
@@ -99,18 +108,21 @@ const PositiveLeads: React.FC = () => {
     setPage(value);
   };
 
-  const initialSearchValue: LeadScrape = {
+  const initialSearchValue: PositiveLeadSearch = {
     city: "",
     sector: "",
+    user: "",
   };
   const validationSchema = Yup.object().shape({
     city: Yup.string(),
     sector: Yup.string(),
+    user: Yup.string(),
   });
-  const handleSearch = (value: LeadScrape) => {
+  const handleSearch = (value: PositiveLeadSearch) => {
     setPage(1);
     setCity(value.city || "");
     setSector(value.sector || "");
+    setSelectedUser(value.user || "");
   };
   const fetchCitySuggestions = async (query: string) => {
     if (!query) return;
@@ -180,7 +192,7 @@ const PositiveLeads: React.FC = () => {
   const navigateToViewLeadPage = (leadId: string) => {
     navigate(`/view-lead/${leadId}`);
   };
-    const openAddNoteModal = (leadId: string) => {
+  const openAddNoteModal = (leadId: string) => {
     setAddNoteModalOpen(true);
     setSelectedLeadId(leadId);
   };
@@ -188,6 +200,27 @@ const PositiveLeads: React.FC = () => {
     setAddNoteModalOpen(false);
     setSelectedLeadId("");
   };
+  const getSalesUsers = async (keyword?: string) => {
+    setIsUserFetching(true);
+    try {
+      const res = await api.get(
+        `${endpoints.user.getUsers}?page=${1}&limit=${10}${
+          keyword ? `&keyword=${keyword}` : ""
+        }&role=User`
+      );
+      if (res.status === 200) {
+        setUsers(res.data?.data?.users || []);
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.detail || error?.message, "error");
+    } finally {
+      setIsUserFetching(false);
+    }
+  };
+  const debouncedFetchUserSuggestions = useCallback(
+    debounce(getSalesUsers, 500),
+    []
+  );
 
   return (
     <>
@@ -235,7 +268,7 @@ const PositiveLeads: React.FC = () => {
                         </li>
                         <li>
                           <Autocomplete
-                            freeSolo
+                            freeSolo={false}
                             options={sectors?.map((option) => option?.name)}
                             onInputChange={(event, value) => {
                               debouncedFetchSectorSuggestions(value);
@@ -257,6 +290,39 @@ const PositiveLeads: React.FC = () => {
                             className={styles.errorMessage}
                           />
                         </li>
+                        {userInfo?.isAdmin && (
+                          <li>
+                            <Autocomplete
+                              freeSolo={false}
+                              options={users || []}
+                              getOptionLabel={(option) => option?.name || ""}
+                              onChange={(event, value) => {
+                                if (value) {
+                                  setFieldValue("user", value.id);
+                                } else {
+                                  setFieldValue("user", "");
+                                }
+                              }}
+                              onInputChange={(event, value) => {
+                                debouncedFetchUserSuggestions(value);
+                              }}
+                              loading={isUserFetching}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  name="user"
+                                  placeholder="Search by user"
+                                  variant="outlined"
+                                />
+                              )}
+                            />
+                            <ErrorMessage
+                              name="user"
+                              component="p"
+                              className={styles.errorMessage}
+                            />
+                          </li>
+                        )}
                         <li>
                           <Button type="submit" variant="contained">
                             Search
@@ -360,16 +426,17 @@ const PositiveLeads: React.FC = () => {
                         >
                           View Lead Details
                         </MenuItem>
-                        {(userInfo?.role && ["Admin", "User"].includes(userInfo?.role)) && (
-                          <MenuItem
-                            onClick={() => {
-                              handleMenuClose();
-                              openAddNoteModal(lead.id);
-                            }}
-                          >
-                            Add Note
-                          </MenuItem>
-                        )}
+                        {userInfo?.role &&
+                          ["Admin", "User"].includes(userInfo?.role) && (
+                            <MenuItem
+                              onClick={() => {
+                                handleMenuClose();
+                                openAddNoteModal(lead.id);
+                              }}
+                            >
+                              Add Note
+                            </MenuItem>
+                          )}
                       </Menu>
                     </div>
                   </li>
