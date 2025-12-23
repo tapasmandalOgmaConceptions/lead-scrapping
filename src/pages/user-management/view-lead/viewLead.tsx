@@ -206,7 +206,7 @@ const ViewLead: React.FC = () => {
               </div>
 
               <div className={styles.leadDtlsBdyRow}>
-                <div className={styles.leadDtlsBdyLeftClm}>
+                {userInfo?.role !== "Technician" && <div className={styles.leadDtlsBdyLeftClm}>
                   <div className={styles.leadDtlsBdyLeftstatusInfo}>
                     <ul>
                       <li onClick={() => scrollToSection("dealSection")}>
@@ -315,8 +315,8 @@ const ViewLead: React.FC = () => {
                     ))}
                   </div>
                 )}
-                </div>
-                <div className={styles.leadDtlsBdyRightClm}>
+                </div>}
+                <div className={`${styles.leadDtlsBdyRightClm} ${userInfo?.role === "Technician" ? styles.fullWidth : ""}`}>
                   {leadDetails?.lead_status &&
                     [
                       "Positive lead",

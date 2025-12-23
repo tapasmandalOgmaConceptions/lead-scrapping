@@ -44,6 +44,7 @@ import { useDispatch } from "react-redux";
 import { setSectionStatus } from "../../../store/templateNoteSectionStatusSlice";
 import Loader from "../../../../src/assets/images/loader.gif";
 import { setWorkPackage } from "../../../store/workPackageSlicer";
+import TechnicianBidding from "../../../modal/technician-bidding/technicanBidding";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -76,6 +77,8 @@ const ViewAndEditTemplateNote: React.FC<{
   const [dependencies, setDependencies] = useState<ToolsAndSkillsInterface[]>(
     []
   );
+  const [biddingModalOpen, setBiddingModalOpen] = useState<boolean>(false);
+  const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
     useRef<FormikProps<TechnicalContext>>(null);
@@ -700,6 +703,14 @@ const ViewAndEditTemplateNote: React.FC<{
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
+  const openBiddingModal = (packageId: string) => {
+    setBiddingModalOpen(true);
+    setSelectedPackageId(packageId);
+  };
+  const closeBiddingModal = (isFetchApi = false) => {
+    setSelectedPackageId("");
+    setBiddingModalOpen(false);
+  };
 
   return (
     <div className={styles.LeadcolRow}>
@@ -934,8 +945,12 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="deal_close_date"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
-                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
-                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                        (
+                          e.currentTarget as HTMLInputElement & {
+                            showPicker?: () => void;
+                          }
+                        ).showPicker?.();
                       }}
                     />
                     <ErrorMessage
@@ -950,8 +965,12 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="expected_start_date"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
-                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
-                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                        (
+                          e.currentTarget as HTMLInputElement & {
+                            showPicker?: () => void;
+                          }
+                        ).showPicker?.();
                       }}
                     />
                     <ErrorMessage
@@ -966,8 +985,12 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="expected_end_date_or_deadline"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
-                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
-                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                        (
+                          e.currentTarget as HTMLInputElement & {
+                            showPicker?: () => void;
+                          }
+                        ).showPicker?.();
                       }}
                     />
                     <ErrorMessage
@@ -1066,9 +1089,19 @@ const ViewAndEditTemplateNote: React.FC<{
               <div className={styles.viewInfo}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <h2 className={styles.packageSubHdn}>
-                      Package - <span>#{ind + 1}</span>
-                    </h2>
+                    <div>
+                      <h2 className={styles.packageSubHdn}>
+                        Package - <span>#{ind + 1}</span>
+                      </h2>
+                      {userInfo?.role === "Technician" && (
+                        <button
+                          type="button"
+                          onClick={() => openBiddingModal(wp.id)}
+                        >
+                          Bid here
+                        </button>
+                      )}
+                    </div>
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
@@ -1496,7 +1529,6 @@ const ViewAndEditTemplateNote: React.FC<{
                             className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                           >
                             <span>
-                             
                               {!sectionChanging ? (
                                 <>
                                   <button
@@ -1518,18 +1550,18 @@ const ViewAndEditTemplateNote: React.FC<{
                                   </button>
                                 </>
                               ) : (
-                                 <button
-                                    type="button"
-                                    disabled={sectionChanging}
-                                    className={styles.addMoreBtn}                                    
-                                  >
-                                    <img
-                                      style={{width:"80px", height:"30px"}}
-                                      src={Loader}
-                                      alt="loader"
-                                      className={styles.loaderImg}
-                                    />
-                                  </button>                                
+                                <button
+                                  type="button"
+                                  disabled={sectionChanging}
+                                  className={styles.addMoreBtn}
+                                >
+                                  <img
+                                    style={{ width: "80px", height: "30px" }}
+                                    src={Loader}
+                                    alt="loader"
+                                    className={styles.loaderImg}
+                                  />
+                                </button>
                               )}
                             </span>
                           </div>
@@ -1699,18 +1731,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                           <button
-                              type="button"
-                              disabled={sectionChanging}
-                              className={styles.addMoreBtn}                              
-                            >
-                              <img
-                                style={{width:"80px", height:"30px"}}
-                                src={Loader}
-                                alt="loader"
-                                className={styles.loaderImg}
-                              />
-                            </button>
+                          <button
+                            type="button"
+                            disabled={sectionChanging}
+                            className={styles.addMoreBtn}
+                          >
+                            <img
+                              style={{ width: "80px", height: "30px" }}
+                              src={Loader}
+                              alt="loader"
+                              className={styles.loaderImg}
+                            />
+                          </button>
                         )}
                       </span>
                     </div>
@@ -1855,13 +1887,13 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                           <button
+                          <button
                             type="button"
                             disabled={sectionChanging}
-                            className={styles.addMoreBtn}                                   
+                            className={styles.addMoreBtn}
                           >
                             <img
-                              style={{width:"80px", height:"30px"}}
+                              style={{ width: "80px", height: "30px" }}
                               src={Loader}
                               alt="loader"
                               className={styles.loaderImg}
@@ -1991,18 +2023,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                           <button
-                              type="button"
-                              disabled={sectionChanging}
-                              className={styles.addMoreBtn}                             
-                            >
-                              <img
-                                style={{width:"80px", height:"30px"}}
-                                src={Loader}
-                                alt="loader"
-                                className={styles.loaderImg}
-                              />
-                            </button>
+                          <button
+                            type="button"
+                            disabled={sectionChanging}
+                            className={styles.addMoreBtn}
+                          >
+                            <img
+                              style={{ width: "80px", height: "30px" }}
+                              src={Loader}
+                              alt="loader"
+                              className={styles.loaderImg}
+                            />
+                          </button>
                         )}
                       </span>
                     </div>
@@ -2013,6 +2045,11 @@ const ViewAndEditTemplateNote: React.FC<{
           </div>
         </>
       )}
+      <TechnicianBidding
+        open={biddingModalOpen}
+        packageId={selectedPackageId}
+        onClose={closeBiddingModal}
+      />
     </div>
   );
 };

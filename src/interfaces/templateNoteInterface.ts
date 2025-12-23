@@ -152,3 +152,17 @@ export interface templateNoteStatus  {
   communication: boolean,
   internalNote: boolean
 };
+export interface BiddingModalProps {
+  open: boolean;
+  onClose: (isFetchApi?: boolean) => void;
+  packageId: string;
+};
+export interface Bidding {
+  note: string;
+  bidding_amount: string;
+};
+export interface TechnicianBiddingPayload {
+  note: string;
+  bidding_amount: string;
+  work_package_id: string;
+};
