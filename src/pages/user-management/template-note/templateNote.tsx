@@ -958,8 +958,8 @@ const ViewAndEditTemplateNote: React.FC<{
                       </h2>
                       <div>
                         {userInfo?.role === "Technician" &&
+                          !wp.user_bidding_placed &&
                           wp.bidding_status !== "closed" &&
-                          wp.bidding_status !== "bid_placed" &&
                           leadStatus === "Triple Positive" && (
                             <button
                               className={styles.bidBtn}
@@ -971,6 +971,8 @@ const ViewAndEditTemplateNote: React.FC<{
                           )}
                       </div>
                     </div>
+                    {userInfo?.role === "Technician" &&
+                      wp.user_bidding_placed && <div style={{color: "white"}}>Already Bid</div>}
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
