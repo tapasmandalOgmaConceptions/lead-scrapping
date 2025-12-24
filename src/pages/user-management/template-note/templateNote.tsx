@@ -8,7 +8,6 @@ import {
   FormikProps,
   FieldArray,
 } from "formik";
-// import * as Yup from "yup";
 import styles from "../view-lead/viewLead.module.scss";
 import {
   CommunicationContact,
@@ -28,7 +27,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
-  PackageBiddingStatusEnum,
   TemplateNoteEnum,
   TemplateNoteStatusEnum,
 } from "../../../enum/templateNoteEnum";
@@ -1018,14 +1016,14 @@ const ViewAndEditTemplateNote: React.FC<{
                               ))}
                             </ul>
                           </span>
-                          <span className={styles.editInfoWidth50}>
+                          {/* <span className={styles.editInfoWidth50}>
                             <label>Bidding Status</label>
                             <p>
                               {wp.bidding_status
                                 ? PackageBiddingStatusEnum[wp.bidding_status]
                                 : "N/A"}
                             </p>
-                          </span>
+                          </span> */}
                         </div>
                       </div>
 
