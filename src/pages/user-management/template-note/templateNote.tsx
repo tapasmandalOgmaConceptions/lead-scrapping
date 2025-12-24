@@ -1089,18 +1089,21 @@ const ViewAndEditTemplateNote: React.FC<{
               <div className={styles.viewInfo}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <div>
+                    <div className={styles.subTitleFlex}>
                       <h2 className={styles.packageSubHdn}>
                         Package - <span>#{ind + 1}</span>
                       </h2>
-                      {userInfo?.role === "Technician" && (
+                      <div>
+                        {userInfo?.role === "Technician" && (
                         <button
+                          className={styles.bidBtn}
                           type="button"
                           onClick={() => openBiddingModal(wp.id)}
                         >
                           Bid here
                         </button>
                       )}
+                      </div>
                     </div>
 
                     <div className={styles.editInfoColFlx}>
@@ -1160,7 +1163,7 @@ const ViewAndEditTemplateNote: React.FC<{
                           )}
 
                           <span
-                            className={`${styles.borderRight} ${styles.pl10}`}
+                            className={styles.borderRight}
                           >
                             <label>Price</label>
                             <p>

@@ -114,3 +114,11 @@
   border-color: #333438;
   color: #ffffff;
 }
+.MuiDialog-paper.MuiDialog-paperScrollPaper form input{
+  background-color: #101115;
+  border-color: #333438;
+  color: #ffffff;
+}
+.modalBodyPart{
+  border-color: #333438 !important;
+}

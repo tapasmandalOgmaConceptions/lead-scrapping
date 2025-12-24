@@ -51,6 +51,45 @@
     .LeaddetailsCol {
       width: 100%;
       @include justify-space-between;
+      .subTitleFlex{
+        display: flex;
+        justify-content: space-between;
+         border-bottom: 1px solid #222;
+         margin-bottom: 25px;
+        .bidBtn{            
+          background: #1563df;
+          border: solid 1px #1563df;    
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          padding: 3px 8px 3px 10px;
+          margin:15px 0 0;
+          cursor: pointer;
+          transition: all ease-in-out 0.3s;
+          -webkit-transition: all ease-in-out 0.3s;
+          -moz-transition: all ease-in-out 0.3s;
+          -o-transition: all ease-in-out 0.3s;
+          position: relative;
+          top: -10px;
+          border: none;
+          white-space: nowrap;
+          svg{
+            font-size: 15px;
+            margin-left: 3px;
+            margin-top: 0;
+          }
+          &:hover{
+            background: #1056c7;
+            border: none;
+            color: #fff;
+            box-shadow: 0 5px 5px rgba(255, 255, 255, 0.1);
+            top: -6px;
+          }
+  
+        }
+      }
       h2 {
         font-size: 20px;
         color: $whiteColor;
@@ -62,10 +101,9 @@
         &.packageSubHdn{
           font-size: 17px;
           margin-top: 10px;
-          margin-bottom: 0;
-          border-bottom: 1px solid #222;
+          margin-bottom: 0;         
           padding-bottom: 10px;
-          margin-bottom: 25px;
+          margin-bottom: 0;
           color: #c7c7c7;
           span{            
             display: inline-block;
@@ -531,7 +569,9 @@
     border-radius: 10px;
     &.fullWidth{
       width: 100% !important;
+      margin-left:0 !important;
     }
+   
     @media (max-width: 767px) {
       width: 100%;
     }
