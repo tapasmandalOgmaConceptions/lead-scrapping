@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import {
   Formik,
   Form,
@@ -28,6 +28,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
+  PackageBiddingStatusEnum,
   TemplateNoteEnum,
   TemplateNoteStatusEnum,
 } from "../../../enum/templateNoteEnum";
@@ -49,7 +50,7 @@ import TechnicianBidding from "../../../modal/technician-bidding/technicanBiddin
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
   leadStatus: LeadStatusType;
-}> = ({ leadId, leadStatus }) => {
+}> = memo(({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
   >([]);
@@ -710,6 +711,7 @@ const ViewAndEditTemplateNote: React.FC<{
   const closeBiddingModal = (isFetchApi = false) => {
     setSelectedPackageId("");
     setBiddingModalOpen(false);
+    if (isFetchApi) getWorkPackageData(dealData?.id || "");
   };
 
   return (
@@ -1094,15 +1096,18 @@ const ViewAndEditTemplateNote: React.FC<{
                         Package - <span>#{ind + 1}</span>
                       </h2>
                       <div>
-                        {userInfo?.role === "Technician" && (
-                        <button
-                          className={styles.bidBtn}
-                          type="button"
-                          onClick={() => openBiddingModal(wp.id)}
-                        >
-                          Bid here
-                        </button>
-                      )}
+                        {userInfo?.role === "Technician" &&
+                          wp.bidding_status !== "closed" &&
+                          wp.bidding_status !== "bid_placed" &&
+                          leadStatus === "Triple Positive" && (
+                            <button
+                              className={styles.bidBtn}
+                              type="button"
+                              onClick={() => openBiddingModal(wp.id)}
+                            >
+                              Bid here
+                            </button>
+                          )}
                       </div>
                     </div>
 
@@ -1150,6 +1155,14 @@ const ViewAndEditTemplateNote: React.FC<{
                               ))}
                             </ul>
                           </span>
+                          <span className={styles.editInfoWidth50}>
+                            <label>Bidding Status</label>
+                            <p>
+                              {wp.bidding_status
+                                ? PackageBiddingStatusEnum[wp.bidding_status]
+                                : "N/A"}
+                            </p>
+                          </span>
                         </div>
                       </div>
 
@@ -1162,9 +1175,7 @@ const ViewAndEditTemplateNote: React.FC<{
                             </span>
                           )}
 
-                          <span
-                            className={styles.borderRight}
-                          >
+                          <span className={styles.borderRight}>
                             <label>Price</label>
                             <p>
                               {wp?.package_price_allocation
@@ -2055,5 +2066,5 @@ const ViewAndEditTemplateNote: React.FC<{
       />
     </div>
   );
-};
+})
 export default ViewAndEditTemplateNote;

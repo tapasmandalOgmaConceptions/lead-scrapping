@@ -17,8 +17,6 @@ import {
   TechnicianBiddingPayload,
 } from "../../interfaces/templateNoteInterface";
 import { NumericFormat } from "react-number-format";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 
 const TechnicianBidding: React.FC<BiddingModalProps> = ({
   open,
@@ -27,11 +25,10 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const formikRef = useRef<FormikProps<Bidding>>(null);
-  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   useEffect(() => {
     if (open) {
       formikRef.current?.resetForm();
-      getBiddingData();
+      // getBiddingData();
     }
   }, [packageId, open]);
   const initialValue: Bidding = {
@@ -65,22 +62,22 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
       setLoading(false);
     }
   };
-  const getBiddingData = async () => {
-    try {
-      const res = await api.get(
-        `${endpoints.technician.getBidding}?work_package_id=${packageId}&technician_id=${userInfo?.id}`
-      );
-      if (res.status === 200) {
-        const data: Bidding = res.data;
-        formikRef.current?.setValues({
-            bidding_amount: data.bidding_amount || "",
-            note: data.note || ""
-        });
-      }
-    } catch (err: any) {
-      alert(err?.response?.data?.detail || err?.message, "error");
-    }
-  };
+  // const getBiddingData = async () => {
+  //   try {
+  //     const res = await api.get(
+  //       `${endpoints.technician.getBidding}?work_package_id=${packageId}&technician_id=${userInfo?.id}`
+  //     );
+  //     if (res.status === 200) {
+  //       const data: Bidding = res.data;
+  //       formikRef.current?.setValues({
+  //           bidding_amount: data.bidding_amount || "",
+  //           note: data.note || ""
+  //       });
+  //     }
+  //   } catch (err: any) {
+  //     alert(err?.response?.data?.detail || err?.message, "error");
+  //   }
+  // };
 
   return (
     <Dialog

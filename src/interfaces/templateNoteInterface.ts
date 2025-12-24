@@ -138,13 +138,14 @@ export interface WorkPackageResponse {
   custom_package_type: string;
   required_tools: SkillsAndPrimaryTools[];
   bidding_duration_days: number;
-  assigned_technician: UserListInterface | null
-}
+  assigned_technician: UserListInterface | null;
+  bidding_status: "pending" | "active" | "closed" | "bid_placed";
+};
 export interface SkillsAndPrimaryTools {
   id: number;
   name: string;
   created_at: string;
-}
+};
 export interface templateNoteStatus  {
   deal: boolean,
   workPackage: boolean,

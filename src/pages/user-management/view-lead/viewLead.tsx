@@ -23,7 +23,7 @@ import { resetWorkPackage } from "../../../store/workPackageSlicer";
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
   const [leadNotes, setLeadNotes] = useState<LeadNote[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
     useState<boolean>(false);
   const { leadId } = useParams();
@@ -40,7 +40,7 @@ const ViewLead: React.FC = () => {
     getLeadNotes();
   }, [leadId]);
   const getLead = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const res = await api.get(endpoints.leadScrape.getLead(leadId || ""));
       if (res.status === 200) {

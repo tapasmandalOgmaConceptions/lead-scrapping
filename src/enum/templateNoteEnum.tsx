@@ -11,4 +11,10 @@ export enum TemplateNoteStatusEnum {
   technicalContext = "technicalContext",
   communication = "communication",
   internalNote = "internalNote"
+};
+export enum PackageBiddingStatusEnum {
+  pending = "Pending",
+  active = "Active",
+  closed = "Closed",
+  bid_placed = "Bid Placed",
 }
