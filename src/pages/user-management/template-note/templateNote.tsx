@@ -977,6 +977,9 @@ const ViewAndEditTemplateNote: React.FC<{
                               Bid here
                             </button>
                           )}
+                          {userInfo?.role === "Technician" &&
+                      wp.user_bidding_placed && 
+                      <div className={styles.bidedBtn} style={{color: "white"}}><i className="fa fa-check-circle"></i> Already Bid </div>}
                       </div>
                       <div>
                         {userInfo?.isAdmin &&
@@ -991,8 +994,7 @@ const ViewAndEditTemplateNote: React.FC<{
                           )}
                       </div>
                     </div>
-                    {userInfo?.role === "Technician" &&
-                      wp.user_bidding_placed && <div style={{color: "white"}}>Already Bid</div>}
+                    
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
