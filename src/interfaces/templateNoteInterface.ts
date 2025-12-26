@@ -168,3 +168,16 @@ export interface TechnicianBiddingPayload {
   bidding_amount: string;
   work_package_id: string;
 };
+export interface PackageBiddingHistoryModalProps {
+  open: boolean;
+  onClose: (isFetchApi?: boolean) => void;
+  packageId: string;
+};
+export interface BiddingHistoryResponse {
+  id: string;
+  bidding_amount: number;
+  created_at: string;
+  note: string;
+  technician: UserListInterface;
+  work_package: WorkPackageResponse;
+};

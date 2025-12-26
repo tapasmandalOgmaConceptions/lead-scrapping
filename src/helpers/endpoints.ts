@@ -51,6 +51,7 @@ const endpoints = {
       saveWorkPackage: "work-package/save",
       getWorkPackage: (dealId: string) => `work-package/${dealId}`,
       deleteWorkPackage: (packageId: string) => `work-package/${packageId}`,
+      getBiddingHistory: (packageId: string) => `work-package/${packageId}/bidding-history`,
     }
   },
 };
