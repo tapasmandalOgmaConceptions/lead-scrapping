@@ -8,7 +8,6 @@ import {
   FormikProps,
   FieldArray,
 } from "formik";
-// import * as Yup from "yup";
 import styles from "../view-lead/viewLead.module.scss";
 import {
   CommunicationContact,
@@ -28,7 +27,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
-  PackageBiddingStatusEnum,
   TemplateNoteEnum,
   TemplateNoteStatusEnum,
 } from "../../../enum/templateNoteEnum";
@@ -59,6 +57,7 @@ import {
   workPackagesInitialFormValue,
   workPackageValue,
 } from "./templateNoteFormInitialValueAndSchemas";
+import BiddingHistory from "../../../modal/bidding-history/biddingHistory";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -92,6 +91,7 @@ const ViewAndEditTemplateNote: React.FC<{
     []
   );
   const [biddingModalOpen, setBiddingModalOpen] = useState<boolean>(false);
+  const [biddingHistoryModalOpen, setBiddingHistoryModalOpen] = useState<boolean>(false);
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
@@ -574,6 +574,14 @@ const ViewAndEditTemplateNote: React.FC<{
     setBiddingModalOpen(false);
     if (isFetchApi) getWorkPackageData(dealData?.id || "");
   };
+   const openBiddingHistoryModal = (packageId: string) => {
+    setSelectedPackageId(packageId);
+    setBiddingHistoryModalOpen(true);
+  };
+  const closeBiddingHistoryModal = (isFetchApi = false) => {
+    setBiddingHistoryModalOpen(false);
+    setSelectedPackageId("");
+  };
 
   return (
     <div className={styles.LeadcolRow}>
@@ -969,10 +977,24 @@ const ViewAndEditTemplateNote: React.FC<{
                               Bid here
                             </button>
                           )}
+                          {userInfo?.role === "Technician" &&
+                      wp.user_bidding_placed && 
+                      <div className={styles.bidedBtn} style={{color: "white"}}><i className="fa fa-check-circle"></i> Already Bid </div>}
+                      </div>
+                      <div>
+                        {userInfo?.isAdmin &&
+                          leadStatus === "Triple Positive" && (
+                            <button
+                              className={styles.bidBtn}
+                              type="button"
+                              onClick={() => openBiddingHistoryModal(wp.id)}
+                            >
+                              Package Bid History
+                            </button>
+                          )}
                       </div>
                     </div>
-                    {userInfo?.role === "Technician" &&
-                      wp.user_bidding_placed && <div style={{color: "white"}}>Already Bid</div>}
+                    
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
@@ -1018,14 +1040,14 @@ const ViewAndEditTemplateNote: React.FC<{
                               ))}
                             </ul>
                           </span>
-                          <span className={styles.editInfoWidth50}>
+                          {/* <span className={styles.editInfoWidth50}>
                             <label>Bidding Status</label>
                             <p>
                               {wp.bidding_status
                                 ? PackageBiddingStatusEnum[wp.bidding_status]
                                 : "N/A"}
                             </p>
-                          </span>
+                          </span> */}
                         </div>
                       </div>
 
@@ -1926,6 +1948,11 @@ const ViewAndEditTemplateNote: React.FC<{
         open={biddingModalOpen}
         packageId={selectedPackageId}
         onClose={closeBiddingModal}
+      />
+       <BiddingHistory
+        open={biddingHistoryModalOpen}
+        packageId={selectedPackageId}
+        onClose={closeBiddingHistoryModal}
       />
     </div>
   );

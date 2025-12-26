@@ -42,3 +42,16 @@
     display: flex;
     flex-direction: column;
 }
+.addBidBtn{
+    margin-right: 10px !important;
+    &:disabled{
+        background: #414141 !important;
+        color: #9b9b9b !important;
+    }
+}
+.cancelBtn{   
+    &:disabled{
+        background: #414141 !important;
+        color: #9b9b9b !important;
+    }
+}
