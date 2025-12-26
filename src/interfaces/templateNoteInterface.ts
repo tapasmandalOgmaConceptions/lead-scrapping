@@ -84,6 +84,7 @@ export interface DealResponse {
   client_approved_scope_summary: string;
   special_terms: string;
   custom_sector_package: string;
+  lead_id: string;
 }
 export interface TechnicalContextResponse {
   id?: string;
