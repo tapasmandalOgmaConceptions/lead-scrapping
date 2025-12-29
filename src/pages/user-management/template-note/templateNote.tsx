@@ -58,6 +58,7 @@ import {
   workPackageValue,
 } from "./templateNoteFormInitialValueAndSchemas";
 import BiddingHistory from "../../../modal/bidding-history/biddingHistory";
+import badgeImg from "../../../assets/images/badge-icon.png";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -957,7 +958,7 @@ const ViewAndEditTemplateNote: React.FC<{
               )}
             </div>
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-              <div className={`${styles.viewInfo} ${userInfo?.role === "Technician" ? "technician_view" : ""}`}>
+              <div className={`${styles.viewInfo} ${userInfo?.role === "Technician" ? "technicianView" : ""}`}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
                     <div className={styles.subTitleFlex}>
@@ -979,7 +980,7 @@ const ViewAndEditTemplateNote: React.FC<{
                           )}
                           {userInfo?.role === "Technician" &&
                       wp.user_bidding_placed && 
-                      <div className={styles.bidedBtn} style={{color: "white"}}><i className="fa fa-check-circle"></i> Already Bid </div>}
+                      <div className={styles.bidedBtn}> <img alt="" src={badgeImg}/>  Already Bid </div>}
                       </div>
                       <div>
                         {userInfo?.isAdmin &&

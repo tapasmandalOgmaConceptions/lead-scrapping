@@ -122,3 +122,32 @@
 .modalBodyPart{
   border-color: #333438 !important;
 }
+
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper{
+  max-width: 1000px !important;
+}
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper .MuiDialogContent-root table thead{
+  color: #fff;
+}
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper .MuiDialogContent-root table tbody tr td{
+  color: #9b9b9b;
+  font-size: 14px;
+  padding-right: 20px;
+}
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper .MuiDialogContent-root table tbody tr td:first-child{
+  padding-right: 30px;
+}
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper .MuiDialogContent-root table thead tr th{
+  width: 15%;
+  font-size: 14px;
+}
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper .MuiDialogContent-root table thead tr th:last-child{
+  width: 30%;
+  padding-right: 0;
+}
+.tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper .MuiDialogContent-root table tbody tr td:last-child{
+  overflow-y:scroll;
+  overflow-x:hidden;
+  max-height: 70px;
+  display: block;
+}
