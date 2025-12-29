@@ -55,6 +55,7 @@ const BiddingHistory: React.FC<PackageBiddingHistoryModalProps> = ({
   };
   return (
     <Dialog
+      className="tableDialog"
       open={open}
       keepMounted
       onClose={() => onClose()}
@@ -69,7 +70,7 @@ const BiddingHistory: React.FC<PackageBiddingHistoryModalProps> = ({
 
       <DialogContent className="pt0s">
         <div>
-          <table>
+          <table >
             <thead>
               <tr>
                 <th>Created At</th>
