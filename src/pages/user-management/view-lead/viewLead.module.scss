@@ -90,14 +90,14 @@
   
         }
         .bidedBtn{            
-          background: green;
-          border: solid 1px green;    
-          border-radius: 5px;
+          background: #10bd9d;
+          // border: solid 1px green;    
+          border-radius: 0 10px 0 10px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #fff;
-          padding: 3px 8px 3px 10px;
+          color: #fff !important;
+          padding: 3px 15px 3px 15px;
           margin:15px 0 0;
           cursor: pointer;
           transition: all ease-in-out 0.3s;
@@ -106,11 +106,10 @@
           -o-transition: all ease-in-out 0.3s;
           position: relative;
           top: -10px;
-          border: none;
           white-space: nowrap;
-          i{
-            font-size: 15px;
-            margin-right: 5px;
+          img{
+            width: 13px;
+            margin-right: 5px;            
             margin-top: 0;
           }         
   
@@ -328,6 +327,7 @@
   }
   
 }
+
 
 
 .viewInfo{
@@ -627,6 +627,10 @@
   display: flex;
   justify-content: space-between;
   .editInfoWidth50{
-    width: 45% !important;
+    width: 48% !important;
   }
 }
+
+
+
+
