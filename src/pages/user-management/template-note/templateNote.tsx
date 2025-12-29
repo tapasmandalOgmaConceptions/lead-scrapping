@@ -957,7 +957,7 @@ const ViewAndEditTemplateNote: React.FC<{
               )}
             </div>
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-              <div className={styles.viewInfo}>
+              <div className={`${styles.viewInfo} ${userInfo?.role === "Technician" ? "technician_view" : ""}`}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
                     <div className={styles.subTitleFlex}>
