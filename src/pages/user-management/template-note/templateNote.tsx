@@ -969,12 +969,12 @@ const ViewAndEditTemplateNote: React.FC<{
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
               <div
                 className={`${styles.viewInfo} ${
-                  userInfo?.role === "Technician" ? "technicianView" : ""
+                  userInfo?.role === "Technician" ? styles.technicianView : ""
                 }`}
               >
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <div className={`${styles.subTitleFlex} ${location.pathname.toLocaleLowerCase().includes("view-package") ? "flex-end" : ""}`}>
+                    <div className={`${styles.subTitleFlex} ${location.pathname.toLocaleLowerCase().includes("view-package") ? "rightBidBtn" : ""}`}>
                       {!location.pathname.toLocaleLowerCase().includes("view-package") && (<h2 className={styles.packageSubHdn}>
                         Package - <span>#{ind + 1}</span>
                       </h2>)}
@@ -993,10 +993,10 @@ const ViewAndEditTemplateNote: React.FC<{
                           )}
                         {userInfo?.role === "Technician" &&
                           wp.user_bidding_placed && (
-                            <div className={styles.bidedBtn}>
+                            <h3 className={styles.bidedBtn}>
                               {" "}
                               <img alt="" src={badgeImg} /> Already Bid{" "}
-                            </div>
+                            </h3>
                           )}
                       </div>
                       <div>

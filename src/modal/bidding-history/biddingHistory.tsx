@@ -68,39 +68,39 @@ const BiddingHistory: React.FC<PackageBiddingHistoryModalProps> = ({
         </span>
       </div>
 
-      <DialogContent className="pt0s">
-        <div>
-          <table >
-            <thead>
-              <tr>
-                <th>Created At</th>
-                <th>Package Name</th>
-                <th>Bidding Amount</th>
-                <th>Technician Name</th>
-                <th>Technician Email</th>
-                <th>Note</th>
-              </tr>
-            </thead>
-            <tbody>
-              {historyData.map((history) => (
-                <tr key={history.id}>
-                  <td>
-                    {moment(history.created_at).format("MM-DD-YYYY h:mm:ss a")}
-                  </td>
-                  <td>{history.work_package.package_title}</td>
-                  <td>
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(Number(history.bidding_amount))}
-                  </td>
-                  <td>{history.technician.name}</td>
-                  <td>{history.technician.email}</td>
-                  <td><Tooltip title={history.note} arrow><span>{history.note}</span></Tooltip></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <DialogContent className="pt0s biddingHistoryModal">
+        <div className={styles.biddingHistoryTable}>
+          <div className={styles.tableHead}>
+            <ul>
+              <li>Created At</li>
+              <li>Package Name</li>
+              <li>Bidding Amount</li>
+              <li>Technician Name</li>
+              <li>Technician Email</li>
+              <li>Note</li>
+            </ul>
+          </div>
+          
+          {historyData.map((history) => (
+            <div className={styles.tableRow} key={history.id}>
+              <ul>
+                <li data-label="Created At">
+                  <p>{moment(history.created_at).format("MM-DD-YYYY h:mm:ss a")}</p>
+                </li>
+                <li data-label="Package Name"><p>{history.work_package.package_title}</p></li>
+                <li data-label="Bidding Amount">
+                  <p>{new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(Number(history.bidding_amount))}</p>
+                </li>
+                <li data-label="Technician Name"><p>{history.technician.name}</p></li>
+                <li data-label="Technician Email"><p>{history.technician.email}</p></li>
+                <li data-label="Note" className={styles.tableTooltip}><p><Tooltip title={history.note} arrow><span>{history.note}</span></Tooltip></p></li>
+              </ul>
+            </div>
+          ))}
+
           <div className={styles.container}>
             {historyData.length === 0 && !loading && (
             <p className={styles.loader}>No history available.</p>

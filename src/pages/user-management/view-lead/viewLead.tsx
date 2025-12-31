@@ -302,7 +302,7 @@ const ViewLead: React.FC = () => {
                           {item?.assigned_technician?.name || ""}
                         </div>
                         {item?.assigned_technician ? (
-                          <div style={{width:"60%"}}>
+                          <div className={styles.assignedTecFlxColRight}>
                             <ul className={styles.chipsList}>
                               {item.required_skills.map((skill) => (
                                 <li key={skill.id}>{skill.name}</li>
