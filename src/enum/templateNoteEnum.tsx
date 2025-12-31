@@ -12,13 +12,15 @@ export enum TemplateNoteStatusEnum {
   communication = "communication",
   internalNote = "internalNote"
 };
-export enum DealsTabsValue {
+export enum PackageTabsValue {
   new = "new",
-  open = "open",
+  active = "active",
+  awarded = "awarded",
   closed = "closed",
 };
-export enum DealsTabsLabels {
+export enum PackageTabsLabels {
   new = "New",
-  open = "Open",
+  active = "Active",
+  awarded = "Awarded",
   closed = "Closed",
 };

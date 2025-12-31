@@ -43,7 +43,7 @@ import { useDispatch } from "react-redux";
 import { setSectionStatus } from "../../../store/templateNoteSectionStatusSlice";
 import Loader from "../../../../src/assets/images/loader.gif";
 import { setWorkPackage } from "../../../store/workPackageSlicer";
-import TechnicianBidding from "../../../modal/technician-bidding/technicanBidding";
+import TechnicianBidding from "../../../modal/technician-bidding/technicianBidding";
 import {
   communicationFormValidationSchema,
   communicationInitialFormValue,
@@ -59,6 +59,7 @@ import {
 } from "./templateNoteFormInitialValueAndSchemas";
 import BiddingHistory from "../../../modal/bidding-history/biddingHistory";
 import badgeImg from "../../../assets/images/badge-icon.png";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
@@ -92,7 +93,8 @@ const ViewAndEditTemplateNote: React.FC<{
     []
   );
   const [biddingModalOpen, setBiddingModalOpen] = useState<boolean>(false);
-  const [biddingHistoryModalOpen, setBiddingHistoryModalOpen] = useState<boolean>(false);
+  const [biddingHistoryModalOpen, setBiddingHistoryModalOpen] =
+    useState<boolean>(false);
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
@@ -103,6 +105,9 @@ const ViewAndEditTemplateNote: React.FC<{
   const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const dispatch: AppDispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const packageId = searchParams.get("pkg");
+  const location = useLocation();
   const hideEditButton =
     userInfo?.role === "Technician" || leadStatus === "Triple Positive";
   useEffect(() => {
@@ -178,10 +183,10 @@ const ViewAndEditTemplateNote: React.FC<{
         setDealData(res.data?.data || null);
         if (res.data?.data?.id) {
           dispatch(setSectionStatus(TemplateNoteStatusEnum.deal));
+          getWorkPackageData(res.data?.data?.id);
           getTechnicianContextData(res.data?.data?.id);
           getInternalNotesData(res.data?.data?.id);
           getCommunicationData(res.data?.data?.id);
-          getWorkPackageData(res.data?.data?.id);
         }
         if (
           !res.data?.data?.id &&
@@ -423,8 +428,12 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.workPackage.getWorkPackage(dealId)
       );
       if (res.status === 200) {
-        setWorkPackageData(res.data?.packages || []);
-        if (res.data?.packages && res.data?.packages?.length > 0) {
+        const packages: WorkPackageResponse[] = res.data?.packages || [];
+        const workPackages = packageId
+          ? packages.filter((pkg) => Number(pkg.id) === Number(packageId))
+          : packages;
+        setWorkPackageData(workPackages);
+        if (packages.length > 0) {
           dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
           dispatch(setWorkPackage(res.data?.packages));
         }
@@ -575,7 +584,7 @@ const ViewAndEditTemplateNote: React.FC<{
     setBiddingModalOpen(false);
     if (isFetchApi) getWorkPackageData(dealData?.id || "");
   };
-   const openBiddingHistoryModal = (packageId: string) => {
+  const openBiddingHistoryModal = (packageId: string) => {
     setSelectedPackageId(packageId);
     setBiddingHistoryModalOpen(true);
   };
@@ -958,13 +967,17 @@ const ViewAndEditTemplateNote: React.FC<{
               )}
             </div>
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-              <div className={`${styles.viewInfo} ${userInfo?.role === "Technician" ? "technicianView" : ""}`}>
+              <div
+                className={`${styles.viewInfo} ${
+                  userInfo?.role === "Technician" ? "technicianView" : ""
+                }`}
+              >
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <div className={styles.subTitleFlex}>
-                      <h2 className={styles.packageSubHdn}>
+                    <div className={`${styles.subTitleFlex} ${location.pathname.toLocaleLowerCase().includes("view-package") ? "flex-end" : ""}`}>
+                      {!location.pathname.toLocaleLowerCase().includes("view-package") && (<h2 className={styles.packageSubHdn}>
                         Package - <span>#{ind + 1}</span>
-                      </h2>
+                      </h2>)}
                       <div>
                         {userInfo?.role === "Technician" &&
                           !wp.user_bidding_placed &&
@@ -978,9 +991,13 @@ const ViewAndEditTemplateNote: React.FC<{
                               Bid here
                             </button>
                           )}
-                          {userInfo?.role === "Technician" &&
-                      wp.user_bidding_placed && 
-                      <div className={styles.bidedBtn}> <img alt="" src={badgeImg}/>  Already Bid </div>}
+                        {userInfo?.role === "Technician" &&
+                          wp.user_bidding_placed && (
+                            <div className={styles.bidedBtn}>
+                              {" "}
+                              <img alt="" src={badgeImg} /> Already Bid{" "}
+                            </div>
+                          )}
                       </div>
                       <div>
                         {userInfo?.isAdmin &&
@@ -995,7 +1012,6 @@ const ViewAndEditTemplateNote: React.FC<{
                           )}
                       </div>
                     </div>
-                    
 
                     <div className={styles.editInfoColFlx}>
                       <div className={styles.editInfoWidth50}>
@@ -1950,7 +1966,7 @@ const ViewAndEditTemplateNote: React.FC<{
         packageId={selectedPackageId}
         onClose={closeBiddingModal}
       />
-       <BiddingHistory
+      <BiddingHistory
         open={biddingHistoryModalOpen}
         packageId={selectedPackageId}
         onClose={closeBiddingHistoryModal}

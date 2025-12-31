@@ -15,7 +15,7 @@ const endpoints = {
     getTechniciansLead: "technician/leads",
     saveBidding: "technician/save-bidding",
     getBidding: "technician/get-bidding",
-    getDeals: "technician/get-deal",
+    getPackages: "technician/packages",
   },
   leadScrape: {
     createLeadScrape: "leads/scrape",

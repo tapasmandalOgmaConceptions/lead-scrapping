@@ -13,7 +13,6 @@ const FollowUp = lazy(() => import("../pages/home-page/homePage"));
 const AssignUserLeadList = lazy(() => import("../pages/user-management/assign-user-lead-list/assignUserLeadList"));
 const ViewLead = lazy(() => import("../pages/user-management/view-lead/viewLead"));
 const PositiveLeads = lazy(() => import("../pages/positive-leads/positiveLeads"));
-const Deals = lazy(() => import("../pages/deals/deals"));
 
 function AppRouter() {
   return (
@@ -34,7 +33,7 @@ function AppRouter() {
           <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
           <Route path="/view-lead/:leadId" element={< ViewLead/>} />
           <Route path="/positive-leads" element={<PositiveLeads />} />
-          <Route path="/deals" element={<Deals />} />
+          <Route path="/view-package/:leadId" element={< ViewLead/>} />
         </Route>
 
         {/* Catch-all for 404 Not Found */}

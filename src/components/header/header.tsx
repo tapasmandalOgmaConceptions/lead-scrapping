@@ -104,29 +104,15 @@ const Header: React.FC  = () => {
                {isAuthenticated && (
                   <ul className="navbar-nav" onClick={handleNavLinkClick}>
                     <li>
-                      <NavLink to={"/"}>{userInfo?.role === "Admin" ? "Lead Scrape" : userInfo?.role === "User" ? "Assigned Leads" : "Assigned Deals"}</NavLink>
+                      <NavLink to={"/"}>{userInfo?.role === "Admin" ? "Lead Scrape" : userInfo?.role === "User" ? "Assigned Leads" : "Packages"}</NavLink>
                     </li>
-                    <li>
+                    {userInfo?.role !== "Technician" && (<li>
                       <NavLink to={"/positive-leads"}>Positive Leads</NavLink>
-                    </li>
+                    </li>)}
                    { userInfo?.isAdmin && (<li>
                       <NavLink to={"/user-list"}>User List</NavLink>
                     </li>)}
-                    {/* {!userInfo?.isAdmin ? (
-                      <li>
-                        <NavLink to={"/assigned-leads"}>Assigned Leads</NavLink>
-                      </li>
-                    ) : (
-                      <>
-                        <li>
-                          <NavLink to={"/lead-scrape"}>Lead Scrape</NavLink>
-                        </li>
-                        <li>
-                          <NavLink to={"/user-list"}>User List</NavLink>
-                        </li>
-                      </>
-                    )} */}
-
+                   
                     {/* <li className="dropdown">
                     <span className='subLink' onClick={handleNavLinkClick}>Place Purchase Orders</span>
                     <span

@@ -142,6 +142,7 @@ export interface WorkPackageResponse {
   assigned_technician: UserListInterface | null;
   bidding_status: "pending" | "active" | "closed";
   user_bidding_placed: boolean;
+  lead_id?: string
 };
 export interface SkillsAndPrimaryTools {
   id: number;
