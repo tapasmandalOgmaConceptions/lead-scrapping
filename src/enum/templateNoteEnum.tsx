@@ -11,4 +11,16 @@ export enum TemplateNoteStatusEnum {
   technicalContext = "technicalContext",
   communication = "communication",
   internalNote = "internalNote"
-}
+};
+export enum PackageTabsValue {
+  new = "new",
+  active = "active",
+  awarded = "awarded",
+  closed = "closed",
+};
+export enum PackageTabsLabels {
+  new = "New",
+  active = "Active",
+  awarded = "Awarded",
+  closed = "Closed",
+};

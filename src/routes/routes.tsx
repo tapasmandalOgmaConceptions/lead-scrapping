@@ -33,6 +33,7 @@ function AppRouter() {
           <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
           <Route path="/view-lead/:leadId" element={< ViewLead/>} />
           <Route path="/positive-leads" element={<PositiveLeads />} />
+          <Route path="/view-package/:leadId" element={< ViewLead/>} />
         </Route>
 
         {/* Catch-all for 404 Not Found */}

@@ -122,7 +122,7 @@ const Login: React.FC = () => {
                       disabled={loading}
                       className={styles.submitBtn}
                     >
-                      Login
+                      {loading ? "Logging in..." : "Login"}
                     </button>
                   </div>
                   <p className={styles.loginTermsService}>

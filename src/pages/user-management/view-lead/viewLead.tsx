@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import styles from "./viewLead.module.scss";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import api from "../../../services/api";
 import endpoints from "../../../helpers/endpoints";
 import {
@@ -23,10 +23,11 @@ import { resetWorkPackage } from "../../../store/workPackageSlicer";
 const ViewLead: React.FC = () => {
   const [leadDetails, setLeadDetails] = useState<LeadListResponse | null>(null);
   const [leadNotes, setLeadNotes] = useState<LeadNote[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [changeLeadStatusModalOpen, setChangeLeadStatusModalOpen] =
     useState<boolean>(false);
   const { leadId } = useParams();
+  const location = useLocation();
   const sectionStatus = useSelector(
     (state: RootState) => state.templateNoteSectionStatus
   );
@@ -40,7 +41,7 @@ const ViewLead: React.FC = () => {
     getLeadNotes();
   }, [leadId]);
   const getLead = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const res = await api.get(endpoints.leadScrape.getLead(leadId || ""));
       if (res.status === 200) {
@@ -111,7 +112,7 @@ const ViewLead: React.FC = () => {
           <div className={styles.container}>
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
-                <h1>Lead Information</h1>
+                <h1>{location.pathname.toLowerCase().includes("view-package") ? "Package" : "Lead"} Information</h1>
               </div>
               <div className={styles.productListTitleBtn}>
                 {userInfo?.role !== "Technician" &&
@@ -146,7 +147,7 @@ const ViewLead: React.FC = () => {
             </div>
 
             <div className={styles.LeadcolRow}>
-              <div
+              {userInfo?.role !== "Technician" && (<div
                 className={`${styles.LeaddetailsCol} ${styles.leadDtlsInfoPrt}`}
               >
                 <h2>Leads Details</h2>
@@ -203,10 +204,10 @@ const ViewLead: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>)}
 
               <div className={styles.leadDtlsBdyRow}>
-                <div className={styles.leadDtlsBdyLeftClm}>
+                {userInfo?.role !== "Technician" && <div className={styles.leadDtlsBdyLeftClm}>
                   <div className={styles.leadDtlsBdyLeftstatusInfo}>
                     <ul>
                       <li onClick={() => scrollToSection("dealSection")}>
@@ -301,7 +302,7 @@ const ViewLead: React.FC = () => {
                           {item?.assigned_technician?.name || ""}
                         </div>
                         {item?.assigned_technician ? (
-                          <div style={{width:"60%"}}>
+                          <div className={styles.assignedTecFlxColRight}>
                             <ul className={styles.chipsList}>
                               {item.required_skills.map((skill) => (
                                 <li key={skill.id}>{skill.name}</li>
@@ -315,8 +316,8 @@ const ViewLead: React.FC = () => {
                     ))}
                   </div>
                 )}
-                </div>
-                <div className={styles.leadDtlsBdyRightClm}>
+                </div>}
+                <div className={`${styles.leadDtlsBdyRightClm} ${userInfo?.role === "Technician" ? styles.fullWidth : ""}`}>
                   {leadDetails?.lead_status &&
                     [
                       "Positive lead",
