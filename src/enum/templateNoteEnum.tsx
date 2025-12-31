@@ -12,9 +12,15 @@ export enum TemplateNoteStatusEnum {
   communication = "communication",
   internalNote = "internalNote"
 };
-export enum PackageBiddingStatusEnum {
-  pending = "Pending",
+export enum PackageTabsValue {
+  new = "new",
+  active = "active",
+  awarded = "awarded",
+  closed = "closed",
+};
+export enum PackageTabsLabels {
+  new = "New",
   active = "Active",
+  awarded = "Awarded",
   closed = "Closed",
-  bid_placed = "Bid Placed",
-}
+};

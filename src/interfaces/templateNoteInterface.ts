@@ -84,6 +84,7 @@ export interface DealResponse {
   client_approved_scope_summary: string;
   special_terms: string;
   custom_sector_package: string;
+  lead_id: string;
 }
 export interface TechnicalContextResponse {
   id?: string;
@@ -141,6 +142,7 @@ export interface WorkPackageResponse {
   assigned_technician: UserListInterface | null;
   bidding_status: "pending" | "active" | "closed";
   user_bidding_placed: boolean;
+  lead_id?: string
 };
 export interface SkillsAndPrimaryTools {
   id: number;

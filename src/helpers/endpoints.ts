@@ -14,7 +14,8 @@ const endpoints = {
   technician: {
     getTechniciansLead: "technician/leads",
     saveBidding: "technician/save-bidding",
-    getBidding: "technician/get-bidding"
+    getBidding: "technician/get-bidding",
+    getPackages: "technician/packages",
   },
   leadScrape: {
     createLeadScrape: "leads/scrape",
@@ -51,8 +52,9 @@ const endpoints = {
       saveWorkPackage: "work-package/save",
       getWorkPackage: (dealId: string) => `work-package/${dealId}`,
       deleteWorkPackage: (packageId: string) => `work-package/${packageId}`,
-      getBiddingHistory: (packageId: string) => `work-package/${packageId}/bidding-history`,
-    }
+      getBiddingHistory: (packageId: string) =>
+        `work-package/${packageId}/bidding-history`,
+    },
   },
 };
 export default endpoints;

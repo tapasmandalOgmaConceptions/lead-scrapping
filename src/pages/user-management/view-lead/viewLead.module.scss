@@ -56,6 +56,9 @@
         justify-content: space-between;
          border-bottom: 1px solid #222;
          margin-bottom: 25px;
+        &.flex-end{
+          justify-content: end !important;
+        }
         .bidBtn{            
           background: #1563df;
           border: solid 1px #1563df;    
