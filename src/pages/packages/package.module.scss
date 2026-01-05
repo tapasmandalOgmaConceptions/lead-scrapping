@@ -1,4 +1,10 @@
 .parent{
     box-sizing: border-box;
     width: 100%;
+    position: relative;
+    z-index: 3;
+    .packageTabMenu{
+        position: relative;
+        margin-bottom: 40px;
+    }
 }

@@ -175,7 +175,42 @@
   font-size: 16px;
 }
 
+.packageTitleBorder{
+  position: relative;
+  border-bottom: none !important;
+}
+.packageTitleBorder::after{
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 1px;
+  bottom: 25px;
+  left: 0;
+  border-bottom: 1px solid #222;
+}
 
+
+.css-13xfq8m-MuiTabPanel-root{
+  padding: 0 !important;
+}
+
+
+.packageTabMenu{
+  position: relative;
+  margin: 30px 0 50px 0;
+}
+.packageTabMenu .container{
+  max-width: 95%;
+}
+.packageTabMenu button{
+  font-size: 18px;
+  color: #ffffff;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.packageTabMenu .css-jhczcq-MuiTabs-root{
+  border-bottom: 1px solid #333438;
+}
 
 
 
@@ -185,5 +220,9 @@
 @media (max-width: 991px){
   .tableDialog .css-10d30g3-MuiPaper-root-MuiDialog-paper{
     width: 90% !important;
+  }
+  .packageTabMenu{
+    position: relative;
+    margin: 30px 0;
   }
 }
