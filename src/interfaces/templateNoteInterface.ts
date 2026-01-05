@@ -84,6 +84,7 @@ export interface DealResponse {
   client_approved_scope_summary: string;
   special_terms: string;
   custom_sector_package: string;
+  lead_id: string;
 }
 export interface TechnicalContextResponse {
   id?: string;
@@ -138,17 +139,47 @@ export interface WorkPackageResponse {
   custom_package_type: string;
   required_tools: SkillsAndPrimaryTools[];
   bidding_duration_days: number;
-  assigned_technician: UserListInterface | null
-}
+  assigned_technician: UserListInterface | null;
+  bidding_status: "pending" | "active" | "closed";
+  user_bidding_placed: boolean;
+  lead_id?: string
+};
 export interface SkillsAndPrimaryTools {
   id: number;
   name: string;
   created_at: string;
-}
+};
 export interface templateNoteStatus  {
   deal: boolean,
   workPackage: boolean,
   technicalContext: boolean,
   communication: boolean,
   internalNote: boolean
+};
+export interface BiddingModalProps {
+  open: boolean;
+  onClose: (isFetchApi?: boolean) => void;
+  packageId: string;
+};
+export interface Bidding {
+  note: string;
+  bidding_amount: string;
+};
+export interface TechnicianBiddingPayload {
+  note: string;
+  bidding_amount: string;
+  work_package_id: string;
+};
+export interface PackageBiddingHistoryModalProps {
+  open: boolean;
+  onClose: (isFetchApi?: boolean) => void;
+  packageId: string;
+};
+export interface BiddingHistoryResponse {
+  id: string;
+  bidding_amount: number;
+  created_at: string;
+  note: string;
+  technician: UserListInterface;
+  work_package: WorkPackageResponse;
 };

@@ -1,0 +1,171 @@
+@import "../../../assets/styles/shared.scss";
+.productListViewPrt {
+  ul {
+    background-color: $darkFormFieldColor;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 12px;
+    @include justify-space-between;
+    align-items: center;
+    li {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      &:first-child {
+        width: 15%;
+        padding-left: 20px !important;
+      }
+      &:nth-child(2) {
+        width: 18%;
+      }
+      &:nth-child(3) {
+        width: 8%;
+      }
+      &:nth-child(4) {
+        width: 12%;
+      }
+      &:nth-child(5) {
+        width: 12%;
+      }
+      &:nth-child(6) {
+        width: 20%;
+      }
+      &:last-child {
+        width: 10%;
+        padding-right: 20px !important;
+      }
+    }
+  }
+  .tableHead {
+    @media (max-width: 991px) {
+      display: none;
+    }
+    ul {
+      li {
+        font-size: 18px;
+        color: $whiteColor;
+        font-weight: 600;
+        padding: 17px 10px;
+      }
+    }
+  }
+  .tableRow {
+    ul {
+      @media (max-width: 991px) {
+        display: block;
+        padding: 15px 0;
+      }
+      li {
+        padding: 10px 10px;
+        @media (max-width: 991px) {
+          width: 100%;
+          @include justify-space-between;
+          align-items: center;
+        }
+        &::before {
+          @media (max-width: 991px) {
+            content: attr(data-label);
+            font-size: 16px;
+            color: #ffffff;
+            font-weight: 600;
+            width: 130px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+        p {
+          font-size: 16px;
+          color: $darkBgTextColor;
+          font-weight: 500;
+          margin-bottom: 0;
+          @media (max-width: 991px) {
+            width: calc(100% - 140px);
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          strong {
+            color: $blackColor;
+            margin-right: 3px;
+          }
+        }
+        &:first-child {
+          padding-left: 10px !important;
+          img {
+            max-width: 100px;
+            max-height: 65px;
+            border-radius: 10px;
+          }
+        }
+        &:nth-child(5) {
+          p {
+            text-decoration: line-through;
+          }
+          &.noLineThrough{
+            p{
+              text-decoration: none;
+            }
+          }
+        }
+        &:last-child {
+          p {
+            font-size: 18px;
+            color: $secondaryColor;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+.loader {
+  color: $whiteColor;
+  text-align: center;
+  margin-top: 10px;
+}
+.heading {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  h2 {
+    color: #ffffff;
+    @media only screen and (max-width: 991px){
+      margin-bottom: 20px;
+    }
+  }
+  input {
+    width: 300px;
+    height: 42px;
+    background-color: $darkFormFieldColor;
+    border: 1px solid $darkBorderColor !important;
+    border-radius: 8px;
+    padding: 10px 40px 10px 15px;
+    font-size: 15px;
+    color: #ffffff;
+    outline: none;
+    @media only screen and (max-width: 991px) {
+      width: 100%;
+    }
+    &::-webkit-input-placeholder {
+      color: #ffffff;
+    }
+    &::-moz-placeholder {
+      color: #ffffff;
+    }
+    &::-ms-placeholder {
+      color: #ffffff;
+    }
+    &::placeholder {
+      color: #ffffff;
+    }
+    &:hover {
+      border: 1px solid $darkBorderColor !important;
+    }
+  }
+}
+
+
+.productPagination{
+  margin-bottom: 30px;
+}

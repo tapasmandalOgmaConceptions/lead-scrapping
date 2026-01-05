@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import {
   Formik,
   Form,
@@ -8,7 +8,6 @@ import {
   FormikProps,
   FieldArray,
 } from "formik";
-import * as Yup from "yup";
 import styles from "../view-lead/viewLead.module.scss";
 import {
   CommunicationContact,
@@ -44,11 +43,28 @@ import { useDispatch } from "react-redux";
 import { setSectionStatus } from "../../../store/templateNoteSectionStatusSlice";
 import Loader from "../../../../src/assets/images/loader.gif";
 import { setWorkPackage } from "../../../store/workPackageSlicer";
+import TechnicianBidding from "../../../modal/technician-bidding/technicianBidding";
+import {
+  communicationFormValidationSchema,
+  communicationInitialFormValue,
+  dealFormValidationSchema,
+  dealInitialFormValue,
+  internalNoteInitialFormValue,
+  internalNoteValidationSchema,
+  technicalContextFormValidationSchema,
+  technicalContextInitialFormValue,
+  workPackagesFormValidationSchema,
+  workPackagesInitialFormValue,
+  workPackageValue,
+} from "./templateNoteFormInitialValueAndSchemas";
+import BiddingHistory from "../../../modal/bidding-history/biddingHistory";
+import badgeImg from "../../../assets/images/badge-icon.png";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 const ViewAndEditTemplateNote: React.FC<{
   leadId: string;
   leadStatus: LeadStatusType;
-}> = ({ leadId, leadStatus }) => {
+}> = memo(({ leadId, leadStatus }) => {
   const [dealsSectorPackages, setDealsSectorPackages] = useState<
     DealSectorPackage[]
   >([]);
@@ -76,6 +92,10 @@ const ViewAndEditTemplateNote: React.FC<{
   const [dependencies, setDependencies] = useState<ToolsAndSkillsInterface[]>(
     []
   );
+  const [biddingModalOpen, setBiddingModalOpen] = useState<boolean>(false);
+  const [biddingHistoryModalOpen, setBiddingHistoryModalOpen] =
+    useState<boolean>(false);
+  const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
     useRef<FormikProps<TechnicalContext>>(null);
@@ -85,6 +105,9 @@ const ViewAndEditTemplateNote: React.FC<{
   const workPackagesFormFormikRef = useRef<FormikProps<WorkPackages>>(null);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const dispatch: AppDispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const packageId = searchParams.get("pkg");
+  const location = useLocation();
   const hideEditButton =
     userInfo?.role === "Technician" || leadStatus === "Triple Positive";
   useEffect(() => {
@@ -96,159 +119,7 @@ const ViewAndEditTemplateNote: React.FC<{
     }
     getDeals();
   }, []);
-  const dealInitialFormValue: DealClientForm = {
-    client_name: "",
-    primary_contact_name: "",
-    primary_contact_email: "",
-    primary_contact_phone: "",
-    industry: "",
-    sector_package_id: "",
-    deal_name: "",
-    salesperson_name: "",
-    deal_close_date: "",
-    expected_start_date: "",
-    expected_end_date_or_deadline: "",
-    client_approved_scope_summary: "",
-    special_terms: "",
-    custom_sector_package: "",
-  };
-  const dealFormValidationSchema = Yup.object().shape({
-    client_name: Yup.string()
-      .required("Client name is required")
-      .min(3, "Too short!"),
-    primary_contact_name: Yup.string()
-      .required("Primary contact name is required")
-      .min(3, "Too short!"),
-    primary_contact_email: Yup.string()
-      .email("Invalid email format")
-      .required("Primary contact email is required"),
-    primary_contact_phone: Yup.string().matches(
-      /^[0-9]{10}$/,
-      "Enter a valid phone number"
-    ),
-    industry: Yup.string().required("Industry is required"),
-    sector_package_id: Yup.string().required("Sector package is required"),
-    deal_name: Yup.string().required("Deal name is required"),
-    salesperson_name: Yup.string().required("sales person name is required"),
-    deal_close_date: Yup.string().required("Deal close date is required"),
-    expected_start_date: Yup.string(),
-    expected_end_date_or_deadline: Yup.string(),
-    client_approved_scope_summary: Yup.string().required(
-      "Client approved scope summary is required"
-    ),
-    special_terms: Yup.string(),
-    custom_sector_package: Yup.string().when("sector_package_id", {
-      is: (val: string) => val === "12",
-      then: (schema) =>
-        schema.required(
-          "Custom sector package is required when selecting Others"
-        ),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  });
-  const technicalContextInitialFormValue: TechnicalContext = {
-    client_main_systems: "",
-    integration_targets: "",
-    tools_in_scope: "",
-    access_required_list: "",
-    credential_provision_method: "",
-  };
-  const technicalContextFormValidationSchema = Yup.object().shape({
-    client_main_systems: Yup.string().required(
-      "Client main system is required"
-    ),
-    integration_targets: Yup.string(),
-    tools_in_scope: Yup.string().required("Tools in scope is required"),
-    access_required_list: Yup.string().required(
-      "Access required list is required"
-    ),
-    credential_provision_method: Yup.string().required(
-      "Credential provision method is required"
-    ),
-  });
-  const communicationInitialFormValue: CommunicationContact = {
-    client_project_contact_name: "",
-    client_project_contact_email: "",
-    preferred_channel: "",
-    update_frequency: "",
-  };
-  const communicationFormValidationSchema = Yup.object().shape({
-    client_project_contact_name: Yup.string()
-      .required("Client project contact name is required")
-      .min(3, "Too short!"),
-    client_project_contact_email: Yup.string()
-      .email("Invalid email format")
-      .required("Client project contact email is required"),
-    preferred_channel: Yup.string(),
-    update_frequency: Yup.string(),
-  });
-  const internalNoteInitialFormValue: InternalNote = {
-    internal_risks_and_warnings: "",
-    internal_margin_sensitivity: "",
-    internal_notes: "",
-  };
-  const internalNoteValidationSchema = Yup.object().shape({
-    internal_risks_and_warnings: Yup.string(),
-    internal_margin_sensitivity: Yup.string().required(
-      "Margin sensitivity is required"
-    ),
-    internal_notes: Yup.string(),
-  });
-  const workPackageValue: WorkPackage = {
-    id: "",
-    package_title: "",
-    package_type: "",
-    package_summary: "",
-    key_deliverables: "",
-    acceptance_criteria: "",
-    required_skills: [],
-    primary_tools: [],
-    package_estimated_complexity: "",
-    package_price_allocation: "",
-    dependencies: [],
-    custom_package_type: "",
-    required_tools: [],
-    bidding_duration_days: "",
-  };
-  const workPackagesInitialFormValue: WorkPackages = {
-    work_packages: [workPackageValue],
-  };
-  const workPackageValidationSchema = Yup.object().shape({
-    id: Yup.string(),
-    package_title: Yup.string().required("Package title is required"),
-    package_type: Yup.string().required("Package type is required"),
-    package_summary: Yup.string().required("Package summary is required"),
-    key_deliverables: Yup.string().required("Key deliverable is required"),
-    acceptance_criteria: Yup.string().required(
-      "Acceptance criteria is required"
-    ),
-    required_skills: Yup.array().min(1, "At least one skill is required"),
-    primary_tools: Yup.array().min(1, "At least one primary tool is required"),
-    package_estimated_complexity: Yup.string().required(
-      "Package estimated complexity is required"
-    ),
-    package_price_allocation: Yup.string(),
-    dependencies: Yup.array().min(1, "At least one dependency is required"),
-    required_tools: Yup.array().min(
-      1,
-      "At least one required tools is required"
-    ),
-    bidding_duration_days: Yup.number()
-      .integer("Must be an integer")
-      .required("Bidding duration is required")
-      .min(1, "Minimum value must be 1"),
-    custom_package_type: Yup.string().when("package_type", {
-      is: (val: string) => val === "12",
-      then: (schema) =>
-        schema.required("Custom package is required when selecting Other"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  });
-  const workPackagesFormValidationSchema = Yup.object().shape({
-    work_packages: Yup.array()
-      .of(workPackageValidationSchema)
-      .min(1, "At least one work package is required"),
-  });
+
   const editSection = (sectionName: TemplateNoteEnum) => {
     if (sectionChanging) return;
     setSectionName(sectionName);
@@ -312,10 +183,10 @@ const ViewAndEditTemplateNote: React.FC<{
         setDealData(res.data?.data || null);
         if (res.data?.data?.id) {
           dispatch(setSectionStatus(TemplateNoteStatusEnum.deal));
+          getWorkPackageData(res.data?.data?.id);
           getTechnicianContextData(res.data?.data?.id);
           getInternalNotesData(res.data?.data?.id);
           getCommunicationData(res.data?.data?.id);
-          getWorkPackageData(res.data?.data?.id);
         }
         if (
           !res.data?.data?.id &&
@@ -557,8 +428,12 @@ const ViewAndEditTemplateNote: React.FC<{
         endpoints.templateNote.workPackage.getWorkPackage(dealId)
       );
       if (res.status === 200) {
-        setWorkPackageData(res.data?.packages || []);
-        if (res.data?.packages && res.data?.packages?.length > 0) {
+        const packages: WorkPackageResponse[] = res.data?.packages || [];
+        const workPackages = packageId
+          ? packages.filter((pkg) => Number(pkg.id) === Number(packageId))
+          : packages;
+        setWorkPackageData(workPackages);
+        if (packages.length > 0) {
           dispatch(setSectionStatus(TemplateNoteStatusEnum.workPackage));
           dispatch(setWorkPackage(res.data?.packages));
         }
@@ -699,6 +574,23 @@ const ViewAndEditTemplateNote: React.FC<{
     } catch (err: any) {
       alert(err?.response?.data?.detail || err?.message, "error");
     }
+  };
+  const openBiddingModal = (packageId: string) => {
+    setBiddingModalOpen(true);
+    setSelectedPackageId(packageId);
+  };
+  const closeBiddingModal = (isFetchApi = false) => {
+    setSelectedPackageId("");
+    setBiddingModalOpen(false);
+    if (isFetchApi) getWorkPackageData(dealData?.id || "");
+  };
+  const openBiddingHistoryModal = (packageId: string) => {
+    setSelectedPackageId(packageId);
+    setBiddingHistoryModalOpen(true);
+  };
+  const closeBiddingHistoryModal = (isFetchApi = false) => {
+    setBiddingHistoryModalOpen(false);
+    setSelectedPackageId("");
   };
 
   return (
@@ -934,8 +826,12 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="deal_close_date"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
-                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
-                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                        (
+                          e.currentTarget as HTMLInputElement & {
+                            showPicker?: () => void;
+                          }
+                        ).showPicker?.();
                       }}
                     />
                     <ErrorMessage
@@ -950,8 +846,12 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="expected_start_date"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
-                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
-                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                        (
+                          e.currentTarget as HTMLInputElement & {
+                            showPicker?: () => void;
+                          }
+                        ).showPicker?.();
                       }}
                     />
                     <ErrorMessage
@@ -966,8 +866,12 @@ const ViewAndEditTemplateNote: React.FC<{
                       name="expected_end_date_or_deadline"
                       type="date"
                       min={new Date().toISOString().split("T")[0]}
-                      onClick={(e: React.MouseEvent<HTMLInputElement>) =>{
-                        (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+                      onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                        (
+                          e.currentTarget as HTMLInputElement & {
+                            showPicker?: () => void;
+                          }
+                        ).showPicker?.();
                       }}
                     />
                     <ErrorMessage
@@ -1063,104 +967,139 @@ const ViewAndEditTemplateNote: React.FC<{
               )}
             </div>
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-              <div className={styles.viewInfo}>
+              <div
+                className={`${styles.viewInfo} ${
+                  userInfo?.role === "Technician" ? styles.technicianView : ""
+                }`}
+              >
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
-                    <h2 className={styles.packageSubHdn}>
-                      Package - <span>#{ind + 1}</span>
-                    </h2>
+                    <div className={`${styles.subTitleFlex} ${location.pathname.toLocaleLowerCase().includes("view-package") ? "rightBidBtn packageTitleBorder" : ""}`}>
+                      {!location.pathname.toLocaleLowerCase().includes("view-package") && (<h2 className={styles.packageSubHdn}>
+                        Package - <span>#{ind + 1}</span>
+                      </h2>)}
+                      <div>
+                        {userInfo?.role === "Technician" &&
+                          !wp.user_bidding_placed &&
+                          wp.bidding_status !== "closed" &&
+                          leadStatus === "Triple Positive" && (
+                            <button
+                              className={styles.bidBtn}
+                              type="button"
+                              onClick={() => openBiddingModal(wp.id)}
+                            >
+                              Bid here
+                            </button>
+                          )}
+                        {userInfo?.role === "Technician" &&
+                          wp.user_bidding_placed && (
+                            <h3 className={styles.bidedBtn}>
+                              {" "}
+                              <img alt="" src={badgeImg} /> Already Bid{" "}
+                            </h3>
+                          )}
+                      </div>
+                      <div>
+                        {userInfo?.isAdmin &&
+                          leadStatus === "Triple Positive" && (
+                            <button
+                              className={styles.bidBtn}
+                              type="button"
+                              onClick={() => openBiddingHistoryModal(wp.id)}
+                            >
+                              Package Bid History
+                            </button>
+                          )}
+                      </div>
+                    </div>
 
-                    <div className={styles.editInfoColFlx}>
-                      <div className={styles.editInfoWidth50}>
-                        <div className={styles.editInfoCol}>
-                          <span className={styles.editInfoWidth50}>
-                            <label>Title</label>
-                            <p>{wp?.package_title || "N/A"}</p>
-                          </span>
-                          <span
-                            className={`${styles.autoWidth} ${styles.pl10}`}
-                          >
-                            <label>Type</label>
-                            <p>{wp?.package_type?.name || "N/A"}</p>
-                          </span>
-                        </div>
-
-                        <div className={styles.editInfoCol}>
-                          <span className={styles.editInfoWidth50}>
-                            <label>Bidding Duration</label>
-                            <p>
-                              {wp?.bidding_duration_days
-                                ? `${wp?.bidding_duration_days} days`
-                                : "N/A"}
-                            </p>
-                          </span>
-                          <span
-                            className={`${styles.autoWidth} ${styles.pl10}`}
-                          >
-                            <label>Primary Tools</label>
-                            <ul className={styles.chipsList}>
-                              {wp?.primary_tools?.map((tool) => (
-                                <li key={tool?.id}>{tool?.name || ""}</li>
-                              ))}
-                            </ul>
-                          </span>
-                        </div>
-                        <div className={styles.editInfoCol}>
-                          <span className={styles.autoWidth}>
-                            <label>Required Tools</label>
-                            <ul className={styles.chipsList}>
-                              {wp?.required_tools?.map((tool) => (
-                                <li key={tool?.id}>{tool?.name || ""}</li>
-                              ))}
-                            </ul>
-                          </span>
-                        </div>
+                    <div className={styles.editInfoColFlx5Clm}>
+                      <div className={styles.editInfoCol100}>
+                        <span>
+                          <label>Title</label>
+                          <p>{wp?.package_title || "N/A"}</p>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Type</label>
+                          <p>{wp?.package_type?.name || "N/A"}</p>
+                        </span>
+                      </div>
+                      {wp.custom_package_type && (
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Custom Work Package</label>
+                          <p>{wp?.custom_package_type || "N/A"}</p>                          
+                        </span>
+                      </div>
+                      )}
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Bidding Duration</label>
+                          <p>
+                            {wp?.bidding_duration_days
+                              ? `${wp?.bidding_duration_days} days`
+                              : "N/A"}
+                          </p>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Primary Tools</label>
+                          <ul className={styles.chipsList}>
+                            {wp?.primary_tools?.map((tool) => (
+                              <li key={tool?.id}>{tool?.name || ""}</li>
+                            ))}
+                          </ul>
+                        </span>
                       </div>
 
-                      <div className={styles.editInfoWidth50}>
-                        <div className={styles.editInfoCol}>
-                          {wp.custom_package_type && (
-                            <span className={styles.editInfoWidth50}>
-                              <label>Custom Work Package</label>
-                              <p>{wp?.custom_package_type || "N/A"}</p>
-                            </span>
-                          )}
 
-                          <span
-                            className={`${styles.borderRight} ${styles.pl10}`}
-                          >
-                            <label>Price</label>
-                            <p>
-                              {wp?.package_price_allocation
-                                ? new Intl.NumberFormat("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                  }).format(
-                                    Number(wp?.package_price_allocation)
-                                  )
-                                : "N/A"}
-                            </p>
-                          </span>
-                        </div>
 
-                        <div className={styles.editInfoCol}>
-                          <span className={styles.editInfoWidth50}>
-                            <label>Complexity</label>
-                            <p>{wp?.package_estimated_complexity || "N/A"}</p>
-                          </span>
 
-                          <span
-                            className={`${styles.autoWidth} ${styles.pl10}`}
-                          >
-                            <label>Skills</label>
-                            <ul className={styles.chipsList}>
-                              {wp?.required_skills?.map((skill) => (
-                                <li key={skill?.id}>{skill?.name || ""}</li>
-                              ))}
-                            </ul>
-                          </span>
-                        </div>
-
+                      <div className={styles.editInfoCol100}>
+                        <span>
+                          <label>Required Tools</label>
+                          <ul className={styles.chipsList}>
+                            {wp?.required_tools?.map((tool) => (
+                              <li key={tool?.id}>{tool?.name || ""}</li>
+                            ))}
+                          </ul>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Price</label>
+                          <p>
+                            {wp?.package_price_allocation
+                              ? new Intl.NumberFormat("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                                }).format(
+                                  Number(wp?.package_price_allocation)
+                                )
+                              : "N/A"}
+                          </p>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Complexity</label>
+                          <p>{wp?.package_estimated_complexity || "N/A"}</p>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol100}>
+                        <span className={styles.pl10}>
+                          <label>Skills</label>
+                          <ul className={styles.chipsList}>
+                            {wp?.required_skills?.map((skill) => (
+                              <li key={skill?.id}>{skill?.name || ""}</li>
+                            ))}
+                          </ul>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol100}>
                         <span className={styles.pl10}>
                           <label>Dependencies</label>
                           <ul className={styles.chipsList}>
@@ -1496,7 +1435,6 @@ const ViewAndEditTemplateNote: React.FC<{
                             className={`${styles.editInfoCol} ${styles.submitBtnRight}`}
                           >
                             <span>
-                             
                               {!sectionChanging ? (
                                 <>
                                   <button
@@ -1518,18 +1456,18 @@ const ViewAndEditTemplateNote: React.FC<{
                                   </button>
                                 </>
                               ) : (
-                                 <button
-                                    type="button"
-                                    disabled={sectionChanging}
-                                    className={styles.addMoreBtn}                                    
-                                  >
-                                    <img
-                                      style={{width:"80px", height:"30px"}}
-                                      src={Loader}
-                                      alt="loader"
-                                      className={styles.loaderImg}
-                                    />
-                                  </button>                                
+                                <button
+                                  type="button"
+                                  disabled={sectionChanging}
+                                  className={styles.addMoreBtn}
+                                >
+                                  <img
+                                    style={{ width: "80px", height: "30px" }}
+                                    src={Loader}
+                                    alt="loader"
+                                    className={styles.loaderImg}
+                                  />
+                                </button>
                               )}
                             </span>
                           </div>
@@ -1699,18 +1637,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                           <button
-                              type="button"
-                              disabled={sectionChanging}
-                              className={styles.addMoreBtn}                              
-                            >
-                              <img
-                                style={{width:"80px", height:"30px"}}
-                                src={Loader}
-                                alt="loader"
-                                className={styles.loaderImg}
-                              />
-                            </button>
+                          <button
+                            type="button"
+                            disabled={sectionChanging}
+                            className={styles.addMoreBtn}
+                          >
+                            <img
+                              style={{ width: "80px", height: "30px" }}
+                              src={Loader}
+                              alt="loader"
+                              className={styles.loaderImg}
+                            />
+                          </button>
                         )}
                       </span>
                     </div>
@@ -1855,13 +1793,13 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                           <button
+                          <button
                             type="button"
                             disabled={sectionChanging}
-                            className={styles.addMoreBtn}                                   
+                            className={styles.addMoreBtn}
                           >
                             <img
-                              style={{width:"80px", height:"30px"}}
+                              style={{ width: "80px", height: "30px" }}
                               src={Loader}
                               alt="loader"
                               className={styles.loaderImg}
@@ -1991,18 +1929,18 @@ const ViewAndEditTemplateNote: React.FC<{
                             Submit
                           </button>
                         ) : (
-                           <button
-                              type="button"
-                              disabled={sectionChanging}
-                              className={styles.addMoreBtn}                             
-                            >
-                              <img
-                                style={{width:"80px", height:"30px"}}
-                                src={Loader}
-                                alt="loader"
-                                className={styles.loaderImg}
-                              />
-                            </button>
+                          <button
+                            type="button"
+                            disabled={sectionChanging}
+                            className={styles.addMoreBtn}
+                          >
+                            <img
+                              style={{ width: "80px", height: "30px" }}
+                              src={Loader}
+                              alt="loader"
+                              className={styles.loaderImg}
+                            />
+                          </button>
                         )}
                       </span>
                     </div>
@@ -2013,7 +1951,17 @@ const ViewAndEditTemplateNote: React.FC<{
           </div>
         </>
       )}
+      <TechnicianBidding
+        open={biddingModalOpen}
+        packageId={selectedPackageId}
+        onClose={closeBiddingModal}
+      />
+      <BiddingHistory
+        open={biddingHistoryModalOpen}
+        packageId={selectedPackageId}
+        onClose={closeBiddingHistoryModal}
+      />
     </div>
   );
-};
+});
 export default ViewAndEditTemplateNote;
