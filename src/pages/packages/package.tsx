@@ -80,21 +80,29 @@ const Packages: React.FC = () => {
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={tabName}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={tabChange}>
-              <Tab label={PackageTabsLabels.new} value={PackageTabsValue.new} />
-              <Tab
-                label={PackageTabsLabels.active}
-                value={PackageTabsValue.active}
-              />
-              <Tab
-                label={PackageTabsLabels.awarded}
-                value={PackageTabsValue.awarded}
-              />
-              <Tab
-                label={PackageTabsLabels.closed}
-                value={PackageTabsValue.closed}
-              />
-            </TabList>
+            <div className="packageTabMenu">
+              <div className="container">
+              <TabList 
+                onChange={tabChange}
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                <Tab label={PackageTabsLabels.new} value={PackageTabsValue.new} />
+                <Tab
+                  label={PackageTabsLabels.active}
+                  value={PackageTabsValue.active}
+                />
+                <Tab
+                  label={PackageTabsLabels.awarded}
+                  value={PackageTabsValue.awarded}
+                />
+                <Tab
+                  label={PackageTabsLabels.closed}
+                  value={PackageTabsValue.closed}
+                />
+              </TabList>
+              </div>
+            </div>
           </Box>
           <TabPanel value={PackageTabsValue.new}>
             <PackageTable

@@ -377,6 +377,9 @@
     }
     .pl10{
       padding-left: 2%;
+      @media (max-width: 991px){
+        padding-left: 0;
+      }
     }
     .autoWidth{
       width: auto !important;
@@ -694,4 +697,23 @@
 
 .viewInfo.technicianView{
   position: relative;
+  .editInfoColFlx5Clm{
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .editInfoCol100{
+    width: 20%;
+    margin-bottom: 25px;
+    @media (max-width: 991px){
+      width: 50%;
+    }
+    @media (max-width: 576px){
+      width: 100%;
+    }
+    span{
+      p{
+        color: #9b9b9b;
+      }
+    }
+  }
 }

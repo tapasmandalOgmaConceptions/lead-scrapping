@@ -62,14 +62,16 @@ const PackageTable: React.FC<PackageListProps> = ({
 
   return (
     <div>
-      <div className={styles.heading}>
-        <h2>Package</h2>
-        <input
-          type="text"
-          placeholder="Search here..."
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
+      <div className={styles.container}>
+        <div className={styles.heading}>
+          <h2>Package</h2>
+          <input
+            type="text"
+            placeholder="Search here..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+        </div>
       </div>
       <div className={styles.productListViewPrt}>
         <div className={styles.container}>
@@ -111,7 +113,7 @@ const PackageTable: React.FC<PackageListProps> = ({
                       : "N/A"}
                   </p>
                 </li>
-                <li data-label="Complexity">
+                <li className={styles.noLineThrough} data-label="Complexity">
                   <p>{pkg.package_estimated_complexity}</p>
                 </li>
                 <li data-label="Skills">
