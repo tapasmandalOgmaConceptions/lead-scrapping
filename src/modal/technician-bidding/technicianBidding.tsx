@@ -147,15 +147,15 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
                 <br />
                 <div>
                   <Button
-                    className={styles.addBidBtn}
                     type="submit"
                     variant="contained"
+                    className={`${styles.addBidBtn} disableBtnStyle`}
                     disabled={loading}
                   >
                     Add bid
                   </Button>
-                  <Button 
-                    className={styles.cancelBtn}                 
+                  <Button
+                    className={`${styles.cancelBtn} disableBtnStyle`}
                     type="button"
                     variant="contained"
                     color="error"

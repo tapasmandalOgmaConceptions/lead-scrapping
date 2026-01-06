@@ -187,6 +187,7 @@ const CreateUpdateUser: React.FC = () => {
                         variant="contained"
                         type="submit"
                         disabled={loading}
+                        className="disableBtnStyle"
                       >
                         {userId ? "Update" : "Add"}
                       </Button>
