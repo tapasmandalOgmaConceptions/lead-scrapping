@@ -64,7 +64,7 @@ const PackageTable: React.FC<PackageListProps> = ({
     <div>
       <div className={styles.container}>
         <div className={styles.heading}>
-          <h2>Package</h2>
+          <h2>Packages</h2>
           <input
             type="text"
             placeholder="Search here..."

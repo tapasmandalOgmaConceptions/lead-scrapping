@@ -204,13 +204,14 @@ const AssignUserModal: React.FC<AssignUserModalProps> = ({
                       color="error"
                       onClick={onClose}
                       disabled={loading}
-                      className={styles.mRight2}
+                      className={`${styles.mRight2} disableBtnStyle`}
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       variant="contained"
+                      className="disableBtnStyle"
                       disabled={loading}
                     >
                       Assign

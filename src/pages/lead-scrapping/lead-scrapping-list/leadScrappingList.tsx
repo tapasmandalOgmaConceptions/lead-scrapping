@@ -216,6 +216,7 @@ const LeadScrappingList: React.FC = () => {
                             type="submit"
                             variant="contained"
                             disabled={isLeadScrapping}
+                            className="disableBtnStyle"
                           >
                             Scrape
                           </Button>
