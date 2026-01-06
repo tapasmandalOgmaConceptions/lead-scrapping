@@ -94,7 +94,7 @@
         }
         .bidedBtn{  
           font-size: 16px;          
-          background: #10bd9d;
+          background: #1563df;
           // border: solid 1px green;    
           border-radius: 0 10px 0 10px;
           display: flex;
@@ -703,6 +703,7 @@
   }
   .editInfoCol100{
     width: 20%;
+    padding-right: 20px;
     margin-bottom: 25px;
     @media (max-width: 991px){
       width: 50%;
