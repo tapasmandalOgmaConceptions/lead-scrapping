@@ -294,7 +294,7 @@ const AssignUserLeadList: React.FC = () => {
                           />
                         </li>
                         <li>
-                          <Button type="submit" variant="contained">
+                          <Button type="submit" variant="contained" className="disableBtnStyle">
                             Search
                           </Button>
                         </li>
