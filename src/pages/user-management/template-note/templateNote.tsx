@@ -967,11 +967,9 @@ const ViewAndEditTemplateNote: React.FC<{
               )}
             </div>
             {sectionName !== TemplateNoteEnum.WORK_PACKAGE && (
-              <div
-                className={`${styles.viewInfo} ${
-                  userInfo?.role === "Technician" ? styles.technicianView : ""
-                }`}
-              >
+              <>
+              {!location.pathname.toLocaleLowerCase().includes("view-package") ?(
+                <div className={styles.viewInfo}>
                 {workPackageData?.map((wp, ind: number) => (
                   <div key={wp.id}>
                     <div className={`${styles.subTitleFlex} ${location.pathname.toLocaleLowerCase().includes("view-package") ? "rightBidBtn packageTitleBorder" : ""}`}>
@@ -1013,93 +1011,103 @@ const ViewAndEditTemplateNote: React.FC<{
                       </div>
                     </div>
 
-                    <div className={styles.editInfoColFlx5Clm}>
-                      <div className={styles.editInfoCol100}>
-                        <span>
-                          <label>Title</label>
-                          <p>{wp?.package_title || "N/A"}</p>
-                        </span>
-                      </div>
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Type</label>
-                          <p>{wp?.package_type?.name || "N/A"}</p>
-                        </span>
-                      </div>
-                      {wp.custom_package_type && (
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Custom Work Package</label>
-                          <p>{wp?.custom_package_type || "N/A"}</p>                          
-                        </span>
-                      </div>
-                      )}
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Bidding Duration</label>
-                          <p>
-                            {wp?.bidding_duration_days
-                              ? `${wp?.bidding_duration_days} days`
-                              : "N/A"}
-                          </p>
-                        </span>
-                      </div>
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Primary Tools</label>
-                          <ul className={styles.chipsList}>
-                            {wp?.primary_tools?.map((tool) => (
-                              <li key={tool?.id}>{tool?.name || ""}</li>
-                            ))}
-                          </ul>
-                        </span>
+                    <div className={styles.editInfoColFlx}>
+                      <div className={styles.editInfoWidth50}>
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.editInfoWidth50}>
+                            <label>Title</label>
+                            <p>{wp?.package_title || "N/A"}</p>
+                          </span>
+                          <span
+                            className={`${styles.autoWidth} ${styles.pl10}`}
+                          >
+                            <label>Type</label>
+                            <p>{wp?.package_type?.name || "N/A"}</p>
+                          </span>
+                        </div>
+
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.editInfoWidth50}>
+                            <label>Bidding Duration</label>
+                            <p>
+                              {wp?.bidding_duration_days
+                                ? `${wp?.bidding_duration_days} days`
+                                : "N/A"}
+                            </p>
+                          </span>
+                          <span
+                            className={`${styles.autoWidth} ${styles.pl10}`}
+                          >
+                            <label>Primary Tools</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.primary_tools?.map((tool) => (
+                                <li key={tool?.id}>{tool?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.autoWidth}>
+                            <label>Required Tools</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.required_tools?.map((tool) => (
+                                <li key={tool?.id}>{tool?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                          {/* <span className={styles.editInfoWidth50}>
+                            <label>Bidding Status</label>
+                            <p>
+                              {wp.bidding_status
+                                ? PackageBiddingStatusEnum[wp.bidding_status]
+                                : "N/A"}
+                            </p>
+                          </span> */}
+                        </div>
                       </div>
 
+                      <div className={styles.editInfoWidth50}>
+                        <div className={styles.editInfoCol}>
+                          {wp.custom_package_type && (
+                            <span className={styles.editInfoWidth50}>
+                              <label>Custom Work Package</label>
+                              <p>{wp?.custom_package_type || "N/A"}</p>
+                            </span>
+                          )}
 
+                          <span className={styles.borderRight}>
+                            <label>Price</label>
+                            <p>
+                              {wp?.package_price_allocation
+                                ? new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                  }).format(
+                                    Number(wp?.package_price_allocation)
+                                  )
+                                : "N/A"}
+                            </p>
+                          </span>
+                        </div>
 
+                        <div className={styles.editInfoCol}>
+                          <span className={styles.editInfoWidth50}>
+                            <label>Complexity</label>
+                            <p>{wp?.package_estimated_complexity || "N/A"}</p>
+                          </span>
 
-                      <div className={styles.editInfoCol100}>
-                        <span>
-                          <label>Required Tools</label>
-                          <ul className={styles.chipsList}>
-                            {wp?.required_tools?.map((tool) => (
-                              <li key={tool?.id}>{tool?.name || ""}</li>
-                            ))}
-                          </ul>
-                        </span>
-                      </div>
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Price</label>
-                          <p>
-                            {wp?.package_price_allocation
-                              ? new Intl.NumberFormat("en-US", {
-                                  style: "currency",
-                                  currency: "USD",
-                                }).format(
-                                  Number(wp?.package_price_allocation)
-                                )
-                              : "N/A"}
-                          </p>
-                        </span>
-                      </div>
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Complexity</label>
-                          <p>{wp?.package_estimated_complexity || "N/A"}</p>
-                        </span>
-                      </div>
-                      <div className={styles.editInfoCol100}>
-                        <span className={styles.pl10}>
-                          <label>Skills</label>
-                          <ul className={styles.chipsList}>
-                            {wp?.required_skills?.map((skill) => (
-                              <li key={skill?.id}>{skill?.name || ""}</li>
-                            ))}
-                          </ul>
-                        </span>
-                      </div>
-                      <div className={styles.editInfoCol100}>
+                          <span
+                            className={`${styles.autoWidth} ${styles.pl10}`}
+                          >
+                            <label>Skills</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.required_skills?.map((skill) => (
+                                <li key={skill?.id}>{skill?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+
                         <span className={styles.pl10}>
                           <label>Dependencies</label>
                           <ul className={styles.chipsList}>
@@ -1136,7 +1144,176 @@ const ViewAndEditTemplateNote: React.FC<{
                 {workPackageData?.length === 0 && (
                   <p className={styles.notFound}>No work packages available.</p>
                 )}
-              </div>
+                </div>
+              ):(
+                  <div className={`${styles.viewInfo} ${styles.technicianView}`}>
+                    {workPackageData?.map((wp, ind: number) => (
+                    <div key={wp.id}>
+                      <div className={`${styles.subTitleFlex} ${location.pathname.toLocaleLowerCase().includes("view-package") ? "rightBidBtn packageTitleBorder" : ""}`}>
+                        {!location.pathname.toLocaleLowerCase().includes("view-package") && (<h2 className={styles.packageSubHdn}>
+                          Package - <span>#{ind + 1}</span>
+                        </h2>)}
+                        <div>
+                          {userInfo?.role === "Technician" &&
+                            !wp.user_bidding_placed &&
+                            wp.bidding_status !== "closed" &&
+                            leadStatus === "Triple Positive" && (
+                              <button
+                                className={styles.bidBtn}
+                                type="button"
+                                onClick={() => openBiddingModal(wp.id)}
+                              >
+                                Bid here
+                              </button>
+                            )}
+                          {userInfo?.role === "Technician" &&
+                            wp.user_bidding_placed && (
+                              <h3 className={styles.bidedBtn}>
+                                {" "}
+                                <img alt="" src={badgeImg} /> Already Bid{" "}
+                              </h3>
+                            )}
+                        </div>
+                        <div>
+                          {userInfo?.isAdmin &&
+                            leadStatus === "Triple Positive" && (
+                              <button
+                                className={styles.bidBtn}
+                                type="button"
+                                onClick={() => openBiddingHistoryModal(wp.id)}
+                              >
+                                Package Bid History
+                              </button>
+                            )}
+                        </div>
+                      </div>
+
+                      <div className={styles.editInfoColFlx5Clm}>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Title</label>
+                            <p>{wp?.package_title || "N/A"}</p>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Type</label>
+                            <p>{wp?.package_type?.name || "N/A"}</p>
+                          </span>
+                        </div>
+                        {wp.custom_package_type && (
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Custom Work Package</label>
+                            <p>{wp?.custom_package_type || "N/A"}</p>                          
+                          </span>
+                        </div>
+                        )}
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Bidding Duration</label>
+                            <p>
+                              {wp?.bidding_duration_days
+                                ? `${wp?.bidding_duration_days} days`
+                                : "N/A"}
+                            </p>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Primary Tools</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.primary_tools?.map((tool) => (
+                                <li key={tool?.id}>{tool?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+
+
+
+
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Required Tools</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.required_tools?.map((tool) => (
+                                <li key={tool?.id}>{tool?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Price</label>
+                            <p>
+                              {wp?.package_price_allocation
+                                ? new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                  }).format(
+                                    Number(wp?.package_price_allocation)
+                                  )
+                                : "N/A"}
+                            </p>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Complexity</label>
+                            <p>{wp?.package_estimated_complexity || "N/A"}</p>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Skills</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.required_skills?.map((skill) => (
+                                <li key={skill?.id}>{skill?.name || ""}</li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+                        <div className={styles.editInfoCol100}>
+                          <span>
+                            <label>Dependencies</label>
+                            <ul className={styles.chipsList}>
+                              {wp?.dependencies?.map((dependency) => (
+                                <li key={dependency?.id}>
+                                  {dependency?.name || ""}
+                                </li>
+                              ))}
+                            </ul>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className={styles.editInfoCol}>
+                        <span className={styles.clmOne}>
+                          <label>Packages Summary</label>
+                          <p>{wp?.package_summary || "N/A"}</p>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol}>
+                        <span className={styles.clmOne}>
+                          <label>Key Deliverables</label>
+                          <p>{wp?.key_deliverables || "N/A"}</p>
+                        </span>
+                      </div>
+                      <div className={styles.editInfoCol}>
+                        <span className={styles.clmOne}>
+                          <label>Acceptance Criteria</label>
+                          <p>{wp?.acceptance_criteria || "N/A"}</p>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {workPackageData?.length === 0 && (
+                    <p className={styles.notFound}>No work packages available.</p>
+                  )}
+                </div>
+              )}
+              </>
             )}
             <div
               className={styles.editInfo}

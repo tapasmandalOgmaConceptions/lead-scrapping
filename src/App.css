@@ -212,7 +212,11 @@
   border-bottom: 1px solid #333438;
 }
 
-
+.css-1f7qp0x-MuiButtonBase-root-MuiButton-root.Mui-disabled,
+.css-74d805-MuiButtonBase-root-MuiButton-root.Mui-disabled{
+  background-color: rgb(255 255 255 / 12%) !important;
+  color: rgb(147 147 147 / 26%) !important;
+}
 
 
 
