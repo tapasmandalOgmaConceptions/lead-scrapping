@@ -24,17 +24,29 @@ function AppRouter() {
           <Route path="/login" element={<Login />} />
         </Route>
 
-        {/* ProtectedRoute for routes that require authentication */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<FollowUp />} />
-          <Route path="/user-list" element={<UserList />} />
-          <Route path="/create-user" element={<CreateUpdateUser />} />
-          <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
-          <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
-          <Route path="/view-lead/:leadId" element={< ViewLead/>} />
-          <Route path="/positive-leads" element={<PositiveLeads />} />
-          <Route path="/view-package/:leadId" element={< ViewLead/>} />
-        </Route>
+        {/* Authenticated and accessed for everyone */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<FollowUp />} />
+          </Route>
+
+          {/* Admin only */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+            <Route path="/user-list" element={<UserList />} />
+            <Route path="/create-user" element={<CreateUpdateUser />} />
+            <Route path="/update-user/:userId" element={<CreateUpdateUser />} />
+          </Route>
+
+          {/* Admin + User */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "User"]} />}>
+            <Route path="/positive-leads" element={<PositiveLeads />} />
+            <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
+            <Route path="/view-lead/:leadId" element={<ViewLead />} />
+          </Route>
+
+          {/* Technician only */}
+          <Route element={<ProtectedRoute allowedRoles={["Technician"]} />}>
+            <Route path="/view-package/:leadId" element={<ViewLead />} />
+          </Route>
 
         {/* Catch-all for 404 Not Found */}
         <Route path="*" element={<PageNotFound/>}/>
