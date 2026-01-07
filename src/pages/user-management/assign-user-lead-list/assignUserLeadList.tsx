@@ -232,7 +232,7 @@ const AssignUserLeadList: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Assigned Leads</h1>
-                <span className={styles.greyBg}>{userId && userData?.name && <p>To <span className={styles.textColor}>{userData?.name}</span></p>}</span>
+                {userId && userData?.name && (<span className={styles.greyBg}><p>To <span className={styles.textColor}>{userData?.name}</span></p> </span>)}
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik

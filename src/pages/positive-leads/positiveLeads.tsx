@@ -25,7 +25,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IconButton from "@mui/material/IconButton";
 import AddNotes from "../../modal/add-note/addNote";
-import { UserListInterface } from "../../interfaces/userInterface";
+import { UserListInterface, UserRole } from "../../interfaces/userInterface";
 
 const PositiveLeads: React.FC = () => {
   const [leads, setLeads] = useState<LeadListResponse[]>([]);
@@ -427,7 +427,7 @@ const PositiveLeads: React.FC = () => {
                           View Lead Details
                         </MenuItem>
                         {userInfo?.role &&
-                          ["Admin", "User"].includes(userInfo?.role) && (
+                          (["Admin", "Sales"] as UserRole[]).includes(userInfo?.role) && (
                             <MenuItem
                               onClick={() => {
                                 handleMenuClose();

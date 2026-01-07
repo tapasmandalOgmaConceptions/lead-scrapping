@@ -218,7 +218,7 @@ const UserList: React.FC = () => {
                         >
                           Edit
                         </MenuItem>
-                        {user.role === "User" && (
+                        {user.role === "Sales" && (
                           <div>
                           <MenuItem
                           onClick={() => {

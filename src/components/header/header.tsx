@@ -104,7 +104,7 @@ const Header: React.FC  = () => {
                {isAuthenticated && (
                   <ul className="navbar-nav" onClick={handleNavLinkClick}>
                     <li>
-                      <NavLink to={"/"}>{userInfo?.role === "Admin" ? "Lead Scrape" : userInfo?.role === "User" ? "Assigned Leads" : "Packages"}</NavLink>
+                      <NavLink to={"/"}>{userInfo?.role === "Admin" ? "Lead Scrape" : userInfo?.role === "Sales" ? "Assigned Leads" : "Packages"}</NavLink>
                     </li>
                     {userInfo?.role !== "Technician" && (<li>
                       <NavLink to={"/positive-leads"}>Positive Leads</NavLink>
