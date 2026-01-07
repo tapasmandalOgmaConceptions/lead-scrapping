@@ -12,12 +12,9 @@ import {
 } from "../../enum/templateNoteEnum";
 import endpoints from "../../helpers/endpoints";
 import api from "../../services/api";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
 import alert from "../../services/alert";
 import { WorkPackageResponse } from "../../interfaces/templateNoteInterface";
 import PackageTable from "../../components/table/package/packageTable";
-import { useNavigate } from "react-router-dom";
 
 const Packages: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -29,14 +26,7 @@ const Packages: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(30);
   const [totalPage, setTotalPage] = useState<number>(0);
-  const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const navigate = useNavigate();
   useEffect(() => {
-    if (userInfo?.role !== "Technician") {
-      alert("Sorry you can't access this page", "error");
-      navigate("/");
-      return;
-    }
     getPackages();
   }, [tabName, page, keyWord, size]);
   const tabChange = (

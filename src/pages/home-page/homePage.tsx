@@ -13,7 +13,7 @@ const HomePage: React.FC = () => {
     <>
       {userInfo?.role === "Admin" ? (
         <LeadScrappingList />
-      ) : userInfo?.role === "User" ? (
+      ) : userInfo?.role === "Sales" ? (
         <AssignUserLeadList />
       ) : (
         <Packages />

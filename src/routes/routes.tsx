@@ -37,7 +37,7 @@ function AppRouter() {
           </Route>
 
           {/* Admin + User */}
-          <Route element={<ProtectedRoute allowedRoles={["Admin", "User"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["Admin", "Sales"]} />}>
             <Route path="/positive-leads" element={<PositiveLeads />} />
             <Route path="/assigned-leads/:userId" element={<AssignUserLeadList />} />
             <Route path="/view-lead/:leadId" element={<ViewLead />} />

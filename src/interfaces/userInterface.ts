@@ -11,7 +11,7 @@ export interface UserInterface {
   password: string;
 }
 
-export type UserRole = 'Admin' | 'User' | 'Technician';
+export type UserRole = 'Admin' | 'Sales' | 'Technician';
 export interface UserInfo {
   id: string;
   email: string;
