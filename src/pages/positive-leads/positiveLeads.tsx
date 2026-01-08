@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
-  PositiveLeadSearch,
+  SearchLead,
   SectorListResponse,
 } from "../../interfaces/leadScrapeInterface";
 import Button from "@mui/material/Button";
@@ -35,6 +35,7 @@ const PositiveLeads: React.FC = () => {
   const [city, setCity] = useState<string>("");
   const [sector, setSector] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<string>("");
+  const [leadStatus, setLeadStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
@@ -48,15 +49,18 @@ const PositiveLeads: React.FC = () => {
   const [isUserFetching, setIsUserFetching] = useState<boolean>(false);
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const navigate = useNavigate();
+  const leadStatusList = [
+    "Positive lead",
+    "Double Positive",
+    "Triple Positive",
+  ];
   useEffect(() => {
     if (userInfo?.isAdmin) getSalesUsers();
     getSectors();
   }, []);
   useEffect(() => {
-    userInfo?.role === "Technician"
-      ? getTechnicianLeadList()
-      : getFollowUpLeadList();
-  }, [page, size, city, sector, selectedUser]);
+    getFollowUpLeadList();
+  }, [page, size, city, sector, selectedUser, leadStatus]);
 
   const getFollowUpLeadList = async () => {
     setLoading(true);
@@ -70,29 +74,13 @@ const PositiveLeads: React.FC = () => {
             : selectedUser
             ? `&user_id=${selectedUser}`
             : ""
-        }&is_followup=true`
+        }&is_followup=true${
+          leadStatus ? `&status=${leadStatus}` : ""
+        }`
       );
       if (res.status === 200) {
         setLeads(res.data?.data || []);
         setTotalPage(res.data?.meta?.pages || 0);
-      }
-    } catch (error: any) {
-      alert(error?.response?.data?.detail || error?.message, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-  const getTechnicianLeadList = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get(
-        `${endpoints.technician.getTechniciansLead}?page=${page}&limit=${size}${
-          city ? `&city=${city}` : ""
-        }${sector ? `&sector=${sector}` : ""}`
-      );
-      if (res.status === 200) {
-        setLeads(res.data?.data?.leads || []);
-        setTotalPage(res.data?.data?.meta?.pages || 0);
       }
     } catch (error: any) {
       alert(error?.response?.data?.detail || error?.message, "error");
@@ -108,21 +96,24 @@ const PositiveLeads: React.FC = () => {
     setPage(value);
   };
 
-  const initialSearchValue: PositiveLeadSearch = {
+  const initialSearchValue: SearchLead = {
     city: "",
     sector: "",
     user: "",
+    leadStatus: "",
   };
   const validationSchema = Yup.object().shape({
     city: Yup.string(),
     sector: Yup.string(),
     user: Yup.string(),
+    leadStatus: Yup.string(),
   });
-  const handleSearch = (value: PositiveLeadSearch) => {
+  const handleSearch = (value: SearchLead) => {
     setPage(1);
     setCity(value.city || "");
     setSector(value.sector || "");
     setSelectedUser(value.user || "");
+    setLeadStatus(value.leadStatus || "");
   };
   const fetchCitySuggestions = async (query: string) => {
     if (!query) return;
@@ -206,7 +197,7 @@ const PositiveLeads: React.FC = () => {
       const res = await api.get(
         `${endpoints.user.getUsers}?page=${1}&limit=${10}${
           keyword ? `&keyword=${keyword}` : ""
-        }&role=User`
+        }&role=Sales`
       );
       if (res.status === 200) {
         setUsers(res.data?.data?.users || []);
@@ -239,7 +230,25 @@ const PositiveLeads: React.FC = () => {
                 >
                   {({ values, setFieldValue }) => (
                     <Form>
-                      <ul>
+                      <ul className={userInfo?.isAdmin ? styles.adminSearch : ""}>
+                        <li>
+                          <Autocomplete
+                            freeSolo={false}
+                            options={leadStatusList}
+                            onInputChange={(event, value) => {
+                              setFieldValue("leadStatus", value);
+                            }}
+                            
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name="leadStatus"
+                                placeholder="Search by lead status"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        </li>
                         <li>
                           <Autocomplete
                             freeSolo
@@ -324,7 +333,11 @@ const PositiveLeads: React.FC = () => {
                           </li>
                         )}
                         <li>
-                          <Button type="submit" variant="contained" className="disableBtnStyle">
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            className="disableBtnStyle"
+                          >
                             Search
                           </Button>
                         </li>
@@ -427,7 +440,9 @@ const PositiveLeads: React.FC = () => {
                           View Lead Details
                         </MenuItem>
                         {userInfo?.role &&
-                          (["Admin", "Sales"] as UserRole[]).includes(userInfo?.role) && (
+                          (["Admin", "Sales"] as UserRole[]).includes(
+                            userInfo?.role
+                          ) && (
                             <MenuItem
                               onClick={() => {
                                 handleMenuClose();

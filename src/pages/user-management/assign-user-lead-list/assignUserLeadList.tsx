@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { Formik, Form, ErrorMessage } from "formik";
 import {
   LeadListResponse,
-  LeadScrape,
+  SearchLead,
   LeadStatusType,
   SectorListResponse,
 } from "../../../interfaces/leadScrapeInterface";
@@ -37,6 +37,7 @@ const AssignUserLeadList: React.FC = () => {
   const [totalPage, setTotalPage] = useState<number>(0);
   const [city, setCity] = useState<string>("");
   const [sector, setSector] = useState<string>("");
+  const [leadStatus, setLeadStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [isCityFetching, setIsCityFetching] = useState<boolean>(false);
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
@@ -55,13 +56,20 @@ const AssignUserLeadList: React.FC = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { userId } = useParams();
   const navigate = useNavigate();
+  const leadStatusList = [
+    { value: "new", label: "New" },
+    { value: "Positive lead", label: "Positive lead" },
+    { value: "Double Positive", label: "Double Positive" },
+    { value: "Triple Positive", label: "Triple Positive" },
+    { value: "Not interested", label: "Not Interested" },
+  ];
   useEffect(() => {
     if (userId) getUserInfo();
     getSectors();
   }, []);
   useEffect(() => {
     getAssignUserLeadList();
-  }, [page, size, city, sector]);
+  }, [page, size, city, sector, leadStatus]);
 
   const getAssignUserLeadList = async () => {
     setLoading(true);
@@ -72,7 +80,9 @@ const AssignUserLeadList: React.FC = () => {
           city ? `&city=${city}` : ""
         }${
           sector ? `&sector=${sector}` : ""
-        }&user_id=${userIdToFetch}&is_followup=false`
+        }&user_id=${userIdToFetch}&is_followup=false${
+          leadStatus ? `&status=${leadStatus}` : ""
+        }`
       );
       if (res.status === 200) {
         setLeads(res.data?.data || []);
@@ -92,18 +102,21 @@ const AssignUserLeadList: React.FC = () => {
     setPage(value);
   };
 
-  const initialSearchValue: LeadScrape = {
+  const initialSearchValue: SearchLead = {
     city: "",
     sector: "",
+    leadStatus: "",
   };
   const validationSchema = Yup.object().shape({
     city: Yup.string(),
     sector: Yup.string(),
+    leadStatus: Yup.string(),
   });
-  const handleSearch = (value: LeadScrape) => {
+  const handleSearch = (value: SearchLead) => {
     setPage(1);
     setCity(value.city || "");
     setSector(value.sector || "");
+    setLeadStatus(value.leadStatus || "");
   };
   const fetchCitySuggestions = async (query: string) => {
     if (!query) return;
@@ -232,7 +245,14 @@ const AssignUserLeadList: React.FC = () => {
             <div className={styles.productListHdrRow}>
               <div className={styles.productListTitle}>
                 <h1>Assigned Leads</h1>
-                {userId && userData?.name && (<span className={styles.greyBg}><p>To <span className={styles.textColor}>{userData?.name}</span></p> </span>)}
+                {userId && userData?.name && (
+                  <span className={styles.greyBg}>
+                    <p>
+                      To{" "}
+                      <span className={styles.textColor}>{userData?.name}</span>
+                    </p>{" "}
+                  </span>
+                )}
               </div>
               <div className={styles.productListRightPrt}>
                 <Formik
@@ -243,6 +263,27 @@ const AssignUserLeadList: React.FC = () => {
                   {({ values, setFieldValue }) => (
                     <Form>
                       <ul>
+                        <li>
+                          <Autocomplete
+                            freeSolo={false}
+                            options={leadStatusList}
+                            getOptionLabel={(option) => option?.label || ""}
+                            onChange={(event, value) => {
+                              setFieldValue(
+                                "leadStatus",
+                                value ? value.value : ""
+                              );
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name="leadStatus"
+                                placeholder="Search by lead status"
+                                variant="outlined"
+                              />
+                            )}
+                          />
+                        </li>
                         <li>
                           <Autocomplete
                             freeSolo
@@ -294,7 +335,11 @@ const AssignUserLeadList: React.FC = () => {
                           />
                         </li>
                         <li>
-                          <Button type="submit" variant="contained" className="disableBtnStyle">
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            className="disableBtnStyle"
+                          >
                             Search
                           </Button>
                         </li>
@@ -355,7 +400,7 @@ const AssignUserLeadList: React.FC = () => {
                   <li data-label="Action" className={styles.actionCell}>
                     <div>
                       <IconButton
-                      className={styles.actionBtn}
+                        className={styles.actionBtn}
                         aria-label="more"
                         id="long-button"
                         aria-controls={

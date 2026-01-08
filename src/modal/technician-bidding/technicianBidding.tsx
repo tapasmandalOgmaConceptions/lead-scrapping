@@ -17,18 +17,22 @@ import {
   TechnicianBiddingPayload,
 } from "../../interfaces/templateNoteInterface";
 import { NumericFormat } from "react-number-format";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 const TechnicianBidding: React.FC<BiddingModalProps> = ({
   open,
   onClose,
   packageId,
+  biddingPlaced
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const formikRef = useRef<FormikProps<Bidding>>(null);
+  const userInfo = useSelector((state: RootState) => state.user.userInfo)
   useEffect(() => {
     if (open) {
       formikRef.current?.resetForm();
-      // getBiddingData();
+      if(biddingPlaced) getBiddingData();
     }
   }, [packageId, open]);
   const initialValue: Bidding = {
@@ -62,22 +66,22 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
       setLoading(false);
     }
   };
-  // const getBiddingData = async () => {
-  //   try {
-  //     const res = await api.get(
-  //       `${endpoints.technician.getBidding}?work_package_id=${packageId}&technician_id=${userInfo?.id}`
-  //     );
-  //     if (res.status === 200) {
-  //       const data: Bidding = res.data;
-  //       formikRef.current?.setValues({
-  //           bidding_amount: data.bidding_amount || "",
-  //           note: data.note || ""
-  //       });
-  //     }
-  //   } catch (err: any) {
-  //     alert(err?.response?.data?.detail || err?.message, "error");
-  //   }
-  // };
+  const getBiddingData = async () => {
+    try {
+      const res = await api.get(
+        `${endpoints.technician.getBidding}?work_package_id=${packageId}&technician_id=${userInfo?.id}`
+      );
+      if (res.status === 200) {
+        const data: Bidding = res.data;
+        formikRef.current?.setValues({
+            bidding_amount: data.bidding_amount || "",
+            note: data.note || ""
+        });
+      }
+    } catch (err: any) {
+      alert(err?.response?.data?.detail || err?.message, "error");
+    }
+  };
 
   return (
     <Dialog
@@ -87,7 +91,7 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
       aria-describedby="alert-dialog-slide-description"
     >
       <div className={styles.modalBodyPart}>
-        <DialogTitle>Add your bid</DialogTitle>
+        <DialogTitle>{biddingPlaced ? "Edit" : "Add"} Your Bid</DialogTitle>
         <span className={styles.closeIcon} onClick={() => onClose()}>
           <CloseIcon />
         </span>
@@ -152,7 +156,7 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
                     className={`${styles.addBidBtn} disableBtnStyle`}
                     disabled={loading}
                   >
-                    Add bid
+                    {biddingPlaced ? "Edit" : "Add"} Bid
                   </Button>
                   <Button
                     className={`${styles.cancelBtn} disableBtnStyle`}
