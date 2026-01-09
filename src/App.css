@@ -178,6 +178,7 @@
 .packageTitleBorder{
   position: relative;
   border-bottom: none !important;
+  min-height: 45px;
 }
 .packageTitleBorder::after{
   position: absolute;
