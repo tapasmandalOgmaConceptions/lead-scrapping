@@ -58,7 +58,6 @@ import {
   workPackageValue,
 } from "./templateNoteFormInitialValueAndSchemas";
 import BiddingHistory from "../../../modal/bidding-history/biddingHistory";
-import badgeImg from "../../../assets/images/badge-icon.png";
 import { useLocation, useSearchParams } from "react-router-dom";
 
 const ViewAndEditTemplateNote: React.FC<{
@@ -95,6 +94,7 @@ const ViewAndEditTemplateNote: React.FC<{
   const [biddingModalOpen, setBiddingModalOpen] = useState<boolean>(false);
   const [biddingHistoryModalOpen, setBiddingHistoryModalOpen] =
     useState<boolean>(false);
+  const [biddingPlaced, setBiddingPlaced] = useState<boolean>(false);
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const dealFormFormikRef = useRef<FormikProps<DealClientForm>>(null);
   const technicalContextFormFormikRef =
@@ -107,6 +107,7 @@ const ViewAndEditTemplateNote: React.FC<{
   const dispatch: AppDispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const packageId = searchParams.get("pkg");
+  const packageType = searchParams.get("type");
   const location = useLocation();
   const hideEditButton =
     userInfo?.role === "Technician" || leadStatus === "Triple Positive";
@@ -575,12 +576,14 @@ const ViewAndEditTemplateNote: React.FC<{
       alert(err?.response?.data?.detail || err?.message, "error");
     }
   };
-  const openBiddingModal = (packageId: string) => {
-    setBiddingModalOpen(true);
+  const openBiddingModal = (packageId: string, biddingPlaced: boolean) => {
+    setBiddingPlaced(biddingPlaced)
     setSelectedPackageId(packageId);
+    setBiddingModalOpen(true);
   };
   const closeBiddingModal = (isFetchApi = false) => {
     setSelectedPackageId("");
+    setBiddingPlaced(false);
     setBiddingModalOpen(false);
     if (isFetchApi) getWorkPackageData(dealData?.id || "");
   };
@@ -978,24 +981,18 @@ const ViewAndEditTemplateNote: React.FC<{
                       </h2>)}
                       <div>
                         {userInfo?.role === "Technician" &&
-                          !wp.user_bidding_placed &&
-                          wp.bidding_status !== "closed" &&
+                          packageType &&
+                          ['new', 'active'].includes(packageType) &&
                           leadStatus === "Triple Positive" && (
                             <button
                               className={styles.bidBtn}
                               type="button"
-                              onClick={() => openBiddingModal(wp.id)}
+                              onClick={() => openBiddingModal(wp.id, wp.user_bidding_placed)}
                             >
-                              Bid here
+                              {wp.user_bidding_placed ? "Edit Your Bid" : "Bid Here"}
                             </button>
                           )}
-                        {userInfo?.role === "Technician" &&
-                          wp.user_bidding_placed && (
-                            <h3 className={styles.bidedBtn}>
-                              {" "}
-                              <img alt="" src={badgeImg} /> Already Bid{" "}
-                            </h3>
-                          )}
+                        
                       </div>
                       <div>
                         {userInfo?.isAdmin &&
@@ -1155,23 +1152,16 @@ const ViewAndEditTemplateNote: React.FC<{
                         </h2>)}
                         <div>
                           {userInfo?.role === "Technician" &&
-                            !wp.user_bidding_placed &&
-                            wp.bidding_status !== "closed" &&
+                            packageType &&
+                            ['new', 'active'].includes(packageType) &&
                             leadStatus === "Triple Positive" && (
                               <button
                                 className={styles.bidBtn}
                                 type="button"
-                                onClick={() => openBiddingModal(wp.id)}
+                                onClick={() => openBiddingModal(wp.id, wp.user_bidding_placed)}
                               >
-                                Bid here
+                                {wp.user_bidding_placed ? "Edit Your Bid" : "Bid Here"}
                               </button>
-                            )}
-                          {userInfo?.role === "Technician" &&
-                            wp.user_bidding_placed && (
-                              <h3 className={styles.bidedBtn}>
-                                {" "}
-                                <img alt="" src={badgeImg} /> Already Bid{" "}
-                              </h3>
                             )}
                         </div>
                         <div>
@@ -2131,6 +2121,7 @@ const ViewAndEditTemplateNote: React.FC<{
       <TechnicianBidding
         open={biddingModalOpen}
         packageId={selectedPackageId}
+        biddingPlaced={biddingPlaced}
         onClose={closeBiddingModal}
       />
       <BiddingHistory

@@ -50,7 +50,7 @@ const PackageTable: React.FC<PackageListProps> = ({
   };
 
   const navigateDealsDetails = (leadId: string, packageId: string) => {
-    navigate(`/view-package/${leadId}?pkg=${packageId}`);
+    navigate(`/view-package/${leadId}?pkg=${packageId}&type=${tabName}`);
   };
 
   const handlePageChange = (

@@ -160,6 +160,7 @@ export interface BiddingModalProps {
   open: boolean;
   onClose: (isFetchApi?: boolean) => void;
   packageId: string;
+  biddingPlaced: boolean;
 };
 export interface Bidding {
   note: string;
