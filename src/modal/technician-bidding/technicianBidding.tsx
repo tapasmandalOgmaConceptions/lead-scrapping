@@ -11,7 +11,7 @@ import * as Yup from "yup";
 import endpoints from "../../helpers/endpoints";
 import api from "../../services/api";
 import alert from "../../services/alert";
-import {
+import {  
   Bidding,
   BiddingModalProps,
   TechnicianBiddingPayload,
@@ -91,7 +91,7 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
       aria-describedby="alert-dialog-slide-description"
     >
       <div className={styles.modalBodyPart}>
-        <DialogTitle>{biddingPlaced ? "Edit" : "Add"} Your Bid</DialogTitle>
+        <DialogTitle>{biddingPlaced ? "Update" : "Add"} Your Bid</DialogTitle>
         <span className={styles.closeIcon} onClick={() => onClose()}>
           <CloseIcon />
         </span>
@@ -156,7 +156,7 @@ const TechnicianBidding: React.FC<BiddingModalProps> = ({
                     className={`${styles.addBidBtn} disableBtnStyle`}
                     disabled={loading}
                   >
-                    {biddingPlaced ? "Edit" : "Add"} Bid
+                    {biddingPlaced ? "Update" : "Add"}
                   </Button>
                   <Button
                     className={`${styles.cancelBtn} disableBtnStyle`}
